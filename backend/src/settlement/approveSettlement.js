@@ -54,17 +54,10 @@ async function approveSettlement({ settlementId, title, settlement, approvals, m
   // 돈을 받는 곳
   // - 기본: Pie(AI 정산 에이전트)가 전원의 분담금을 에스크로에 모아 결제까지 처리 → 전원 잠금
   // - payer 명시("진우가 먼저 결제했어"): payer는 자기 몫을 이미 냈으므로 나머지 멤버만 잠그고 payer에게 지급
-  const recipient = calc.payer || blockchain.ESCROW_RECIPIENT;
-  // TODO(블록체인 연동): 중간에 한 명이라도 잠금이 실패하면 앞서 잠근 금액을 되돌리는 처리 필요
-  //   (컨트랙트가 한 트랜잭션에서 전원 잠금을 지원하면 그쪽을 쓰는 게 가장 안전)
-  const locks = [];
-  for (let i = 0; i < calc.members.length; i++) {
-    const participant = calc.members[i];
-    if (participant === calc.payer || calc.shares[i] === 0) continue; // payer가 null이면 아무도 건너뛰지 않음
-    const tx = await blockchain.lockForSettlement({ settlementId, participant, amount: calc.shares[i] });
-    locks.push({ from: participant, to: recipient, amount: calc.shares[i], txHash: tx.txHash });
-  }
-  const release = await blockchain.releaseToRecipient({ settlementId, recipient });
+  // 온체인 기록: open_settlement → lock_for_settlement × N → release_to_recipient (MOCK/실제 체인 동일 형식)
+  // 잠그기 전에 전원 잔액을 먼저 확인하므로, 한 명이라도 부족하면 INSUFFICIENT_BALANCE(409)로 아무것도 잠기지 않는다
+  const onchain = await blockchain.recordSettlementOnchain({ settlementId, members: calc.members, shares: calc.shares, payer: calc.payer });
+  const { release } = onchain;
 
   const cert = {
     id: 'd' + Date.now(),
@@ -84,7 +77,6 @@ async function approveSettlement({ settlementId, title, settlement, approvals, m
     cert: cert.id,
   };
 
-  const onchain = { mock: Boolean(blockchain.IS_MOCK), recipient, viaEscrow: !calc.payer, locks, release };
   logEvent('settlement.approve', { settlementId, source: settlement ? 'analyze' : 'ui-form', calculation: calc, cert, onchain });
   return { group, cert, onchain };
 }

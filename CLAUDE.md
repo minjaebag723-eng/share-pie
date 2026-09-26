@@ -74,11 +74,16 @@ Stage 2(계산)는 Kiln API를 호출하지 않는다. 토큰 로그에 `settlem
 
 ## 5. 스마트 컨트랙트 함수 시그니처
 
-체인은 아직 미확정(Move 또는 Solidity, 팀 결정 후 이 섹션 업데이트). **정산 코어에 필수인 함수(★)를 먼저 구현한다.**
+**체인 확정: Solidity + Sepolia 테스트넷** (OpenZeppelin ERC-20, Hardhat — 구현: `contracts/`, 백엔드 연동: `backend/src/blockchain/`). **정산 코어에 필수인 함수(★)를 먼저 구현한다.**
+
+- 서버의 운영자 지갑(`DEPLOYER_PRIVATE_KEY`) 하나가 모든 트랜잭션에 서명하는 데모용 수탁 구조. 멤버 이름 → 주소는 `backend/src/blockchain/members.js`
+- PieCoin: `decimals = 0` (1 PIE = 1원). 발행·정산 이동은 정산 컨트랙트만 가능 (멤버 approve 불필요)
+- `BLOCKCHAIN_RPC_URL`·`CONTRACT_ADDRESS`·`DEPLOYER_PRIVATE_KEY` 중 하나라도 없으면 MOCK 모드 (`onchain.mock: true`)
 
 | 함수 | 파라미터(개념) | 역할 | 우선순위 |
 |---|---|---|:---:|
 | `charge_token` | user_address, amount | PieCoin 발급(충전) | ★ 코어 |
+| `open_settlement` | settlement_id, participants[], amounts[] | 정산 등록 — 누가 얼마를 잠가야 하는지 기록. lock은 등록 금액과 같아야 하고, release는 전원 잠금 후에만 가능 (팀 합의로 추가) | ★ 코어 |
 | `lock_for_settlement` | settlement_id, participant, amount | 승인 시 분담금 잠금. **참여자의 PieCoin 잔액이 amount보다 적으면 잠금을 거부하고 에러를 반환한다 (잔액 부족 시 정산 자체가 진행되지 않음 — 일부만 잠기는 상태를 절대 허용하지 않는다).** | ★ 코어 |
 | `release_to_recipient` | settlement_id, recipient | 전원 승인 완료 시 잠긴 금액 지급 | ★ 코어 |
 | `refund_participant` | settlement_id, participant | 착오 판정 시 자동 환불 | Dispute 모듈 |
@@ -215,8 +220,10 @@ Run 2 (이의제기): Run 1 결과에 이의제기 → Dispute 모듈이 재조�
 KILN_API_KEY=sk-bk-...
 KILN_BASE_URL=https://api.bricksum.com/v1
 KILN_MODEL=gpt-oss-120b
-BLOCKCHAIN_RPC_URL=<확정 후 입력>
-CONTRACT_ADDRESS=<배포 후 입력>
+BLOCKCHAIN_RPC_URL=<Sepolia RPC 주소 (Alchemy/Infura)>
+CONTRACT_ADDRESS=<contracts: npm run deploy:sepolia 결과>
+DEPLOYER_PRIVATE_KEY=<테스트 전용 지갑 비밀키 — 실제 자산 지갑 절대 금지>
+MERCHANT_ADDRESS=<Pie 에스크로가 지급할 테스트 결제처 주소>
 SHOPPING_API_KEY=<SerpApi 키 — https://serpapi.com/manage-api-key>   # 선택. 없으면 목 데이터
 SHOPPING_PROVIDER=mock   # 선택. 개발 중 SerpApi 한도 아끼기
 ```
