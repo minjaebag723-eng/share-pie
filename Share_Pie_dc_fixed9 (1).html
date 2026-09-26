@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+/* ============================================================
+   쉐어파이 디자인 시스템 토큰 (2026-09-26 적용, @박진우 디자인 시스템 가이드 기준)
+   AI 도구(Cursor, Claude Code 등)가 새 화면을 만들 때 새 값을 만들지 말고
+   아래 값 중에서만 고르도록 하기 위한 기준값입니다.
+
+   - Color(Role): Primary=#EE6A26(배경/채움) · Primary-Text=#C9531A(밝은 배경 위 텍스트/강조)
+                  Background=#EADFCC(디바이스 프레임) / #FBF4E6(화면 배경)
+                  Surface=#FFFCF6(카드·시트) · Text=#2E1D12(기본) / #7A6353(보조) / #A8927F(caption)
+                  Border=#EEE1CB(기본) / #EE6A26(focus) · Danger=#B8401A / #F1B4A8
+   - Spacing Scale: 4 / 8 / 12 / 16 / 24 / 32 (기존 화면은 14·18·20·22도 관례적으로 써왔음 — 이미 반복 사용되어
+     굳어진 값이라 무리하게 갈아엎지 않고 유지. 새로 만드는 요소는 아래 --space-* 우선 사용 권장)
+   - Radius Scale: --radius-sm(작은 박스/칩,12) / --radius-btn-sm(컴팩트 버튼,11) / --radius-btn(기본 버튼,14)
+                   --radius-card(카드형 리스트,18) / --radius-lg(강조 배너/프로모/모달,24) / --radius-full(원형,999)
+   - Shadow: Small(리스트 아이템) / Medium(카드,드롭다운) / Large(모달,플로팅 버튼) 3단계로 통일
+   ============================================================ */
+:root{
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:24px; --space-6:32px;
+  --radius-sm:12px; --radius-btn-sm:11px; --radius-btn:14px; --radius-card:18px; --radius-lg:24px; --radius-full:999px;
+  --shadow-sm:0 2px 6px rgba(60,30,10,.08);
+  --shadow-md:0 8px 20px rgba(60,30,10,.12);
+  --shadow-lg:0 20px 48px rgba(60,30,10,.18);
+}
+body{margin:0;background:#EADFCC;font-family:Pretendard,-apple-system,system-ui,sans-serif;color:#2E1D12;-webkit-font-smoothing:antialiased}
+a{color:#C9531A;text-decoration:none}a:hover{color:#A8481A}
+*{box-sizing:border-box}*::-webkit-scrollbar{display:none}
+input::placeholder{color:#A8927F}
+@keyframes spLoad{from{width:0}to{width:100%}}
+@keyframes spBob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
+@keyframes spFade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes spSlide{from{transform:translateX(100%)}to{transform:none}}
+@keyframes spUp{from{transform:translateY(100%)}to{transform:none}}
+@keyframes spDim{from{opacity:0}to{opacity:1}}
+@keyframes spDot{0%,80%,100%{opacity:.25}40%{opacity:1}}
+@keyframes spPop{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:none}}
+</style>
+</helmet>
+<div style="min-height:100vh;display:grid;place-items:center;padding:20px 0">
+<div style="width:{{ frameW }};height:{{ frameH }};position:relative">
+<div style="position:absolute;left:0;top:0;width:412px;height:866px;transform:{{ frameT }};transform-origin:0 0;background:#1E140D;border-radius:60px;padding:11px;box-shadow:0 30px 80px rgba(60,30,10,.25)">
+<div data-screen-label="Phone" style="position:relative;width:390px;height:844px;border-radius:49px;overflow:hidden;background:#FBF4E6">
+
+<div style="position:absolute;top:0;left:0;right:0;height:47px;z-index:70;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0 34px;pointer-events:none">
+<span style="font-weight:700;font-size:16px;letter-spacing:-0.01em">9:41</span>
+<div style="position:absolute;left:50%;top:11px;width:120px;height:34px;margin-left:-60px;background:#1E140D;border-radius:20px"></div>
+<div style="display:flex;align-items:center;gap:6px">
+<div style="display:flex;align-items:flex-end;gap:2px;height:12px"><span style="width:3px;height:4px;background:#2E1D12;border-radius:1px"></span><span style="width:3px;height:6px;background:#2E1D12;border-radius:1px"></span><span style="width:3px;height:9px;background:#2E1D12;border-radius:1px"></span><span style="width:3px;height:12px;background:#2E1D12;border-radius:1px"></span></div>
+<div style="width:25px;height:12px;border:1.5px solid #2E1D12;border-radius:4px;padding:1.5px;opacity:.9"><div style="width:75%;height:100%;background:#2E1D12;border-radius:1.5px"></div></div>
+</div>
+</div>
+
+<sc-if value="{{ isSplash }}" hint-placeholder-val="{{ true }}">
+<div data-screen-label="01 Loading" style="position:absolute;inset:0;background:#FBF4E6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px">
+<div style="width:120px;height:120px;border-radius:30px;overflow:hidden;box-shadow:0 12px 30px rgba(238,106,38,.22);animation:spPop .6s ease both"><img src="assets/app-icon.png" alt="Share Pie" style="width:100%;height:100%;object-fit:cover;transform:scale(1.06)"></div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:6px;animation:spFade .6s .2s ease both">
+<span style="font-weight:800;font-size:30px;letter-spacing:-0.03em">Share Pie</span>
+<span style="font-size:14px;color:#7A6353">찾고, 사고, 나누는 것까지 AI로</span>
+</div>
+<div style="position:absolute;bottom:86px;width:120px;height:4px;border-radius:2px;background:#EEE1CB;overflow:hidden"><div style="height:100%;background:#EE6A26;border-radius:2px;animation:spLoad 2.2s ease forwards"></div></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isAuth }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="02 Login" style="position:absolute;inset:0;padding:47px 28px 30px;display:flex;flex-direction:column;overflow:auto;animation:spFade .4s ease both">
+<div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin:48px 0 34px">
+<div style="width:72px;height:72px;border-radius:20px;overflow:hidden"><img src="assets/app-icon.png" alt="" style="width:100%;height:100%;object-fit:cover;transform:scale(1.06)"></div>
+<span style="font-weight:800;font-size:24px;letter-spacing:-0.03em">Share Pie</span>
+<span style="font-size:14px;color:#7A6353">함께 사고, 공정하게 나누는 AI 정산</span>
+</div>
+<div style="display:flex;background:#F1E6D3;border-radius:14px;padding:4px;margin-bottom:20px">
+<button onClick="{{ setLogin }}" style="flex:1;height:40px;border:none;border-radius:var(--radius-btn-sm);font:700 15px Pretendard,sans-serif;cursor:pointer;background:{{ loginTabBg }};color:{{ loginTabFg }}">로그인</button>
+<button onClick="{{ setSignup }}" style="flex:1;height:40px;border:none;border-radius:var(--radius-btn-sm);font:700 15px Pretendard,sans-serif;cursor:pointer;background:{{ signupTabBg }};color:{{ signupTabFg }}">회원가입</button>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-if value="{{ isSignup }}"><input value="{{ name }}" onChange="{{ onName }}" placeholder="이름" style="height:52px;border:1.5px solid #EEE1CB;border-radius:14px;padding:0 16px;font:500 15px Pretendard,sans-serif;background:#FFFCF6;color:#2E1D12;outline:none" style-focus="border-color:#EE6A26"></sc-if>
+<sc-if value="{{ isSignup }}"><div style="display:flex;flex-direction:column;gap:6px">
+<div style="height:52px;display:flex;align-items:center;gap:2px;border:1.5px solid {{ signupIdBorder }};border-radius:14px;padding:0 16px;background:#FFFCF6"><span style="font:600 15px Pretendard,sans-serif;color:#A8927F">@</span><input value="{{ signupId }}" onChange="{{ onSignupId }}" maxlength="21" placeholder="Pie ID (친구가 나를 찾을 때 써요)" autocapitalize="none" autocomplete="off" spellcheck="false" style="flex:1;min-width:0;border:none;background:transparent;outline:none;font:500 15px Pretendard,sans-serif;color:#2E1D12"></div>
+<span style="font-size:12px;color:{{ signupIdHelpColor }};padding:0 4px">{{ signupIdHelp }}</span>
+</div></sc-if>
+<input value="{{ email }}" onChange="{{ onEmail }}" placeholder="이메일" type="email" style="height:52px;border:1.5px solid #EEE1CB;border-radius:14px;padding:0 16px;font:500 15px Pretendard,sans-serif;background:#FFFCF6;color:#2E1D12;outline:none" style-focus="border-color:#EE6A26">
+<input value="{{ pw }}" onChange="{{ onPw }}" onKeyDown="{{ onAuthKey }}" placeholder="비밀번호 (6자 이상)" type="password" style="height:52px;border:1.5px solid #EEE1CB;border-radius:14px;padding:0 16px;font:500 15px Pretendard,sans-serif;background:#FFFCF6;color:#2E1D12;outline:none" style-focus="border-color:#EE6A26">
+<sc-if value="{{ hasAuthErr }}"><span style="font-size:13px;color:#B8401A;padding:0 4px">{{ authErr }}</span></sc-if>
+<button onClick="{{ submitAuth }}" style="height:54px;margin-top:6px;border:none;border-radius:var(--radius-btn);background:#EE6A26;color:#fff;font:700 17px Pretendard,sans-serif;cursor:pointer" style-active="transform:scale(.98)">{{ authCta }}</button>
+<sc-if value="{{ isLogin }}"><div style="display:flex;justify-content:center;gap:14px;font-size:13px;color:#7A6353;margin-top:4px"><span onClick="{{ findId }}" style="cursor:pointer">아이디 찾기</span><span style="color:#D9C8AE">|</span><span onClick="{{ findId }}" style="cursor:pointer">비밀번호 재설정</span></div></sc-if>
+</div>
+<div style="display:flex;align-items:center;gap:12px;margin:26px 0 14px;color:#A8927F;font-size:12px"><div style="flex:1;height:1px;background:#EEE1CB"></div>또는<div style="flex:1;height:1px;background:#EEE1CB"></div></div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<button onClick="{{ quickLogin }}" style="height:50px;border:1.5px solid #EEE1CB;border-radius:var(--radius-btn);background:#FFFCF6;font:600 15px Pretendard,sans-serif;color:#2E1D12;cursor:pointer" style-hover="background:#F7EEDD">Google로 계속하기</button>
+<button onClick="{{ quickLogin }}" style="height:50px;border:none;border-radius:var(--radius-btn);background:#2E1D12;font:600 15px Pretendard,sans-serif;color:#FBF4E6;cursor:pointer">Apple로 계속하기</button>
+</div>
+<span style="margin-top:auto;padding-top:20px;text-align:center;font-size:12px;color:#A8927F">데모: 이메일 형식 + 6자 이상 비밀번호면 로그인돼요</span>
+</div>
+</sc-if>
+
+<sc-if value="{{ isMain }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;padding-top:47px;display:flex;flex-direction:column">
+<div style="height:56px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 12px 0 20px">
+<sc-if value="{{ isHome }}"><div style="display:flex;align-items:center;gap:8px"><div style="width:30px;height:30px;border-radius:9px;overflow:hidden"><img src="assets/app-icon.png" alt="" style="width:100%;height:100%;object-fit:cover;transform:scale(1.06)"></div><span style="font-weight:800;font-size:19px;letter-spacing:-0.02em">Share Pie</span></div></sc-if>
+<sc-if value="{{ notHome }}"><span style="font-weight:800;font-size:22px;letter-spacing:-0.02em">{{ tabTitle }}</span></sc-if>
+<div style="display:flex;gap:2px">
+<button onClick="{{ openSearch }}" style="width:40px;height:40px;border:none;background:transparent;border-radius:20px;display:grid;place-items:center;cursor:pointer;color:#2E1D12" style-hover="background:#F3E7D3" aria-label="검색"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4"></path></svg></button>
+<sc-if value="{{ isHome }}"><button onClick="{{ openAddressSheet }}" style="width:40px;height:40px;border:none;background:transparent;border-radius:20px;display:grid;place-items:center;cursor:pointer;color:#2E1D12" style-hover="background:#F3E7D3" aria-label="{{ locationAriaLabel }}" title="{{ userAddress }}"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg></button></sc-if>
+<button onClick="{{ openNotif }}" aria-label="알림" style="position:relative;width:40px;height:40px;border:none;background:transparent;border-radius:20px;display:grid;place-items:center;cursor:pointer;color:#2E1D12" style-hover="background:#F3E7D3"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4zM10 21h4"></path></svg><sc-if value="{{ hasUnread }}"><span style="position:absolute;top:7px;right:8px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:#EE6A26;color:#fff;font-size:10px;font-weight:700;display:grid;place-items:center;border:2px solid #FBF4E6">{{ unreadCount }}</span></sc-if></button>
+</div>
+</div>
+
+<div style="flex:1;overflow-y:auto;overflow-x:hidden">
+
+<sc-if value="{{ isHome }}">
+<div data-screen-label="03 Home" style="animation:spFade .35s ease both">
+<div style="display:flex;flex-direction:column;align-items:center;padding:18px 20px 0;min-height:560px">
+<img src="assets/pie-bot.png" alt="Pie 챗봇" style="width:200px;height:200px;object-fit:cover;mix-blend-mode:multiply;animation:spBob 3.4s ease-in-out infinite">
+<span style="font-size:14px;color:#7A6353;margin-top:2px">안녕하세요, {{ firstName }}님</span>
+<span style="font-weight:800;font-size:24px;letter-spacing:-0.03em;text-align:center;line-height:1.35;margin-top:6px;text-wrap:balance">무엇을 함께 사고, 나눠볼까요?</span>
+<div style="width:100%;margin-top:24px;display:flex;align-items:center;gap:8px;background:#FFFCF6;border:1.5px solid #F1C9A8;border-radius:28px;padding:6px 6px 6px 18px;box-shadow:0 6px 20px rgba(238,106,38,.10)">
+<input value="{{ homeInput }}" onChange="{{ onHomeInput }}" onKeyDown="{{ onHomeKey }}" placeholder="예: 4명이서 먹을 고기, 1인 1만원 정도" style="flex:1;min-width:0;border:none;background:transparent;outline:none;font:500 15px Pretendard,sans-serif;color:#2E1D12;height:42px">
+<button onClick="{{ sendHome }}" style="width:42px;height:42px;flex:none;border:none;border-radius:21px;background:#EE6A26;color:#fff;display:grid;place-items:center;cursor:pointer" style-active="transform:scale(.94)" aria-label="보내기"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"></path></svg></button>
+</div>
+<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:14px">
+<sc-for list="{{ suggestions }}" as="s" hint-placeholder-count="3"><button onClick="{{ s.go }}" style="height:34px;padding:0 14px;border:1px solid #EEE1CB;border-radius:17px;background:transparent;font:500 13px Pretendard,sans-serif;color:#5E4A3B;cursor:pointer" style-hover="background:#F3E7D3">{{ s.label }}</button></sc-for>
+</div>
+</div>
+<div style="padding:8px 20px 0">
+<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px"><span style="font-weight:800;font-size:18px;letter-spacing:-0.02em">지난 Pie 대화 요약</span><span style="font-size:13px;color:#7A6353">{{ chatCount }}개</span></div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ visibleChats }}" as="c" hint-placeholder-count="3">
+<button onClick="{{ c.open }}" style="text-align:left;border:1px solid #EEE1CB;background:#FFFCF6;border-radius:var(--radius-card);padding:16px;display:flex;gap:12px;cursor:pointer;font-family:inherit;color:inherit" style-hover="border-color:#F1C9A8">
+<div style="width:40px;height:40px;flex:none;border-radius:var(--radius-sm);background:#FDEBC8;overflow:hidden"><img src="assets/pie-bot.png" alt="" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);mix-blend-mode:multiply"></div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">
+<div style="display:flex;justify-content:space-between;gap:8px"><span style="font-weight:700;font-size:15px">{{ c.title }}</span><span style="font-size:12px;color:#A8927F;flex:none">{{ c.date }}</span></div>
+<span style="font-size:13px;line-height:1.5;color:#7A6353;text-wrap:pretty">{{ c.summary }}</span>
+</div>
+</button>
+</sc-for>
+</div>
+<sc-if value="{{ hasMoreChats }}"><button onClick="{{ toggleAllChats }}" style="width:100%;margin-top:14px;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;gap:2px;color:#A8927F;font-size:12px;cursor:pointer;font-family:inherit" style-hover="color:#7A6353">{{ moreChatsLabel }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="{{ moreChatsIconStyle }}"><path d="M6 9l6 6 6-6"></path></svg></button></sc-if>
+<button onClick="{{ startGroupSettle }}" style="width:100%;margin:24px 0 28px;text-align:left;border:none;border-radius:var(--radius-lg);background:#EE6A26;color:#fff;padding:24px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;font-family:inherit" style-active="transform:scale(.99)">
+<div style="flex:1;display:flex;flex-direction:column;gap:6px"><span style="font-weight:800;font-size:20px;letter-spacing:-0.02em">그룹 정산 시작하기</span><span style="font-size:14px;line-height:1.45;color:#FFF3E8">여행·모임·공동구매 비용을 말로 설명하면 Pie가 나눠드려요</span></div>
+<div style="width:44px;height:44px;flex:none;border-radius:22px;background:#FFFCF6;color:#EE6A26;display:grid;place-items:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></div>
+</button>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isBuy }}">
+<div data-screen-label="04 Group Buy" style="padding:4px 0 28px;animation:spFade .35s ease both">
+<div style="padding:0 20px">
+<div style="display:flex;align-items:center;gap:10px;background:#FFFCF6;border:1.5px solid #F1C9A8;border-radius:18px;padding:6px 6px 6px 12px">
+<div style="width:34px;height:34px;flex:none;border-radius:10px;background:#FDEBC8;overflow:hidden"><img src="assets/pie-bot.png" alt="" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);mix-blend-mode:multiply"></div>
+<input value="{{ buyInput }}" onChange="{{ onBuyInput }}" onKeyDown="{{ onBuyKey }}" placeholder="어떤 상품을 찾고 계신가요?" style="flex:1;min-width:0;border:none;background:transparent;outline:none;font:500 15px Pretendard,sans-serif;color:#2E1D12;height:40px">
+<button onClick="{{ sendBuy }}" style="height:40px;padding:0 14px;border:none;border-radius:var(--radius-sm);background:#EE6A26;color:#fff;font:700 14px Pretendard,sans-serif;cursor:pointer">AI 검색</button>
+</div>
+<span style="display:block;font-size:12px;color:#7A6353;margin:8px 4px 0">원하는 조건을 AI에게 말해보세요. 인원·예산·마감까지 비교해드려요.</span>
+</div>
+
+<div style="display:flex;align-items:baseline;justify-content:space-between;padding:26px 20px 12px"><span style="font-weight:800;font-size:18px;letter-spacing:-0.02em">요즘 뜨는 공동구매</span><span style="font-size:12px;color:#A8927F">실시간 참여 기준</span></div>
+<div style="display:flex;gap:12px;overflow-x:auto;padding:0 20px">
+<sc-for list="{{ hotList }}" as="p" hint-placeholder-count="3">
+<button onClick="{{ p.open }}" style="flex:none;width:168px;text-align:left;border:1px solid #EEE1CB;background:#FFFCF6;border-radius:var(--radius-card);padding:0;overflow:hidden;cursor:pointer;font-family:inherit;color:inherit">
+<div style="height:112px;background:{{ p.tint }};position:relative;display:grid;place-items:center"><span style="font:600 10px ui-monospace,Menlo,monospace;letter-spacing:.08em;color:#8A6A55">{{ p.cat }} PHOTO</span><span style="position:absolute;top:10px;left:10px;height:22px;padding:0 8px;border-radius:11px;background:#2E1D12;color:#FBF4E6;font-size:11px;font-weight:700;display:grid;place-items:center">{{ p.rankLabel }}</span></div>
+<div style="padding:12px 12px 14px;display:flex;flex-direction:column;gap:6px">
+<span style="font-weight:700;font-size:15px">{{ p.name }}</span>
+<span style="font-weight:800;font-size:16px;color:#C9531A">{{ p.priceStr }}</span>
+<div style="height:5px;border-radius:3px;background:#F1E6D3;overflow:hidden"><div style="height:100%;width:{{ p.pct }};background:#F5B04A;border-radius:3px"></div></div>
+<span style="font-size:12px;color:#7A6353">{{ p.recruit }} · {{ p.deadline }}</span>
+</div>
+</button>
+</sc-for>
+</div>
+
+<div style="display:flex;align-items:baseline;justify-content:space-between;padding:28px 20px 12px"><span style="font-weight:800;font-size:18px;letter-spacing:-0.02em">우리 동네에서 진행 중</span><span style="font-size:13px;color:#C9531A;font-weight:600">성수동</span></div>
+<div style="display:flex;flex-direction:column;gap:10px;padding:0 20px">
+<sc-for list="{{ localList }}" as="p" hint-placeholder-count="4">
+<button onClick="{{ p.open }}" style="text-align:left;border:1px solid #EEE1CB;background:#FFFCF6;border-radius:var(--radius-card);padding:12px;display:flex;gap:12px;align-items:center;cursor:pointer;font-family:inherit;color:inherit">
+<div style="width:64px;height:64px;flex:none;border-radius:14px;background:{{ p.tint }};display:grid;place-items:center"><span style="font:600 9px ui-monospace,Menlo,monospace;letter-spacing:.06em;color:#8A6A55">{{ p.cat }}</span></div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">
+<div style="display:flex;justify-content:space-between;gap:8px"><span style="font-weight:700;font-size:15px">{{ p.name }}</span><span style="font-weight:800;font-size:15px;flex:none">{{ p.priceStr }}</span></div>
+<span style="font-size:12px;color:#7A6353">{{ p.where }}</span>
+<div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:5px;border-radius:3px;background:#F1E6D3;overflow:hidden"><div style="height:100%;width:{{ p.pct }};background:#EE6A26;border-radius:3px"></div></div><span style="font-size:12px;font-weight:600;color:#5E4A3B;flex:none">{{ p.recruit }}</span></div>
+</div>
+</button>
+</sc-for>
+</div>
+
+<div style="padding:28px 20px 12px;display:flex;flex-direction:column;gap:4px"><span style="font-weight:800;font-size:18px;letter-spacing:-0.02em">Pie가 추천하는 공동구매</span><span style="font-size:13px;color:#7A6353">지난 대화 ‘자취방 고기 공동구매’ 조건 기반 · 4명</span></div>
+<div style="display:flex;flex-direction:column;gap:10px;padding:0 20px">
+<sc-for list="{{ recList }}" as="p" hint-placeholder-count="3">
+<button onClick="{{ p.open }}" style="text-align:left;border:1px solid #EEE1CB;background:#FFFCF6;border-radius:var(--radius-card);padding:14px 16px;display:flex;flex-direction:column;gap:10px;cursor:pointer;font-family:inherit;color:inherit">
+<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:700;font-size:15px">{{ p.name }}</span><span style="font-size:12px;font-weight:700;color:#A8481A;background:#FCE3D3;padding:4px 8px;border-radius:8px">{{ p.reason }}</span></div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px">
+<div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:11px;color:#A8927F">가격</span><span style="font-size:13px;font-weight:700">{{ p.priceStr }}</span></div>
+<div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:11px;color:#A8927F">1인 예상</span><span style="font-size:13px;font-weight:700;color:#C9531A">{{ p.per4 }}</span></div>
+<div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:11px;color:#A8927F">마감</span><span style="font-size:13px;font-weight:700">{{ p.deadline }}</span></div>
+</div>
+</button>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isGroup }}">
+<div data-screen-label="05 Groups" style="padding:4px 20px 28px;display:flex;flex-direction:column;gap:12px;animation:spFade .35s ease both">
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
+<div style="background:#FFFCF6;border:1px solid #EEE1CB;border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;color:#7A6353">전체 그룹</span><span style="font-weight:800;font-size:20px">{{ gStat.total }}</span></div>
+<div style="background:#FFFCF6;border:1px solid #EEE1CB;border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;color:#7A6353">진행 중</span><span style="font-weight:800;font-size:20px;color:#C9531A">{{ gStat.active }}</span></div>
+<div style="background:#FFFCF6;border:1px solid #EEE1CB;border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;color:#7A6353">정산 완료</span><span style="font-weight:800;font-size:20px;color:#2F6B45">{{ gStat.done }}</span></div>
+</div>
+<button onClick="{{ openCreateBlank }}" style="height:56px;border:1.5px dashed #F1B48C;border-radius:var(--radius-card);background:#FFF7EE;color:#C9531A;font:700 15px Pretendard,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer" style-hover="background:#FCEBDC"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>그룹 만들기</button>
+<sc-for list="{{ groupList }}" as="g" hint-placeholder-count="3">
+<div style="background:#FFFCF6;border:1px solid #EEE1CB;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+<div style="display:flex;flex-direction:column;gap:4px;min-width:0"><span style="font-weight:800;font-size:17px;letter-spacing:-0.02em">{{ g.name }}</span><span style="font-size:13px;color:#7A6353">{{ g.meta }}</span></div>
+<span style="flex:none;font-size:12px;font-weight:700;padding:5px 9px;border-radius:9px;background:{{ g.pillBg }};color:{{ g.pillFg }}">{{ g.status }}</span>
+</div>
+<div style="display:flex;align-items:center;gap:10px">
+<div style="display:flex">
+<sc-for list="{{ g.avatars }}" as="a"><div style="width:30px;height:30px;margin-right:-7px;border-radius:15px;background:{{ a.bg }};border:2px solid #FFFCF6;display:grid;place-items:center;font-size:10px;font-weight:700;color:#5E3A22">{{ a.name }}</div></sc-for>
+</div>
+<div style="flex:1;margin-left:12px;height:6px;border-radius:3px;background:#F1E6D3;overflow:hidden"><div style="height:100%;width:{{ g.pct }};background:{{ g.barColor }};border-radius:3px;transition:width .5s"></div></div>
+<span style="font-size:12px;font-weight:600;color:#5E4A3B;flex:none">{{ g.approvedStr }}</span>
+</div>
+<sc-if value="{{ g.expanded }}">
+<div style="border-top:1px solid #F1E6D3;padding-top:10px;display:flex;flex-direction:column;gap:8px">
+<sc-for list="{{ g.rows }}" as="r"><div style="display:flex;align-items:center;gap:10px"><span style="flex:1;font-size:14px;font-weight:600">{{ r.name }}</span><span style="font-size:14px;font-weight:700">{{ r.amt }}</span><span style="width:52px;text-align:center;font-size:11px;font-weight:700;padding:4px 0;border-radius:7px;background:{{ r.bg }};color:{{ r.fg }}">{{ r.label }}</span></div></sc-for>
+<sc-if value="{{ g.canRemind }}"><button onClick="{{ g.remind }}" style="height:40px;margin-top:4px;border:none;border-radius:var(--radius-sm);background:#FDEBC8;color:#8A5A0B;font:700 13px Pretendard,sans-serif;cursor:pointer">미승인 멤버에게 승인 요청 다시 보내기</button></sc-if>
+<sc-if value="{{ g.hasCert }}"><button onClick="{{ g.openCert }}" style="height:40px;margin-top:4px;border:none;border-radius:var(--radius-sm);background:#E1F0E4;color:#2F6B45;font:700 13px Pretendard,sans-serif;cursor:pointer">정산 인증서 보기</button></sc-if>
+</div>
+</sc-if>
+<div style="display:flex;gap:8px">
+<button onClick="{{ g.toggle }}" style="flex:1;height:42px;border:1px solid #EEE1CB;border-radius:var(--radius-sm);background:transparent;font:700 14px Pretendard,sans-serif;color:#2E1D12;cursor:pointer" style-hover="background:#F7EEDD">{{ g.expandLabel }}</button>
+<button onClick="{{ g.chat }}" style="flex:1;height:42px;border:none;border-radius:var(--radius-sm);background:#2E1D12;font:700 14px Pretendard,sans-serif;color:#FBF4E6;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"></path></svg>채팅하기</button>
+</div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ isSettle }}">
+<div data-screen-label="06 Settlement" style="padding:4px 20px 28px;display:flex;flex-direction:column;gap:14px;animation:spFade .35s ease both">
+<div style="background:#2E1D12;color:#FBF4E6;border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:14px">
+<span style="font-size:13px;color:#D9C8AE">Web3 검증 완료된 정산</span>
+<div style="display:flex;align-items:baseline;gap:6px"><span style="font-weight:800;font-size:30px;letter-spacing:-0.03em">{{ certTotal }}</span><span style="font-size:14px;color:#D9C8AE">누적 {{ certCount }}건</span></div>
+<div style="display:flex;gap:8px;font-size:12px"><span style="padding:5px 9px;border-radius:8px;background:#4A3323;color:#FDEBC8">Share Pie Testnet</span><span style="padding:5px 9px;border-radius:8px;background:#4A3323;color:#FDEBC8">위·변조 검증 가능</span></div>
+</div>
+<div style="display:flex;background:#F1E6D3;border-radius:14px;padding:4px">
+<button onClick="{{ segCert }}" style="flex:1;height:38px;border:none;border-radius:var(--radius-btn-sm);font:700 14px Pretendard,sans-serif;cursor:pointer;background:{{ segCertBg }};color:{{ segCertFg }}">인증서 {{ certCount }}</button>
+<button onClick="{{ segRcpt }}" style="flex:1;height:38px;border:none;border-radius:var(--radius-btn-sm);font:700 14px Pretendard,sans-serif;cursor:pointer;background:{{ segRcptBg }};color:{{ segRcptFg }}">영수증 {{ rcptCount }}</button>
+</div>
+<sc-for list="{{ docList }}" as="d" hint-placeholder-count="3">
+<button onClick="{{ d.open }}" style="text-align:left;border:1px solid #EEE1CB;background:#FFFCF6;border-radius:var(--radius-card);padding:16px;display:flex;gap:14px;align-items:center;cursor:pointer;font-family:inherit;color:inherit" style-hover="border-color:#F1C9A8">
+<div style="width:46px;height:46px;flex:none;border-radius:14px;background:{{ d.iconBg }};color:{{ d.iconFg }};display:grid;place-items:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{ d.icon }}"></path></svg></div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font-weight:700;font-size:15px">{{ d.title }}</span><span style="font-size:12px;color:#7A6353">{{ d.sub }}</span></div>
+<div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex:none"><span style="font-weight:800;font-size:15px">{{ d.totalStr }}</span><span style="font-size:11px;font-weight:700;color:{{ d.tagFg }}">{{ d.tag }}</span></div>
+</button>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ isMy }}">
+<div data-screen-label="07 My" style="padding:4px 20px 28px;display:flex;flex-direction:column;gap:14px;animation:spFade .35s ease both">
+<div style="display:flex;align-items:center;gap:14px;padding:6px 2px">
+<sc-if value="{{ hasHeaderAvatar }}"><img src="{{ headerAvatarUrl }}" alt="프로필 사진" style="width:60px;height:60px;border-radius:30px;object-fit:cover;flex:none"></sc-if>
+<sc-if value="{{ noHeaderAvatar }}"><div style="width:60px;height:60px;border-radius:30px;background:#FDEBC8;display:grid;place-items:center;font-weight:800;font-size:22px;color:#A8481A;flex:none">{{ initial }}</div></sc-if>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font-weight:800;font-size:19px">{{ userName }}</span><button onClick="{{ copyMyId }}" aria-label="내 Pie ID 복사" style="align-self:flex-start;border:none;background:transparent;padding:0;display:flex;align-items:center;gap:6px;cursor:pointer;font:600 13px Pretendard,sans-serif;color:#C9531A">@{{ userId }}<span style="font-size:11px;font-weight:700;color:#A8927F;background:#F1E6D3;padding:2px 6px;border-radius:6px">복사</span></button><span style="font-size:13px;color:#7A6353">{{ userAddress }}</span></div>
+</div>
+<div style="background:linear-gradient(135deg, #EE6A26 0%, #F5A24C 100%);border-radius:22px;padding:20px;color:#fff;display:flex;flex-direction:column;gap:14px">
+<span style="font-weight:700;font-size:15px">Pie Pay 잔액</span>
+<span style="font-weight:800;font-size:34px;letter-spacing:-0.03em">{{ balanceStr }}</span>
+<span style="font-size:13px;color:#FFF3E8">연결계좌 · 국민은행 ****1234</span>
+<div style="display:flex;gap:8px;margin-top:2px">
+<button onClick="{{ charge }}" style="flex:1;height:44px;border:none;border-radius:var(--radius-sm);background:#FFFCF6;color:#C9531A;font:700 14px Pretendard,sans-serif;cursor:pointer">충전하기</button>
+<button onClick="{{ sendMoney }}" style="flex:1;height:44px;border:1.5px solid rgba(255,255,255,.75);border-radius:var(--radius-sm);background:transparent;color:#fff;font:700 14px Pretendard,sans-serif;cursor:pointer">연결계좌 관리</button>
+</div>
+</div>
+<div style="background:#FFFCF6;border:1px solid #EEE1CB;border-radius:20px;padding:6px 16px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;padding:12px 0 6px"><span style="font-weight:800;font-size:16px">파이페이 내역</span><span style="font-size:12px;color:#A8927F">최근 30일</span></div>
+<sc-for list="{{ payList }}" as="h" hint-placeholder-count="4"><div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid #F4EBDC"><span style="width:38px;font-size:12px;color:#A8927F">{{ h.d }}</span><div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:600">{{ h.t }}</span><span style="font-size:12px;color:#7A6353">{{ h.s }}</span></div><span style="font-size:14px;font-weight:700;color:{{ h.color }}">{{ h.amt }}</span></div></sc-for>
+<sc-if value="{{ hasMorePay }}"><button onClick="{{ loadMorePay }}" style="width:100%;height:44px;margin-top:6px;border:none;background:transparent;font:600 13px Pretendard,sans-serif;color:#C9531A;cursor:pointer">내역보기</button></sc-if>
+</div>
+<div style="background:#FFFCF6;border:1px solid #EEE1CB;border-radius:20px;overflow:hidden">
+<sc-for list="{{ myMenu }}" as="m" hint-placeholder-count="5"><button onClick="{{ m.go }}" style="width:100%;height:54px;border:none;border-top:1px solid #F4EBDC;background:transparent;display:flex;align-items:center;justify-content:space-between;padding:0 16px;font:600 15px Pretendard,sans-serif;color:{{ m.color }};cursor:pointer" style-hover="background:#F9F1E3">{{ m.label }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C4B09A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></button></sc-for>
+</div>
+<span style="text-align:center;font-size:12px;color:#A8927F">Share Pie v1.0 · AI 공동정산</span>
+</div>
+</sc-if>
+
+</div>
+
+<div style="flex:none;height:84px;background:#FFFCF6;border-top:1px solid #EEE1CB;display:flex;padding:6px 6px 0">
+<sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5">
+<button onClick="{{ t.go }}" style="flex:1;height:54px;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;color:{{ t.color }};font-family:inherit">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="{{ t.fill }}" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{ t.d }}"></path></svg>
+<span style="font-size:11px;font-weight:{{ t.fw }}">{{ t.label }}</span>
+</button>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isChat }}">
+<div data-screen-label="08 Pie Chat" style="position:absolute;inset:0;z-index:20;background:#FBF4E6;padding-top:47px;display:flex;flex-direction:column;animation:spSlide .3s cubic-bezier(.2,.8,.2,1) both">
+<div style="height:56px;flex:none;display:flex;align-items:center;gap:4px;padding:0 12px 0 6px;border-bottom:1px solid #EEE1CB">
+<button onClick="{{ closeOverlay }}" style="width:40px;height:40px;border:none;background:transparent;border-radius:20px;display:grid;place-items:center;cursor:pointer;color:#2E1D12" aria-label="닫기"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></button>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-weight:800;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ chatTitle }}</span><span style="font-size:11px;color:#3D8457;font-weight:600">Pie · AI Shopping & Settlement Agent</span></div>
+<button onClick="{{ openSearch }}" style="width:40px;height:40px;border:none;background:transparent;border-radius:20px;display:grid;place-items:center;cursor:pointer;color:#2E1D12" aria-label="검색"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4"></path></svg></button>
+<button onClick="{{ openNotif }}" style="position:relative;width:40px;height:40px;border:none;background:transparent;border-radius:20px;display:grid;place-items:center;cursor:pointer;color:#2E1D12" aria-label="알림"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4zM10 21h4"></path></svg><sc-if value="{{ hasUnread }}"><span style="position:absolute;top:7px;right:8px;width:9px;height:9px;border-radius:5px;background:#EE6A26;border:2px solid #FBF4E6"></span></sc-if></button>
+</div>
+<div ref="{{ chatRef }}" style="flex:1;overflow-y:auto;padding:16px 16px 20px;display:flex;flex-direction:column;gap:12px">
+<sc-for list="{{ chatMsgs }}" as="m">
+<sc-if value="{{ m.isUser }}"><div style="align-self:flex-end;max-width:80%;background:#EE6A26;color:#fff;padding:11px 14px;border-radius:18px 18px 4px 18px;font-size:15px;line-height:1.5;animation:spFade .25s ease both">{{ m.text }}</div></sc-if>
+<sc-if value="{{ m.isBot }}">
+<div style="display:flex;gap:8px;align-items:flex-start;animation:spFade .3s ease both">
+<div style="width:34px;height:34px;flex:none;border-radius:17px;background:#FDEBC8;overflow:hidden"><img src="assets/pie-bot.png" alt="" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);mix-blend-mode:multiply"></div>
+<div style="flex:1;min-width:0;max-width:300px;display:flex;flex-direction:column;gap:8px">
+<div style="background:#FFFCF6;border:1px solid #EEE1CB;padding:11px 14px;border-radius:4px 18px 18px 18px;font-size:15px;line-height:1.55;text-wrap:pretty">{{ m.text }}</div>
+<sc-if value="{{ m.hasCompare }}">
+<sc-for list="{{ m.compareItems }}" as="c">
+<div style="background:#FFFCF6;border:1.5px solid {{ c.border }};border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;gap:10px;align-items:center">
+<div style="width:44px;height:44px;flex:none;border-radius:11px;background:{{ c.tint }};display:grid;place-items:center"><span style="font:600 8px ui-monospace,Menlo,monospace;color:#8A6A55">{{ c.cat }}</span></div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><div style="display:flex;gap:6px;align-items:center"><span style="font-size:11px;font-weight:800;color:#A8927F">{{ c.letter }}</span><span style="font-weight:700;font-size:14px">{{ c.name }}</span><sc-if value="{{ c.isBest }}"><span style="font-size:10px;font-weight:800;color:#fff;background:#EE6A26;padding:2px 6px;border-radius:6px">AI 추천</span></sc-if></div><span style="font-weight:800;font-size:14px">{{ c.price }}</span></div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;font-size:11px;color:#7A6353">
+<div style="display:flex;flex-direction:column"><span>1인 예상</span><span style="font-weight:700;color:#C9531A;font-size:12px">{{ c.per }}</span></div>
+<div style="display:flex;flex-direction:column"><span>마감</span><span style="font-weight:700;color:#2E1D12;font-size:12px">{{ c.deadline }}</span></div>
+<div style="display:flex;flex-direction:column"><span>모집</span><span style="font-weight:700;color:#2E1D12;font-size:12px">{{ c.recruit }}</span></div>
+</div>
+<button onClick="{{ c.onPick }}" style="height:36px;border:none;border-radius:10px;background:#FDEBC8;color:#8A4A12;font:700 13px Pretendard,sans-serif;cursor:pointer" style-hover="background:#FBDDA6">이 상품 선택하기</button>
+</div>
+</sc-for>
+</sc-if>
+<sc-if value="{{ m.hasSplit }}">
+<div style="background:#FFFCF6;border:1.5px solid #F1C9A8;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px">
+<span style="font-size:12px;font-weight:700;color:#A8927F">개인별 부담액</span>
+<sc-for list="{{ m.splitRows }}" as="r"><div style="display:flex;justify-content:space-between;font-size:14px"><span style="font-weight:600">{{ r.name }}</span><span style="font-weight:700">{{ r.amt }}</span></div></sc-for>
+<div style="display:flex;justify-content:space-between;font-size:14px;border-top:1px dashed #EEE1CB;padding-top:8px"><span style="color:#7A6353">합계</span><span style="font-weight:800;color:#C9531A">{{ m.splitTotal }}</span></div>
+<button onClick="{{ m.onSettle }}" style="height:40px;margin-top:2px;border:none;border-radius:var(--radius-btn-sm);background:#EE6A26;color:#fff;font:700 14px Pretendard,sans-serif;cursor:pointer">이 조건으로 그룹 정산 시작하기</button>
+</div>
+</sc-if>
+<sc-if value="{{ m.hasVerdict }}">
+<div style="background:#FFFCF6;border:1.5px solid #F1C9A8;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;font-weight:800;color:#A8927F">AI 분쟁 조사 판정</span><span style="font-size:12px;font-weight:800;color:{{ m.verdictFg }};background:{{ m.verdictBg }};padding:3px 8px;border-radius:8px">{{ m.verdictLabel }}</span></div>
+<span style="font-size:13px;line-height:1.55;color:#5E4A3B">{{ m.verdictReason }}</span>
+</div>
+</sc-if>
+</div>
+</div>
+</sc-if>
+</sc-for>
+<sc-if value="{{ typing }}"><div style="display:flex;gap:8px;align-items:center"><div style="width:34px;height:34px;border-radius:17px;background:#FDEBC8;overflow:hidden"><img src="assets/pie-bot.png" alt="" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);mix-blend-mode:multiply"></div><div style="background:#FFFCF6;border:1px solid #EEE1CB;border-radius:4px 18px 18px 18px;padding:14px 16px;display:flex;gap:5px"><span style="width:7px;height:7px;border-radius:4px;background:#EE6A26;animation:spDot 1.2s infinite"></span><span style="width:7px;height:7px;border-radius:4px;background:#EE6A26;animation:spDot 1.2s .2s infinite"></span><span style="width:7px;height:7px;border-radius:4px;background:#EE6A26;animation:spDot 1.2s .4s infinite"></span></div></div></sc-if>
+</div>
+<div style="flex:none;padding:10px 12px 30px;border-top:1px solid #EEE1CB;background:#FFFCF6;display:flex;gap:8px;align-items:center">
+<input value="{{ chatInput }}" onChange="{{ onChatInput }}" onKeyDown="{{ onChatKey }}" placeholder="Pie에게 물어보세요" style="flex:1;min-width:0;height:44px;border:1.5px solid #EEE1CB;border-radius:22px;padding:0 16px;background:#FBF4E6;outline:none;font:500 15px Pretendard,sans-serif;color:#2E1D12" style-focus="border-color:#EE6A26">
+<button onClick="{{ sendChat }}" style="width:44px;height:44px;flex:none;border:none;border-radius:22px;background:#EE6A26;color:#fff;display:grid;place-items:center;cursor:pointer" aria-label="보내기"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"></path></svg></button>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isGChat }}">
+<div data-screen-label="09 Group Chat" style="position:absolute;inset:0;z-index:20;background:#FBF4E6;padding-top:47px;display:flex;flex-direction:column;animation:spSlide .3s cubic-bezier(.2,.8,.2,1) both">
+<div style="height:56px;flex:none;display:flex;align-items:center;gap:4px;padding:0 12px 0 6px;border-bottom:1px solid #EEE1CB">
+<button onClick="{{ closeOverlay }}" style="width:40px;height:40px;border:none;background:transparent;border-radius:20px;display:grid;place-items:center;cursor:pointer;color:#2E1D12" aria-label="닫기"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></button>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-weight:800;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ gc.name }}</span><span style="font-size:11px;color:#7A6353">{{ gc.memberStr }}</span></div>
+<button onClick="{{ openSearch }}" style="width:40px;height:40px;border:none;background:transparent;border-radius:20px;display:grid;place-items:center;cursor:pointer;color:#2E1D12" aria-label="검색"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4"></path></svg></button>
+<button onClick="{{ openNotif }}" style="position:relative;width:40px;height:40px;border:none;background:transparent;border-radius:20px;display:grid;place-items:center;cursor:pointer;color:#2E1D12" aria-label="알림"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4zM10 21h4"></path></svg><sc-if value="{{ hasUnread }}"><span style="position:absolute;top:7px;right:8px;width:9px;height:9px;border-radius:5px;background:#EE6A26;border:2px solid #FBF4E6"></span></sc-if></button>
+</div>
+<div style="flex:none;margin:10px 12px 0;background:#FFFCF6;border:1px solid #EEE1CB;border-radius:14px;padding:10px 14px;display:flex;align-items:center;gap:10px">
+<div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;color:#7A6353">정산 현황 · {{ gc.status }}</span><span style="font-weight:800;font-size:15px">{{ gc.totalStr }} <span style="font-weight:600;font-size:12px;color:#7A6353">{{ gc.approvedStr }}</span></span></div>
+<div style="width:80px;height:6px;border-radius:3px;background:#F1E6D3;overflow:hidden"><div style="height:100%;width:{{ gc.pct }};background:#EE6A26"></div></div>
+</div>
+<div ref="{{ gchatRef }}" style="flex:1;overflow-y:auto;padding:14px 16px 20px;display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ gcMsgs }}" as="m">
+<sc-if value="{{ m.isSys }}"><div style="align-self:center;max-width:90%;background:#FDEBC8;color:#6B4210;border-radius:14px;padding:9px 14px;font-size:13px;line-height:1.5;text-align:center;display:flex;gap:8px;align-items:center;animation:spFade .25s ease both"><img src="assets/pie-bot.png" alt="" style="width:22px;height:22px;object-fit:cover;transform:scale(1.5);mix-blend-mode:multiply;flex:none">{{ m.text }}</div></sc-if>
+<sc-if value="{{ m.isMe }}"><div style="align-self:flex-end;max-width:78%;background:#EE6A26;color:#fff;padding:10px 14px;border-radius:18px 18px 4px 18px;font-size:15px;line-height:1.5;animation:spFade .25s ease both">{{ m.text }}</div></sc-if>
+<sc-if value="{{ m.isOther }}"><div style="display:flex;gap:8px;align-items:flex-start;animation:spFade .25s ease both"><div style="width:32px;height:32px;flex:none;border-radius:16px;background:{{ m.bg }};display:grid;place-items:center;font-size:10px;font-weight:700;color:#5E3A22">{{ m.from }}</div><div style="display:flex;flex-direction:column;gap:3px;max-width:75%"><span style="font-size:12px;color:#7A6353">{{ m.from }}</span><div style="background:#FFFCF6;border:1px solid #EEE1CB;padding:10px 14px;border-radius:4px 18px 18px 18px;font-size:15px;line-height:1.5">{{ m.text }}</div></div></div></sc-if>
+<sc-if value="{{ m.isGuide }}">
+<div style="align-self:center;width:92%;background:#FFFCF6;border:1.5px solid #F1C9A8;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;animation:spFade .25s ease both">
+<div style="display:flex;align-items:center;gap:8px"><img src="assets/pie-bot.png" alt="" style="width:22px;height:22px;object-fit:cover;transform:scale(1.5);mix-blend-mode:multiply;flex:none"><span style="font-weight:800;font-size:13px;color:#5E3A12">Pie mate</span></div>
+<span style="font-size:13px;line-height:1.55;color:#5E4A3B">정산 조건을 아래 항목에 맞춰 편하게 말씀해 주세요.</span>
+<div style="display:flex;flex-direction:column;gap:4px;font-size:13px;color:#5E4A3B">
+<span>· 분배 항목 — 무엇에 대한 비용인가요? (예: 삼겹살, 숙소비)</span>
+<span>· 금액 — 총 얼마인가요?</span>
+<span>· 분배 인원 — 누가 나눠 내나요? (기본은 전원, "OO 빼고"도 가능)</span>
+<span>· 분배 방식 — 균등 / 비율(%) / 항목별 / 특정 인원만 더·덜 내기 중 어떤 방식인가요?</span>
+</div>
+<div style="background:#FDEBC8;border-radius:10px;padding:8px 10px;font-size:12px;line-height:1.6;color:#6B4210">예시<br>"삼겹살 35900원 다같이 나눠줘"<br>"숙소비 200000원 진우 60% 나머지 나눠줘"<br>"삼겹살 35900원, 진주는 5000원 적게 내고 나머지 나눠줘"</div>
+</div>
+</sc-if>
+<sc-if value="{{ m.isConfirm }}">
+<div style="align-self:center;width:92%;background:#FFFCF6;border:1.5px solid #F1C9A8;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;animation:spFade .25s ease both">
+<div style="display:flex;align-items:center;gap:8px"><img src="assets/pie-bot.png" alt="" style="width:22px;height:22px;object-fit:cover;transform:scale(1.5);mix-blend-mode:multiply;flex:none"><span style="font-weight:800;font-size:13px;color:#5E3A12">Pie가 이렇게 이해했어요</span></div>
+<div style="display:flex;flex-direction:column;gap:5px;font-size:13px;color:#5E4A3B">
+<div style="display:flex;justify-content:space-between"><span style="color:#7A6353">항목</span><span style="font-weight:700">{{ m.confirmItemName }}</span></div>
+<div style="display:flex;justify-content:space-between"><span style="color:#7A6353">총 금액</span><span style="font-weight:700">{{ m.confirmTotal }}</span></div>
+<div style="display:flex;justify-content:space-between;gap:10px"><span style="color:#7A6353;flex:none">참여자</span><span style="font-weight:700;text-align:right">{{ m.confirmParticipants }}</span></div>
+<div style="display:flex;justify-content:space-between"><span style="color:#7A6353">방식</span><span style="font-weight:700">{{ m.confirmModeLabel }}</span></div>
+</div>
+<sc-if value="{{ m.hasConfirmDetail }}"><div style="display:flex;flex-direction:column;gap:2px;background:#FBF4E6;border-radius:10px;padding:8px 10px"><sc-for list="{{ m.confirmDetailLines }}" as="dl"><span style="font-size:12px;color:#5E4A3B">{{ dl }}</span></sc-for></div></sc-if>
+<sc-if value="{{ m.confirmPending }}">
+<span style="font-size:12px;color:#7A6353">이대로 정산을 시작할까요?</span>
+<div style="display:flex;gap:8px">
+<button onClick="{{ m.onConfirmNo }}" style="flex:1;height:40px;border:1px solid #EEE1CB;border-radius:var(--radius-btn-sm);background:transparent;font:700 13px Pretendard,sans-serif;color:#7A6353;cursor:pointer">다시 설명할게요</button>
+<button onClick="{{ m.onConfirmYes }}" style="flex:1;height:40px;border:none;border-radius:var(--radius-btn-sm);background:#EE6A26;color:#fff;font:700 13px Pretendard,sans-serif;cursor:pointer">확인 · 정산 시작</button>
+</div>
+</sc-if>
+<sc-if value="{{ m.confirmResolved }}"><span style="font-size:12px;font-weight:700;color:{{ m.confirmStatusColor }}">{{ m.confirmStatusText }}</span></sc-if>
+</div>
+</sc-if>
+</sc-for>
+</div>
+<div style="flex:none;padding:10px 12px 30px;border-top:1px solid #EEE1CB;background:#FFFCF6;display:flex;gap:8px;align-items:center">
+<input value="{{ gchatInput }}" onChange="{{ onGchatInput }}" onKeyDown="{{ onGchatKey }}" placeholder="예: 총 12만원 똑같이 나눠줘" style="flex:1;min-width:0;height:44px;border:1.5px solid #EEE1CB;border-radius:22px;padding:0 16px;background:#FBF4E6;outline:none;font:500 15px Pretendard,sans-serif;color:#2E1D12" style-focus="border-color:#EE6A26">
+<button onClick="{{ sendGchat }}" style="width:44px;height:44px;flex:none;border:none;border-radius:22px;background:#EE6A26;color:#fff;display:grid;place-items:center;cursor:pointer" aria-label="보내기"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"></path></svg></button>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isDoc }}">
+<div data-screen-label="10 Document" style="position:absolute;inset:0;z-index:20;background:#FBF4E6;padding-top:47px;display:flex;flex-direction:column;animation:spSlide .3s cubic-bezier(.2,.8,.2,1) both">
+<div style="height:56px;flex:none;display:flex;align-items:center;gap:4px;padding:0 12px 0 6px">
+<button onClick="{{ closeOverlay }}" style="width:40px;height:40px;border:none;background:transparent;border-radius:20px;display:grid;place-items:center;cursor:pointer;color:#2E1D12" aria-label="닫기"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></button>
+<span style="flex:1;font-weight:800;font-size:17px">{{ doc.kindLabel }}</span>
+<button onClick="{{ openSearch }}" style="width:40px;height:40px;border:none;background:transparent;border-radius:20px;display:grid;place-items:center;cursor:pointer;color:#2E1D12" aria-label="검색"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4"></path></svg></button>
+<button onClick="{{ openNotif }}" style="position:relative;width:40px;height:40px;border:none;background:transparent;border-radius:20px;display:grid;place-items:center;cursor:pointer;color:#2E1D12" aria-label="알림"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4zM10 21h4"></path></svg><sc-if value="{{ hasUnread }}"><span style="position:absolute;top:7px;right:8px;width:9px;height:9px;border-radius:5px;background:#EE6A26;border:2px solid #FBF4E6"></span></sc-if></button>
+</div>
+<div style="flex:1;overflow-y:auto;padding:8px 20px 20px">
+<div style="background:#FFFCF6;border:1px solid #EEE1CB;border-radius:22px;padding:24px 20px;display:flex;flex-direction:column;gap:16px;position:relative;overflow:hidden">
+<div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;border-radius:10px;overflow:hidden"><img src="assets/app-icon.png" alt="" style="width:100%;height:100%;object-fit:cover;transform:scale(1.06)"></div><div style="display:flex;flex-direction:column"><span style="font-size:11px;font-weight:700;letter-spacing:.12em;color:#A8927F">SHARE PIE</span><span style="font-weight:800;font-size:15px">{{ doc.headline }}</span></div>
+<sc-if value="{{ doc.isCert }}"><span style="margin-left:auto;font-size:11px;font-weight:800;color:#2F6B45;background:#E1F0E4;padding:5px 8px;border-radius:8px">검증 완료</span></sc-if></div>
+<div style="display:flex;flex-direction:column;gap:4px"><span style="font-weight:800;font-size:22px;letter-spacing:-0.02em">{{ doc.title }}</span><span style="font-size:13px;color:#7A6353">{{ doc.date }}</span></div>
+<div style="background:#FBF4E6;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px">
+<sc-for list="{{ doc.rowsFmt }}" as="r"><div style="display:flex;justify-content:space-between;font-size:14px"><span style="color:#5E4A3B">{{ r.k }}</span><span style="font-weight:700">{{ r.v }}</span></div></sc-for>
+<div style="display:flex;justify-content:space-between;border-top:1px dashed #E3D3BA;padding-top:10px;margin-top:2px"><span style="font-weight:700">합계</span><span style="font-weight:800;font-size:17px;color:#C9531A">{{ doc.totalStr }}</span></div>
+</div>
+<sc-if value="{{ doc.isCert }}">
+<div style="display:flex;flex-direction:column;gap:10px;font-size:13px">
+<div style="display:flex;justify-content:space-between;gap:10px"><span style="color:#7A6353;flex:none">분담 조건</span><span style="font-weight:600;text-align:right">{{ doc.rule }}</span></div>
+<div style="display:flex;justify-content:space-between"><span style="color:#7A6353">네트워크</span><span style="font-weight:600">Share Pie Testnet</span></div>
+<div style="display:flex;justify-content:space-between"><span style="color:#7A6353">블록</span><span style="font-weight:600;font-family:ui-monospace,Menlo,monospace">{{ doc.block }}</span></div>
+<div style="display:flex;flex-direction:column;gap:4px"><span style="color:#7A6353">트랜잭션 해시</span><span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;background:#2E1D12;color:#FDEBC8;padding:10px 12px;border-radius:10px;word-break:break-all">{{ doc.hash }}</span></div>
+</div>
+</sc-if>
+<sc-if value="{{ doc.isRcpt }}">
+<div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
+<div style="display:flex;justify-content:space-between"><span style="color:#7A6353">결제처</span><span style="font-weight:600">{{ doc.store }}</span></div>
+<div style="display:flex;justify-content:space-between"><span style="color:#7A6353">결제 수단</span><span style="font-weight:600">{{ doc.method }}</span></div>
+<div style="display:flex;justify-content:space-between"><span style="color:#7A6353">승인 번호</span><span style="font-weight:600;font-family:ui-monospace,Menlo,monospace">{{ doc.approval }}</span></div>
+</div>
+</sc-if>
+</div>
+<div style="display:flex;gap:8px;margin-top:14px">
+<button onClick="{{ shareDoc }}" style="flex:1;height:50px;border:1px solid #EEE1CB;border-radius:var(--radius-btn);background:#FFFCF6;font:700 15px Pretendard,sans-serif;color:#2E1D12;cursor:pointer">공유하기</button>
+<button onClick="{{ saveDoc }}" style="flex:1;height:50px;border:none;border-radius:var(--radius-btn);background:#EE6A26;font:700 15px Pretendard,sans-serif;color:#fff;cursor:pointer">PDF 저장</button>
+</div>
+<sc-if value="{{ doc.isCert }}"><button onClick="{{ dispute }}" style="width:100%;margin-top:10px;height:44px;border:none;background:transparent;font:600 13px Pretendard,sans-serif;color:#7A6353;cursor:pointer;text-decoration:underline">정산에 문제가 있나요? AI 분쟁 조사 요청</button></sc-if>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isSearch }}">
+<div data-screen-label="11 Search" style="position:absolute;inset:0;z-index:30;background:#FBF4E6;padding-top:47px;display:flex;flex-direction:column;animation:spFade .2s ease both">
+<div style="height:60px;flex:none;display:flex;align-items:center;gap:6px;padding:0 16px 0 6px">
+<button onClick="{{ closePanel }}" style="width:40px;height:40px;border:none;background:transparent;border-radius:20px;display:grid;place-items:center;cursor:pointer;color:#2E1D12" aria-label="닫기"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></button>
+<div style="flex:1;height:44px;display:flex;align-items:center;gap:8px;background:#FFFCF6;border:1.5px solid #EE6A26;border-radius:14px;padding:0 12px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A6353" stroke-width="2" stroke-linecap="round"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4"></path></svg><input ref="{{ searchRef }}" value="{{ searchQ }}" onChange="{{ onSearchQ }}" placeholder="공동구매, 그룹, 대화 검색" style="flex:1;min-width:0;border:none;background:transparent;outline:none;font:500 15px Pretendard,sans-serif;color:#2E1D12"></div>
+</div>
+<div style="flex:1;overflow-y:auto;padding:8px 20px 20px;display:flex;flex-direction:column;gap:18px">
+<sc-if value="{{ searchEmpty }}">
+<div style="display:flex;flex-direction:column;gap:10px"><span style="font-size:13px;font-weight:700;color:#7A6353">최근 검색어</span><div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ recentKw }}" as="k"><button onClick="{{ k.go }}" style="height:34px;padding:0 14px;border:1px solid #EEE1CB;border-radius:17px;background:#FFFCF6;font:500 13px Pretendard,sans-serif;color:#2E1D12;cursor:pointer">{{ k.label }}</button></sc-for></div></div>
+</sc-if>
+<sc-if value="{{ searchHasQ }}">
+<sc-if value="{{ noResults }}"><span style="text-align:center;padding:40px 0;color:#7A6353;font-size:14px">‘{{ searchQ }}’ 검색 결과가 없어요</span></sc-if>
+<sc-for list="{{ searchGroups }}" as="sg">
+<div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:700;color:#7A6353">{{ sg.label }}</span>
+<sc-for list="{{ sg.items }}" as="it"><button onClick="{{ it.go }}" style="text-align:left;height:52px;border:none;border-bottom:1px solid #EEE1CB;background:transparent;display:flex;align-items:center;justify-content:space-between;padding:0 2px;cursor:pointer;font-family:inherit;color:#2E1D12"><span style="font-size:15px;font-weight:600">{{ it.title }}</span><span style="font-size:13px;color:#7A6353">{{ it.sub }}</span></button></sc-for>
+</div>
+</sc-for>
+</sc-if>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isNotif }}">
+<div data-screen-label="12 Notifications" style="position:absolute;inset:0;z-index:30;background:#FBF4E6;padding-top:47px;display:flex;flex-direction:column;animation:spSlide .3s cubic-bezier(.2,.8,.2,1) both">
+<div style="height:56px;flex:none;display:flex;align-items:center;gap:4px;padding:0 16px 0 6px">
+<button onClick="{{ closePanel }}" style="width:40px;height:40px;border:none;background:transparent;border-radius:20px;display:grid;place-items:center;cursor:pointer;color:#2E1D12" aria-label="닫기"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></button>
+<span style="flex:1;font-weight:800;font-size:18px">알림</span>
+<button onClick="{{ readAll }}" style="border:none;background:transparent;font:600 13px Pretendard,sans-serif;color:#C9531A;cursor:pointer">모두 읽음</button>
+</div>
+<div style="flex:1;overflow-y:auto;padding:0 12px 20px">
+<sc-for list="{{ notifList }}" as="n" hint-placeholder-count="4"><button onClick="{{ n.go }}" style="width:100%;text-align:left;border:none;background:{{ n.bg }};border-radius:16px;padding:14px;display:flex;gap:12px;cursor:pointer;font-family:inherit;color:#2E1D12;margin-bottom:6px"><span style="width:8px;height:8px;margin-top:6px;border-radius:4px;flex:none;background:{{ n.dot }}"></span><div style="flex:1;display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;font-weight:700;color:#A8481A">{{ n.cat }}</span><span style="font-size:14px;line-height:1.5">{{ n.text }}</span><span style="font-size:12px;color:#A8927F">{{ n.time }}</span></div></button></sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ hasSheet }}">
+<div onClick="{{ closeSheet }}" style="position:absolute;inset:0;z-index:40;background:rgba(46,29,18,.38);animation:spDim .2s ease both"></div>
+<div style="position:absolute;left:0;right:0;bottom:0;z-index:41;background:#FFFCF6;border-radius:28px 28px 0 0;padding:10px 20px 34px;max-height:88%;overflow-y:auto;animation:spUp .3s cubic-bezier(.2,.8,.2,1) both">
+<div style="width:40px;height:5px;border-radius:3px;background:#E3D3BA;margin:0 auto 16px"></div>
+
+<sc-if value="{{ isProductSheet }}">
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="height:170px;border-radius:18px;background:{{ sp.tint }};display:grid;place-items:center"><span style="font:600 11px ui-monospace,Menlo,monospace;letter-spacing:.08em;color:#8A6A55">{{ sp.cat }} PRODUCT PHOTO</span></div>
+<div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:13px;color:#7A6353">{{ sp.where }}</span><span style="font-weight:800;font-size:22px;letter-spacing:-0.02em">{{ sp.name }}</span><span style="font-weight:800;font-size:20px;color:#C9531A">{{ sp.priceStr }}</span></div>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
+<div style="background:#FBF4E6;border-radius:var(--radius-sm);padding:10px;display:flex;flex-direction:column;gap:2px"><span style="font-size:11px;color:#7A6353">1인 예상(4명)</span><span style="font-weight:800;font-size:14px">{{ sp.per4 }}</span></div>
+<div style="background:#FBF4E6;border-radius:var(--radius-sm);padding:10px;display:flex;flex-direction:column;gap:2px"><span style="font-size:11px;color:#7A6353">마감</span><span style="font-weight:800;font-size:14px">{{ sp.deadline }}</span></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;justify-content:space-between;font-size:13px"><span style="font-weight:600">모집 현황 {{ sp.recruit }}</span><span style="color:#C9531A;font-weight:700">{{ sp.remain }}</span></div><div style="height:8px;border-radius:4px;background:#F1E6D3;overflow:hidden"><div style="height:100%;width:{{ sp.pct }};background:#EE6A26;border-radius:4px"></div></div></div>
+<div style="background:#FDEBC8;border-radius:14px;padding:12px 14px;font-size:13px;line-height:1.55;color:#5E3A12">참여하면 Share Pie 정산방이 자동으로 만들어지고, 상품 가격과 참여자 정보가 공동정산으로 전달돼요.</div>
+<button onClick="{{ joinProduct }}" style="height:54px;border:none;border-radius:var(--radius-btn);background:#EE6A26;color:#fff;font:700 17px Pretendard,sans-serif;cursor:pointer">참여하고 정산방 만들기</button>
+<button onClick="{{ askPieProduct }}" style="height:46px;border:none;border-radius:var(--radius-btn);background:transparent;color:#7A6353;font:600 14px Pretendard,sans-serif;cursor:pointer">비슷한 상품 Pie에게 비교 요청</button>
+</div>
+</sc-if>
+
+<sc-if value="{{ isCreateSheet }}">
+<div style="display:flex;flex-direction:column;gap:14px">
+<span style="font-weight:800;font-size:21px;letter-spacing:-0.02em">그룹 만들기</span>
+<div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600;color:#7A6353">그룹 이름</span><input value="{{ newGroupName }}" onChange="{{ onNewGroupName }}" placeholder="예: 부산 여행, 동아리 회식" style="height:50px;border:1.5px solid #EEE1CB;border-radius:14px;padding:0 14px;font:500 15px Pretendard,sans-serif;background:#FBF4E6;color:#2E1D12;outline:none" style-focus="border-color:#EE6A26"></div>
+<div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:13px;font-weight:600;color:#7A6353">친구 검색 · 나({{ firstName }}) 포함 {{ newCount }}명</span>
+<button onClick="{{ openFriendSearch }}" style="height:50px;border:1.5px solid #EEE1CB;border-radius:var(--radius-btn);padding:0 14px;background:#FBF4E6;display:flex;align-items:center;gap:8px;cursor:pointer;font-family:inherit;color:#7A6353;font:500 15px Pretendard,sans-serif" style-hover="border-color:#F1C9A8"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A8927F" stroke-width="2" stroke-linecap="round"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4"></path></svg>친구 이름으로 검색</button>
+<sc-if value="{{ hasSelectedFriends }}"><div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ selectedFriendChips }}" as="f"><button onClick="{{ f.remove }}" aria-label="{{ f.ariaLabel }}" style="height:34px;padding:0 10px 0 14px;border:1.5px solid #F1C9A8;border-radius:17px;background:#FCE3D3;font:600 13px Pretendard,sans-serif;color:#A8481A;cursor:pointer;display:flex;align-items:center;gap:6px">{{ f.name }}<span style="font-size:15px;line-height:1" aria-hidden="true">×</span></button></sc-for></div></sc-if>
+</div>
+<sc-if value="{{ hasPrefill }}"><div style="background:#FDEBC8;border-radius:14px;padding:12px 14px;font-size:13px;line-height:1.5;color:#5E3A12">Pie가 계산한 총 {{ prefillTotal }}이 함께 전달돼요. 멤버를 바꾸면 균등 분담으로 다시 계산돼요.</div></sc-if>
+<sc-if value="{{ showChatHint }}"><div style="background:#FDEBC8;border-radius:14px;padding:12px 14px;font-size:13px;line-height:1.5;color:#5E3A12">그룹을 만들면 Pie mate가 정산 조건을 어떻게 알려주면 되는지 채팅으로 안내해 드려요.</div></sc-if>
+
+<button onClick="{{ createGroup }}" style="height:54px;border:none;border-radius:var(--radius-btn);background:{{ createBg }};color:#fff;font:700 17px Pretendard,sans-serif;cursor:pointer">그룹 만들고 정산 시작</button>
+</div>
+</sc-if>
+
+<sc-if value="{{ isFriendSearchSheet }}">
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;gap:10px">
+<button onClick="{{ closeFriendSearch }}" style="width:36px;height:36px;border:none;background:transparent;border-radius:var(--radius-full);display:grid;place-items:center;cursor:pointer;color:#2E1D12" aria-label="뒤로가기"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></button>
+<span style="font-weight:800;font-size:20px;letter-spacing:-0.02em">친구 검색</span>
+</div>
+<div style="height:50px;display:flex;align-items:center;gap:8px;background:#FBF4E6;border:1.5px solid #EE6A26;border-radius:14px;padding:0 14px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A6353" stroke-width="2" stroke-linecap="round"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4"></path></svg>
+<input value="{{ friendSearchQ }}" onChange="{{ onFriendSearchQ }}" placeholder="친구 이름 또는 Pie ID 검색" style="flex:1;min-width:0;border:none;background:transparent;outline:none;font:500 15px Pretendard,sans-serif;color:#2E1D12">
+</div>
+<div style="display:flex;flex-direction:column;gap:4px">
+<sc-if value="{{ friendSearchEmpty }}"><span style="text-align:center;padding:20px 0;color:#A8927F;font-size:14px">일치하는 친구가 없어요</span></sc-if>
+<sc-for list="{{ friendSearchList }}" as="f"><button onClick="{{ f.toggle }}" style="height:56px;border:none;border-bottom:1px solid #F1E6D3;background:transparent;display:flex;align-items:center;gap:12px;padding:0 2px;cursor:pointer;font-family:inherit">
+<div style="width:38px;height:38px;flex:none;border-radius:19px;background:{{ f.bg }};border:1.5px solid {{ f.border }};display:grid;place-items:center;font-size:12px;font-weight:700;color:{{ f.fg }}">{{ f.initial }}</div>
+<span style="flex:1;min-width:0;text-align:left;display:flex;flex-direction:column;gap:1px"><span style="font-size:15px;font-weight:600;color:#2E1D12">{{ f.name }}</span><span style="font-size:12px;color:#A8927F">@{{ f.id }}</span></span>
+<sc-if value="{{ f.on }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EE6A26" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg></sc-if>
+</button></sc-for>
+</div>
+<div style="background:#FDEBC8;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px">
+<span style="font-size:13px;line-height:1.5;color:#5E3A12">목록에 없는 친구는 Pie ID로 추가하거나, 아직 가입 전이면 초대 링크로 불러올 수 있어요.</span>
+<button onClick="{{ openFriendAddFromSearch }}" style="height:44px;border:1.5px solid #EE6A26;border-radius:var(--radius-sm);background:#FFFCF6;color:#C9531A;font:700 14px Pretendard,sans-serif;cursor:pointer">Pie ID로 친구 추가</button>
+<sc-if value="{{ hasInviteLink }}"><div onClick="{{ copyInviteLink }}" style="height:44px;border-radius:var(--radius-sm);background:#FFFCF6;display:flex;align-items:center;padding:0 12px;gap:8px;cursor:pointer;overflow:hidden"><span style="flex:1;font-size:13px;color:#5E4A3B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:ui-monospace,Menlo,monospace">{{ inviteLink }}</span><span style="font-size:12px;font-weight:700;color:#C9531A;flex:none">복사</span></div></sc-if>
+<button onClick="{{ generateInviteLink }}" style="height:44px;border:none;border-radius:var(--radius-sm);background:#EE6A26;color:#fff;font:700 14px Pretendard,sans-serif;cursor:pointer">초대 링크 만들기</button>
+</div>
+<button onClick="{{ closeFriendSearch }}" style="height:54px;border:none;border-radius:var(--radius-btn);background:#EE6A26;color:#fff;font:700 17px Pretendard,sans-serif;cursor:pointer">완료 · {{ newCount }}명 선택</button>
+</div>
+</sc-if>
+
+<sc-if value="{{ isFriendAddSheet }}">
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;gap:10px">
+<button onClick="{{ closeFriendAdd }}" style="width:36px;height:36px;border:none;background:transparent;border-radius:var(--radius-full);display:grid;place-items:center;cursor:pointer;color:#2E1D12" aria-label="뒤로가기"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></button>
+<span style="font-weight:800;font-size:20px;letter-spacing:-0.02em">ID로 친구 추가</span>
+</div>
+<div style="background:#FDEBC8;border-radius:16px;padding:14px;display:flex;align-items:center;gap:10px">
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;font-weight:600;color:#7A4E08">내 Pie ID · 친구에게 알려주세요</span><span style="font-size:16px;font-weight:800;color:#5E3A12;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">@{{ userId }}</span></div>
+<button onClick="{{ copyMyId }}" style="height:36px;padding:0 14px;border:none;border-radius:var(--radius-sm);background:#EE6A26;color:#fff;font:700 13px Pretendard,sans-serif;cursor:pointer;flex:none">복사</button>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<span style="font-size:13px;font-weight:600;color:#7A6353">친구의 Pie ID</span>
+<div style="display:flex;gap:8px">
+<div style="flex:1;min-width:0;height:50px;display:flex;align-items:center;gap:2px;border:1.5px solid {{ friendAddBorder }};border-radius:14px;padding:0 14px;background:#FBF4E6"><span style="font:600 15px Pretendard,sans-serif;color:#A8927F">@</span><input value="{{ friendAddQ }}" onChange="{{ onFriendAddQ }}" onKeyDown="{{ onFriendAddKey }}" maxlength="21" placeholder="예: yuna_pie" autocapitalize="none" autocomplete="off" spellcheck="false" style="flex:1;min-width:0;border:none;background:transparent;outline:none;font:500 15px Pretendard,sans-serif;color:#2E1D12"></div>
+<button onClick="{{ lookupFriendId }}" style="width:72px;height:50px;border:none;border-radius:var(--radius-btn);background:{{ friendAddSearchBg }};color:#fff;font:700 15px Pretendard,sans-serif;cursor:pointer;flex:none">찾기</button>
+</div>
+<sc-if value="{{ hasFriendAddErr }}"><span style="font-size:12px;color:#B8401A;padding:0 4px">{{ friendAddErr }}</span></sc-if>
+</div>
+<sc-if value="{{ hasFriendAddResult }}">
+<div style="border:1.5px solid #EEE1CB;border-radius:var(--radius-card);padding:14px;display:flex;align-items:center;gap:12px;background:#FFFCF6">
+<div style="width:44px;height:44px;flex:none;border-radius:22px;background:{{ friendAddResult.bg }};display:grid;place-items:center;font-size:13px;font-weight:800;color:#5E4A3B">{{ friendAddResult.initial }}</div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:16px;font-weight:700;color:#2E1D12">{{ friendAddResult.name }}</span><span style="font-size:13px;color:#A8927F">@{{ friendAddResult.id }}</span></div>
+<button onClick="{{ addFriend }}" style="height:38px;padding:0 14px;border:none;border-radius:var(--radius-sm);background:{{ friendAddResult.btnBg }};color:#fff;font:700 13px Pretendard,sans-serif;cursor:pointer;flex:none">{{ friendAddResult.btnLabel }}</button>
+</div>
+</sc-if>
+<span style="font-size:12px;line-height:1.5;color:#A8927F">Pie ID는 영문 소문자로 시작하고, 영문 소문자·숫자·마침표(.)·밑줄(_)로 된 4~20자예요.</span>
+</div>
+</sc-if>
+
+<sc-if value="{{ isProfileSheet }}">
+<div style="display:flex;flex-direction:column;gap:14px">
+<span style="font-weight:800;font-size:21px">프로필 편집</span>
+<div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:2px 0 6px">
+<div style="position:relative;width:96px;height:96px">
+<sc-if value="{{ hasAvatarPreview }}"><img src="{{ avatarPreview }}" alt="프로필 사진 미리보기" style="width:96px;height:96px;border-radius:48px;object-fit:cover;border:1.5px solid #EEE1CB"></sc-if>
+<sc-if value="{{ noAvatarPreview }}"><div style="width:96px;height:96px;border-radius:48px;background:#FDEBC8;display:grid;place-items:center;font-weight:800;font-size:32px;color:#A8481A">{{ avatarInitial }}</div></sc-if>
+<label for="avatarFileInput" style="position:absolute;right:0;bottom:0;width:32px;height:32px;border-radius:16px;background:#EE6A26;border:2px solid #FFFCF6;display:grid;place-items:center;cursor:pointer">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>
+</label>
+</div>
+<input type="file" id="avatarFileInput" accept="image/*" onChange="{{ onAvatarFile }}" style="display:none">
+<sc-if value="{{ hasAvatarPreview }}"><button onClick="{{ resetAvatar }}" style="border:none;background:transparent;font:600 13px Pretendard,sans-serif;color:#7A6353;cursor:pointer;text-decoration:underline">기본 이미지로 변경</button></sc-if>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<span style="font-size:13px;font-weight:600;color:#7A6353">이름</span>
+<input value="{{ draftName }}" onChange="{{ onDraftName }}" maxlength="12" style="height:50px;border:1.5px solid {{ nickBorderColor }};border-radius:14px;padding:0 14px;font:500 15px Pretendard,sans-serif;background:#FBF4E6;color:#2E1D12;outline:none" style-focus="border-color:#EE6A26">
+<div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:{{ nickHelpColor }}">{{ nickHelpText }}</span><span style="color:#A8927F">{{ nickLen }}</span></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<span style="font-size:13px;font-weight:600;color:#7A6353">Pie ID</span>
+<div style="height:50px;display:flex;align-items:center;gap:2px;border:1.5px solid {{ draftIdBorder }};border-radius:14px;padding:0 14px;background:#FBF4E6"><span style="font:600 15px Pretendard,sans-serif;color:#A8927F">@</span><input value="{{ draftUserId }}" onChange="{{ onDraftUserId }}" maxlength="21" autocapitalize="none" autocomplete="off" spellcheck="false" style="flex:1;min-width:0;border:none;background:transparent;outline:none;font:500 15px Pretendard,sans-serif;color:#2E1D12"></div>
+<span style="font-size:12px;color:{{ draftIdHelpColor }}">{{ draftIdHelp }}</span>
+</div>
+<button onClick="{{ saveProfile }}" style="height:54px;border:none;border-radius:var(--radius-btn);background:{{ saveProfileBg }};color:#fff;font:700 17px Pretendard,sans-serif;cursor:pointer">완료</button>
+</div>
+</sc-if>
+
+<sc-if value="{{ isPrivacySheet }}">
+<div style="display:flex;flex-direction:column;gap:4px">
+<span style="font-weight:800;font-size:21px;margin-bottom:10px">개인정보 관리</span>
+<sc-for list="{{ privacyRows }}" as="r">
+<sc-if value="{{ r.editable }}"><button onClick="{{ r.go }}" style="width:100%;text-align:left;border:none;background:transparent;display:flex;justify-content:space-between;align-items:center;height:50px;border-bottom:1px solid #F1E6D3;font-size:15px;cursor:pointer;font-family:inherit;color:inherit" style-hover="background:#F9F1E3"><span style="color:#7A6353">{{ r.k }}</span><span style="display:flex;align-items:center;gap:6px;font-weight:600">{{ r.v }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C4B09A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></span></button></sc-if>
+<sc-if value="{{ r.notEditable }}"><div style="display:flex;justify-content:space-between;align-items:center;height:50px;border-bottom:1px solid #F1E6D3;font-size:15px"><span style="color:#7A6353">{{ r.k }}</span><span style="font-weight:600">{{ r.v }}</span></div></sc-if>
+</sc-for>
+<div style="display:flex;justify-content:space-between;align-items:center;height:56px;border-bottom:1px solid #F1E6D3;font-size:15px"><span style="color:#7A6353">마케팅 정보 수신</span><button onClick="{{ toggleMarketing }}" role="switch" aria-checked="{{ marketing }}" aria-label="마케팅 정보 수신" style="width:50px;height:30px;border:none;border-radius:15px;background:{{ mkBg }};padding:3px;cursor:pointer;display:flex;justify-content:{{ mkJustify }};transition:background .2s"><span style="width:24px;height:24px;border-radius:12px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2)"></span></button></div>
+<button onClick="{{ downloadData }}" style="height:50px;margin-top:10px;border:1px solid #EEE1CB;border-radius:var(--radius-btn);background:transparent;font:600 14px Pretendard,sans-serif;color:#2E1D12;cursor:pointer">내 정산 데이터 내려받기</button>
+<button onClick="{{ downloadData }}" style="height:44px;border:none;background:transparent;font:600 13px Pretendard,sans-serif;color:#7A6353;cursor:pointer;text-decoration:underline">개인정보 처리방침 보기</button>
+</div>
+</sc-if>
+
+<sc-if value="{{ isEditFieldSheet }}">
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;gap:10px">
+<button onClick="{{ closeEditField }}" style="width:36px;height:36px;border:none;background:transparent;border-radius:var(--radius-full);display:grid;place-items:center;cursor:pointer;color:#2E1D12" aria-label="뒤로가기"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></button>
+<span style="font-weight:800;font-size:20px;letter-spacing:-0.02em">{{ editFieldLabel }} 변경</span>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<input value="{{ editFieldDraft }}" onChange="{{ onEditFieldDraft }}" type="{{ editFieldInputType }}" placeholder="{{ editFieldPlaceholder }}" style="height:50px;border:1.5px solid {{ editFieldBorderColor }};border-radius:14px;padding:0 14px;font:500 15px Pretendard,sans-serif;background:#FBF4E6;color:#2E1D12;outline:none" style-focus="border-color:#EE6A26">
+<sc-if value="{{ hasEditFieldErr }}"><span style="font-size:12px;color:#B8401A;padding:0 4px">{{ editFieldErr }}</span></sc-if>
+</div>
+<button onClick="{{ saveEditField }}" style="height:54px;border:none;border-radius:var(--radius-btn);background:{{ editFieldSaveBg }};color:#fff;font:700 17px Pretendard,sans-serif;cursor:pointer">저장</button>
+</div>
+</sc-if>
+
+<sc-if value="{{ isAddressSheet }}">
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;gap:10px">
+<button onClick="{{ closeAddressSheet }}" style="width:36px;height:36px;border:none;background:transparent;border-radius:var(--radius-full);display:grid;place-items:center;cursor:pointer;color:#2E1D12" aria-label="뒤로가기"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></button>
+<span style="font-weight:800;font-size:20px;letter-spacing:-0.02em">우리 동네 변경</span>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600;color:#7A6353">현재 우리 동네</span><div style="height:50px;border-radius:14px;padding:0 14px;background:#FBF4E6;display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600;color:#2E1D12"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EE6A26" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>{{ userAddress }}</div></div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<span style="font-size:13px;font-weight:600;color:#7A6353">새 동네</span>
+<input value="{{ draftAddress }}" onChange="{{ onDraftAddress }}" onKeyDown="{{ onAddressKey }}" placeholder="예: 서울 성동구 성수동" style="height:50px;border:1.5px solid #EEE1CB;border-radius:14px;padding:0 14px;font:500 15px Pretendard,sans-serif;background:#FBF4E6;color:#2E1D12;outline:none" style-focus="border-color:#EE6A26">
+</div>
+<button onClick="{{ saveAddress }}" style="height:54px;border:none;border-radius:var(--radius-btn);background:{{ saveAddressBg }};color:#fff;font:700 17px Pretendard,sans-serif;cursor:pointer">완료</button>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ hasConfirm }}">
+<div style="position:absolute;inset:0;z-index:50;background:rgba(46,29,18,.42);display:grid;place-items:center;padding:28px;animation:spDim .2s ease both">
+<div style="width:100%;background:#FFFCF6;border-radius:24px;padding:24px 20px 16px;display:flex;flex-direction:column;gap:10px;animation:spPop .25s ease both">
+<span style="font-weight:800;font-size:19px;text-align:center">{{ confirm.title }}</span>
+<span style="font-size:14px;line-height:1.55;color:#7A6353;text-align:center;text-wrap:pretty">{{ confirm.body }}</span>
+<div style="display:flex;gap:8px;margin-top:10px">
+<button onClick="{{ cancelConfirm }}" style="flex:1;height:48px;border:none;border-radius:13px;background:#F1E6D3;font:700 15px Pretendard,sans-serif;color:#2E1D12;cursor:pointer">취소</button>
+<button onClick="{{ okConfirm }}" style="flex:1;height:48px;border:none;border-radius:13px;background:{{ confirm.okBg }};font:700 15px Pretendard,sans-serif;color:#fff;cursor:pointer">{{ confirm.ok }}</button>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ hasToast }}"><div style="position:absolute;left:20px;right:20px;bottom:104px;z-index:60;background:#2E1D12;color:#FBF4E6;border-radius:14px;padding:14px 16px;font-size:14px;font-weight:600;text-align:center;animation:spFade .25s ease both;pointer-events:none">{{ toast }}</div></sc-if>
+
+<div style="position:absolute;bottom:8px;left:50%;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:#2E1D12;z-index:70;pointer-events:none"></div>
+</div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  P = {
+    p1:{name:'사과 5kg',cat:'FRUIT',price:21900,joined:14,cap:20,deadline:'오늘 마감',where:'전국 배송',tint:'#FCE3D3'},
+    p2:{name:'한우 세트',cat:'MEAT',price:39900,          joined:8,cap:10,deadline:'1일 후',where:'전국 배송',tint:'#F8D6C2'},
+    p3:{name:'화장지 30롤',cat:'LIVING',price:15900,          joined:27,cap:30,deadline:'2일 후',where:'전국 배송',tint:'#FDEBC8'},
+    p4:{name:'계란 30구',cat:'FRESH',price:7900,          joined:6,cap:10,deadline:'오늘 마감',where:'약 450m · 성수동 주민센터 앞',tint:'#FFF1D6'},
+    p5:{name:'딸기 2kg',cat:'FRUIT',price:18900,          joined:7,cap:10,deadline:'1일 후',where:'약 800m · 학교 정문 픽업',tint:'#FAD4CC'},
+    p6:{name:'우유 12팩',cat:'DAIRY',price:14900,          joined:3,cap:8,deadline:'2일 후',where:'약 1.1km · 성수역 3번 출구',tint:'#F3EEE4'},
+    p7:{name:'귤 5kg',cat:'FRUIT',price:15900,          joined:9,cap:10,deadline:'오늘 마감',where:'약 1.3km · 뚝섬 픽업',tint:'#FDE2BE'},
+    p8:{name:'삼겹살 1.2kg',cat:'MEAT',price:35900,          joined:9,cap:10,deadline:'오늘',where:'전국 배송',tint:'#F8D6C2',reason:'가장 저렴'},
+    p9:{name:'목살 1.5kg',cat:'MEAT',price:39900,          joined:5,cap:10,deadline:'2일 후',where:'전국 배송',tint:'#F6DCCB',reason:'양이 넉넉'},
+    p10:{name:'혼합세트 1.4kg',cat:'MEAT',price:42900,          joined:8,cap:10,deadline:'3일 후',where:'전국 배송',tint:'#F9E0CF',reason:'구성 다양'},
+  };
+  // ⚠️ TEMP: Share Pie에 가입된 사용자 목록(서버 DB 흉내). 실제 백엔드가 붙으면 lookupFriendId에서
+  // 이 배열을 뒤지는 대신 "Pie ID로 사용자 조회" API를 호출하고, isPieIdTaken은 "ID 중복 확인" API로 바꾼다.
+  // id는 로그인용 이메일과 별개인, 친구끼리 서로 찾을 때 쓰는 공개 ID다.
+  USERS = [
+    {id:'jinwoo_00', name:'진우'}, {id:'minjae.k', name:'민재'}, {id:'jihyun22', name:'지현'},
+    {id:'seoyeon.pie', name:'서연'}, {id:'doyoon_7', name:'도윤'}, {id:'harin.l', name:'하린'},
+    {id:'junho.k', name:'준호'}, {id:'yuna_pie', name:'유나'}, {id:'sohee22', name:'소희'}, {id:'taeo.lee', name:'태오'},
+  ];
+  // Pie ID 규칙: 영문 소문자로 시작, 영문 소문자·숫자·마침표(.)·밑줄(_)만, 4~20자, 마침표로 끝나거나 연속 마침표 금지.
+  pieIdError(id){
+    if (!id) return 'Pie ID를 입력해 주세요';
+    if (id.length < 4 || id.length > 20) return 'Pie ID는 4~20자로 만들어 주세요';
+    if (!/^[a-z]/.test(id)) return 'Pie ID는 영문 소문자로 시작해야 해요';
+    if (!/^[a-z0-9._]+$/.test(id)) return '영문 소문자, 숫자, 마침표(.), 밑줄(_)만 쓸 수 있어요';
+    if (/\.\./.test(id) || /\.$/.test(id)) return '마침표는 연속으로 쓰거나 끝에 쓸 수 없어요';
+    return '';
+  }
+  normalizePieId(v){ return String(v||'').trim().replace(/^@+/, '').toLowerCase(); }
+  isPieIdTaken(id){ return this.USERS.some(u => u.id === id); }
+  TINT = {'진주':'#FDEBC8','진우':'#FCE3D3','민재':'#E7EFD9','지현':'#F6DCE3','서연':'#E3E6F3','도윤':'#EAE0D2','하린':'#F9E7C9','준호':'#DDEDE9'};
+  PRODUCT_EXPLAIN = 'B 상품은 4명이 먹기에 양이 충분하면서 1인당 약 9,975원으로 설정한 예산 안에 들어옵니다. A 상품은 가장 저렴하고 공동구매 마감이 임박해 빠르게 구매하려는 경우 확인할 만합니다. C 상품은 여러 부위를 함께 맛볼 수 있지만 1인당 예상 비용이 10,000원을 조금 넘습니다.';
+  state = {
+    screen:'splash', authMode:'login', email:'', pw:'', name:'', authErr:'',
+    tab:'home', homeInput:'', buyInput:'', overlay:null, chatId:null, chatInput:'', typing:false,
+    panel:null, searchQ:'', sheet:null, productId:null, openGroup:'g1', gchatId:null, gchatInput:'',
+    docId:null, settleSeg:'cert', confirm:null, toast:'', newGroupName:'', newMembers:['진우','민재','지현'], prefill:null,
+    showAllChats:false, friendSearchQ:'', inviteLink:null, payVisibleCount:5,
+    // 친구 목록은 이제 이름만이 아니라 Pie ID와 함께 저장한다(같은 이름의 사용자를 구분하기 위함).
+    friends:[{id:'jinwoo_00',name:'진우'},{id:'minjae.k',name:'민재'},{id:'jihyun22',name:'지현'},{id:'seoyeon.pie',name:'서연'},{id:'doyoon_7',name:'도윤'},{id:'harin.l',name:'하린'}],
+    userId:'jinju.pie', signupId:'', draftUserId:'',
+    friendAddQ:'', friendAddErr:'', friendAddResult:null, friendAddFrom:null,
+    userName:'김진주', userEmail:'jinju@sharepie.app', userPhone:'010-2841-5920', userAddress:'서울 성동구 성수동', draftName:'', avatarUrl:null, draftAvatar:null, marketing:true, balance:128400, scale:1,
+    editField:null, editFieldDraft:'',
+    draftAddress:'',
+    chats:[
+      {id:'c1',title:'자취방 고기 공동구매 비교',date:'9월 21일',summary:'4명 · 1인 1만원 조건으로 삼겹살·목살·혼합세트를 비교했어요. 목살 1.5kg이 예산 안에서 양이 가장 넉넉해요.',msgs:[
+        {from:'user',text:'학교 친구들이랑 자취방에서 먹을 고기 사고 싶은데 4명이고 한 명당 만 원 정도였으면 좋겠어.'},
+        {from:'bot',text:'상품 고기 · 인원 4명 · 1인 약 10,000원(총 약 40,000원) 조건으로 공동구매 3개를 비교했어요.',compare:['p8','p9','p10'],n:4,best:'p9'},
+        {from:'bot',text:this.PRODUCT_EXPLAIN}]},
+      {id:'c2',title:'삼겹살 공동구매 정산',date:'9월 21일',summary:'총 35,900원 중 주문자 진주 5,000원 감면, 나머지 세 명이 10,225원씩 나누기로 했어요.',msgs:[
+        {from:'user',text:'진주는 주문하는 사람이니까 5천원 적게 내고 나머지 세 명이 나눠줘.'},
+        {from:'bot',text:'삼겹살 공동구매 총 35,900원을 계산했어요. 진주님은 5,000원 적게, 나머지 세 명은 동일하게 부담해요.',split:[['진주',5225],['진우',10225],['민재',10225],['지현',10225]],groupName:'삼겹살 공동구매'}]},
+      {id:'c3',title:'과일 공동구매 찾기',date:'9월 12일',summary:'4명 · 총 3만원 조건으로 학교 근처에서 받을 수 있는 딸기 2kg을 추천받았어요.',msgs:[
+        {from:'user',text:'친구들이랑 과일 좀 싸게 사고 싶어.'},
+        {from:'bot',text:'몇 명이 함께 구매하시나요? 그리고 전체 예산은 어느 정도인가요?'},
+        {from:'user',text:'4명이고 3만원 정도.'},
+        {from:'bot',text:'좋아요. 4명이 나눠 먹기 좋고 총비용 3만원 내외의 공동구매를 비교해볼게요.',compare:['p5','p7','p1'],n:4,best:'p5'}]},
+    ],
+    groups:[
+      {id:'g1',name:'제주 여행 3박 4일',members:['진주','진우','민재','지현'],shares:[121500,121500,121500,121500],approvals:[true,true,true,false],status:'승인 대기',msgs:[
+        {from:'진우',text:'렌터카 영수증 올렸어! 186,000원'},{from:'sys',text:'Pie가 총 486,000원을 4명 균등 분담으로 계산했어요 · 1인 121,500원'},{from:'민재',text:'승인했어~'},{from:'진주',text:'지현아 승인만 눌러주면 끝!'}]},
+      {id:'g2',name:'삼겹살 공동구매',members:['진주','진우','민재','지현'],shares:[5225,10225,10225,10225],approvals:[true,true,true,true],status:'정산 완료',cert:'d1',msgs:[
+        {from:'sys',text:'삼겹살 1.2kg 공동구매에서 정산방이 만들어졌어요'},{from:'진주',text:'주문은 내가 할게!'},{from:'sys',text:'전원 승인 · 가상 결제 완료 · Web3 인증서가 발급됐어요'}]},
+      {id:'g3',name:'경영학과 축제 뒤풀이',members:['진주','진우','민재','지현','서연','도윤','하린','준호'],shares:[12050,12050,12050,12050,12050,12050,12050,12050],approvals:[true,true,true,false,true,false,true,false],status:'결제 진행',msgs:[
+        {from:'sys',text:'8명 · 총 96,400원 · 1인 12,050원'},{from:'서연',text:'고기 양 충분하겠지?'},{from:'진우',text:'삼겹살 비중 높은 걸로 골랐어'}]},
+    ],
+    docs:[
+      {id:'d1',kind:'cert',title:'삼겹살 공동구매',date:'2026.09.21 19:42',rows:[['진주',5225],['진우',10225],['민재',10225],['지현',10225]],hash:'0x7a3f9e2b61c04d8fa215e0b93c7d44e1b8a0f6c2d9e37154ab804d1c91e',block:'#18,204,331',rule:'주문자 진주 5,000원 감면 후 3인 균등'},
+      {id:'d2',kind:'cert',title:'성수 브런치 모임',date:'2026.09.14 13:10',rows:[['진주',28000],['서연',28000],['하린',28000]],hash:'0x3c81d7a90e5f42b6c1a8e7d03f9b25c6e4a1d80b7f3c92e56d1a4b0c7e28',block:'#18,117,902',rule:'3인 균등 분담'},
+      {id:'d3',kind:'cert',title:'8월 MT 회비',date:'2026.08.30 21:05',rows:[['진주',52000],['진우',52000],['민재',52000],['지현',52000],['도윤',52000],['준호',52000]],hash:'0x91be04f7d2a3c5e8b6f10d9a7c42e3b85f6d01a9c7e4b2d38f5a60c1e9b4',block:'#17,988,415',rule:'6인 균등 분담'},
+      {id:'r1',kind:'rcpt',title:'삼겹살 1.2kg 공동구매',date:'2026.09.21 19:40',rows:[['삼겹살 1.2kg',35900]],store:'Share Pie 공동구매',method:'파이페이',approval:'SP-260921-0087'},
+      {id:'r2',kind:'rcpt',title:'성수 브런치',date:'2026.09.14 12:58',rows:[['브런치 세트 x3',72000],['음료 x3',12000]],store:'카페 오르트',method:'파이페이',approval:'SP-260914-0412'},
+      {id:'r3',kind:'rcpt',title:'제주 렌터카 선결제',date:'2026.09.05 10:22',rows:[['경차 3일 대여',156000],['완전자차 보험',30000]],store:'제주 한라렌트',method:'파이페이',approval:'SP-260905-0193'},
+    ],
+    pay:[
+      {d:'09.21',t:'진우 정산 입금',s:'삼겹살 공동구매',a:10225},
+      {d:'09.21',t:'민재 정산 입금',s:'삼겹살 공동구매',a:10225},
+      {d:'09.21',t:'공동구매 결제',s:'삼겹살 1.2kg',a:-35900},
+      {d:'09.15',t:'파이페이 충전',s:'토스뱅크 ****2109',a:50000},
+      {d:'09.14',t:'정산 송금',s:'성수 브런치 모임',a:-28000},
+    ],
+    notifs:[
+      {cat:'정산',text:'지현님이 ‘제주 여행 3박 4일’ 정산을 아직 승인하지 않았어요.',time:'10분 전',read:false,go:['group','g1']},
+      {cat:'인증서',text:'‘삼겹살 공동구매’ 정산 인증서가 발급됐어요.',time:'2일 전',read:false,go:['doc','d1']},
+      {cat:'우리 동네',text:'딸기 2kg 공동구매 마감까지 3시간 남았어요. 7/10명 참여 중',time:'3시간 전',read:false,go:['product','p5']},
+      {cat:'그룹 채팅',text:'서연님: 고기 양 충분하겠지?',time:'어제',read:true,go:['gchat','g3']},
+    ],
+  };
+  chatRef = React.createRef(); gchatRef = React.createRef(); searchRef = React.createRef();
+  won = n => (n<0?'-':'') + Math.abs(Math.round(n)).toLocaleString('ko-KR') + '원';
+  componentDidMount(){ this._prev = this.state;
+    this.fit(); this._r = () => this.fit(); window.addEventListener('resize', this._r);
+    this._t = setTimeout(() => this.setState({screen:'auth'}), 2400);
+  }
+  componentWillUnmount(){ window.removeEventListener('resize', this._r); clearTimeout(this._t); }
+  componentDidUpdate(){
+    const s = this.state, ps = this._prev || s;
+    this._prev = s;
+    const cm = s.chats.find(c=>c.id===s.chatId), pcm = ps.chats.find(c=>c.id===ps.chatId);
+    if (this.chatRef.current && ((cm&&cm.msgs.length)!==(pcm&&pcm.msgs.length) || s.typing!==ps.typing || s.chatId!==ps.chatId)) this.chatRef.current.scrollTop = 1e6;
+    const g = s.groups.find(x=>x.id===s.gchatId), pg = ps.groups.find(x=>x.id===ps.gchatId);
+    if (this.gchatRef.current && ((g&&g.msgs.length)!==(pg&&pg.msgs.length) || s.gchatId!==ps.gchatId)) this.gchatRef.current.scrollTop = 1e6;
+    if (s.panel==='search' && ps.panel!=='search' && this.searchRef.current) this.searchRef.current.focus();
+  }
+  fit(){ const sc = Math.min(1, (window.innerHeight-40)/866, (window.innerWidth-20)/412); this.setState({scale: Math.max(.4, sc)}); }
+  showToast(t){ clearTimeout(this._tt); this.setState({toast:t}); this._tt = setTimeout(()=>this.setState({toast:''}), 2000); }
+  ask(o){ this.setState({confirm:o}); }
+
+    showToast(t){ clearTimeout(this._tt); this.setState({toast:t}); this._tt = setTimeout(()=>this.setState({toast:''}), 2000); }
+  ask(o){ this.setState({confirm:o}); }
+  me = '진주';
+  isEnter(e){ return e.key==='Enter' && !(e.nativeEvent && e.nativeEvent.isComposing) && e.keyCode!==229; }
+  today(){ const d=new Date(), p=n=>String(n).padStart(2,'0'); return p(d.getMonth()+1)+'.'+p(d.getDate()); }
+  parseWon(t){
+    const s = t.replace(/[,\s]/g,'');
+    const m = s.match(/(?:(\d+(?:\.\d+)?)만)?(?:(\d+)천)?(\d+)?원/);
+    if (!m || !(m[1]||m[2]||m[3])) return 0;
+    return Math.round(parseFloat(m[1]||0)*10000 + (+(m[2]||0))*1000 + (+(m[3]||0)));
+  }
+
+  // ============================================================
+  // 공동 정산 계산 엔진 (Stage 2: 코드 전용)
+  // CLAUDE.md 0-2 원칙: 금액 계산은 절대 AI가 하지 않는다. 이 블록 전체가
+  // 순수 JS 사칙연산이며, AI(Kiln) API는 어떤 형태로도 호출하지 않는다.
+  // 잔돈(나머지)은 최대 잉여분 배분법(Largest Remainder Method)으로 처리해
+  // 각 결과 합계가 total과 항상 정확히 일치하도록 방어한다.
+  // ============================================================
+  parseAmount(input){
+    if (input === null || input === undefined) return 0;
+    const trimmed = String(input).trim();
+    if (!trimmed) return 0;
+    if (/^[0-9,]+$/.test(trimmed)) return Number(trimmed.replace(/,/g, '')) || 0;
+    return this.parseWon(trimmed);
+  }
+  distributeRemainder(rawShares, total, unit = 1){
+    const floored = rawShares.map(s => {
+      const base = Math.floor(s.raw / unit) * unit;
+      return { name: s.name, base, remainder: s.raw - base };
+    });
+    let leftover = Math.round((total - floored.reduce((a, s) => a + s.base, 0)) / unit);
+    const sorted = [...floored].sort((a, b) => b.remainder - a.remainder);
+    const map = new Map(floored.map(s => [s.name, s.base]));
+    for (let i = 0; i < sorted.length && leftover > 0; i++) { map.set(sorted[i].name, map.get(sorted[i].name) + unit); leftover--; }
+    let i = 0;
+    while (leftover < 0 && i < sorted.length) {
+      const name = sorted[sorted.length - 1 - i].name;
+      if (map.get(name) - unit >= 0) { map.set(name, map.get(name) - unit); leftover++; }
+      i++;
+    }
+    return rawShares.map(s => ({ name: s.name, amount: map.get(s.name) }));
+  }
+  // 참여자 목록에 중복·빈 이름이 있으면 다른 파트(백엔드/AI) 데이터와 합쳐질 때
+  // 계산이 깨질 수 있으므로 여기서 방어적으로 걸러낸다.
+  assertValidMembers(members){
+    if (!Array.isArray(members) || members.length === 0) throw new Error('참여자가 1명 이상 필요해요.');
+    const seen = new Set();
+    for (const m of members) {
+      if (typeof m !== 'string' || !m.trim()) throw new Error('참여자 이름이 올바르지 않아요.');
+      if (seen.has(m)) throw new Error(`참여자가 중복돼요: ${m}`);
+      seen.add(m);
+    }
+  }
+  calcEqual(members, total){
+    this.assertValidMembers(members);
+    if (typeof total !== 'number' || !isFinite(total) || total < 0) throw new Error('총 금액이 올바르지 않아요.');
+    const raw = members.map(name => ({ name, raw: total / members.length }));
+    const results = this.distributeRemainder(raw, total, 1);
+    this.assertSumMatches(results, total);
+    return results;
+  }
+  calcRatio(members, ratios, total){
+    this.assertValidMembers(members);
+    if (typeof total !== 'number' || !isFinite(total) || total < 0) throw new Error('총 금액이 올바르지 않아요.');
+    const nums = members.map(name => { const v = Number(ratios && ratios[name]); return { name, v: isFinite(v) && v > 0 ? v : 0 }; });
+    const sum = nums.reduce((a, r) => a + r.v, 0);
+    if (sum <= 0) throw new Error('비율 합이 0보다 커야 해요.');
+    const raw = nums.map(r => ({ name: r.name, raw: (total * r.v) / sum }));
+    const results = this.distributeRemainder(raw, total, 1);
+    this.assertSumMatches(results, total);
+    return results;
+  }
+  calcItem(members, items){
+    this.assertValidMembers(members);
+    if (!Array.isArray(items) || items.length === 0) throw new Error('품목이 1개 이상 필요해요.');
+    const memberSet = new Set(members);
+    const totals = new Map(members.map(m => [m, 0]));
+    let grandTotal = 0;
+    for (const item of items) {
+      const price = Number(item.price);
+      if (!isFinite(price) || price <= 0) throw new Error(`'${item.name || '품목'}' 금액이 올바르지 않아요.`);
+      const parts = (item.participants || []).filter(p => memberSet.has(p));
+      if (parts.length === 0) throw new Error(`'${item.name || '품목'}'에 참가자가 없어요.`);
+      const raw = parts.map(name => ({ name, raw: price / parts.length }));
+      const dist = this.distributeRemainder(raw, price, 1);
+      this.assertSumMatches(dist, price);
+      dist.forEach(d => totals.set(d.name, totals.get(d.name) + d.amount));
+      grandTotal += price;
+    }
+    const results = members.map(name => ({ name, amount: totals.get(name) }));
+    this.assertSumMatches(results, grandTotal);
+    return { results, total: grandTotal };
+  }
+  // 합계 불일치는 다른 팀 결과물과 합쳐졌을 때 가장 치명적인 버그이므로
+  // 여기서 즉시 막아 조기에 드러나게 한다.
+  assertSumMatches(results, total){
+    const sum = results.reduce((a, r) => a + r.amount, 0);
+    if (sum !== total) throw new Error(`계산 합계(${sum})가 총액(${total})과 일치하지 않아요.`);
+  }
+  // "진주는 5000원 적게 내고 나머지가 나눠줘" 같은 차등(가감) 분배.
+  // n*X + sum(deltas) = total 이 되도록 공통값 X를 구한 뒤 각자에게 delta를 더한다.
+  calcAdjust(members, adjustments, total){
+    this.assertValidMembers(members);
+    if (typeof total !== 'number' || !isFinite(total) || total < 0) throw new Error('총 금액이 올바르지 않아요.');
+    const sumDeltas = members.reduce((a, m) => a + (adjustments && adjustments[m] ? Number(adjustments[m]) : 0), 0);
+    const X = (total - sumDeltas) / members.length;
+    const raw = members.map(name => ({ name, raw: X + (adjustments && adjustments[name] ? Number(adjustments[name]) : 0) }));
+    if (raw.some(r => r.raw < 0)) throw new Error('조정 금액이 총액보다 커서 계산할 수 없어요.');
+    const results = this.distributeRemainder(raw, total, 1);
+    this.assertSumMatches(results, total);
+    return results;
+  }
+
+  // ============================================================
+  // 정산 조건 자연어 해석 (Stage 1: AI 역할 — 여기서는 규칙 기반으로 흉내낸 것.
+  // 실제 Kiln API 연동 시 이 함수를 그 호출로 교체하면 된다. 이 함수는 "이해"만
+  // 하고, 실제 금액 계산은 절대 하지 않는다 — 계산은 항상 calcEqual 등 Stage2가 담당)
+  // ============================================================
+  parseSettlementText(text, members){
+    const raw = (text || '').trim();
+
+    // 참여자: 기본 전원, "이름(+조사) 빼고/제외"가 있으면 제외
+    // 이름 뒤에 "이는", "이", "은/는" 같은 조사가 붙어도 인식하도록 gap을 넉넉히 허용한다.
+    let participants = [...members];
+    members.forEach(m => {
+      if (new RegExp(`${m}[\\s\\S]{0,6}?(빼고|제외하고|제외)`).test(raw)) {
+        participants = participants.filter(x => x !== m);
+      }
+    });
+
+    // 품목 후보: "단어 12345원" 형태의 순수 숫자 금액. 참여자 이름 + 금액(예: "진주 5000원")은
+    // 개인 가감 표현일 수 있으므로 품목 후보에서 제외한다.
+    const itemRegex = /([가-힣a-zA-Z0-9]{1,12})\s*([0-9][0-9,]*)\s*원/g;
+    const items = [];
+    let m;
+    while ((m = itemRegex.exec(raw)) !== null) {
+      // "진주는", "민재가"처럼 이름 뒤에 조사가 붙은 경우까지 인식해 개인 가감 표현을
+      // 품목으로 잘못 인식하지 않도록 한다.
+      if (members.some(name => m[1].startsWith(name))) continue;
+      items.push({ name: m[1], price: Number(m[2].replace(/,/g, '')) });
+    }
+
+    if (items.length >= 2) {
+      const total = items.reduce((a, it) => a + it.price, 0);
+      return { mode: 'ITEM', itemName: '여러 품목', items: items.map(it => ({ ...it, participants: [...participants] })), participants, total, raw };
+    }
+
+    const total = this.parseWon(raw);
+
+    // 비율(%) 언급
+    const ratios = {};
+    let hasRatio = false;
+    members.forEach(name => {
+      const pctMatch = raw.match(new RegExp(`${name}[\\s\\S]{0,15}?([0-9]+)\\s*%`));
+      if (pctMatch) { ratios[name] = Number(pctMatch[1]); hasRatio = true; }
+    });
+    if (hasRatio) {
+      const named = Object.keys(ratios);
+      const namedSum = named.reduce((a, k) => a + ratios[k], 0);
+      const rest = participants.filter(name => !named.includes(name));
+      const restEach = rest.length ? Math.max(0, (100 - namedSum)) / rest.length : 0;
+      rest.forEach(name => { ratios[name] = restEach; });
+      return { mode: 'RATIO', itemName: '정산', total, ratios, participants, raw };
+    }
+
+    // 차감/추가 언급 ("OOO원 적게/덜", "OOO원 더/많이") — 이름과 금액 사이에
+    // 한국어 수식어가 섞여도 인식하도록 gap은 한글 포함 임의 문자로 허용한다.
+    const adjustments = {};
+    let hasAdjust = false;
+    members.forEach(name => {
+      const lessMatch = raw.match(new RegExp(`${name}[\\s\\S]{0,15}?([0-9][0-9,]*)\\s*원[\\s\\S]{0,4}?(적게|덜)`));
+      const moreMatch = raw.match(new RegExp(`${name}[\\s\\S]{0,15}?([0-9][0-9,]*)\\s*원[\\s\\S]{0,4}?(더|많이)`));
+      if (lessMatch) { adjustments[name] = -Number(lessMatch[1].replace(/,/g, '')); hasAdjust = true; }
+      if (moreMatch) { adjustments[name] = Number(moreMatch[1].replace(/,/g, '')); hasAdjust = true; }
+    });
+    if (hasAdjust) return { mode: 'ADJUST', itemName: '정산', total, adjustments, participants, raw };
+
+    const itemName = items.length === 1 ? items[0].name : '정산';
+    return { mode: 'EQUAL', itemName, total, participants, raw };
+  }
+
+  // auth
+  submitAuth = () => {
+    const {email,pw,name,authMode} = this.state;
+    if (authMode==='signup' && !name.trim()) return this.setState({authErr:'이름을 입력해 주세요.'});
+    if (!/^\S+@\S+\.\S+$/.test(email)) return this.setState({authErr:'올바른 이메일 형식이 아니에요.'});
+    if (pw.length<6) return this.setState({authErr:'비밀번호는 6자 이상이어야 해요.'});
+    let newId = '';
+    if (authMode==='signup') {
+      newId = this.normalizePieId(this.state.signupId);
+      const idErr = this.pieIdError(newId);
+      if (idErr) return this.setState({authErr:idErr});
+      if (this.isPieIdTaken(newId)) return this.setState({authErr:'이미 사용 중인 Pie ID예요. 다른 ID를 입력해 주세요.'});
+    }
+    const patch = {screen:'main', tab:'home', authErr:'', userEmail:email, pw:''};
+    if (authMode==='signup') { patch.userName = name.trim(); patch.userId = newId; patch.signupId = ''; }
+    this.setState(patch); this.showToast(authMode==='signup'?'가입을 환영해요!':'로그인했어요');
+  };
+  quickLogin = () => { this.setState({screen:'main',tab:'home',authErr:''}); this.showToast('로그인했어요'); };
+
+  // chat
+  openChat = (id) => this.setState({overlay:'chat', chatId:id, chatInput:'', panel:null, sheet:null});
+  startChat = (text) => {
+    const id = 'c'+Date.now();
+    const title = text.length>16 ? text.slice(0,16)+'…' : text;
+    this.setState(s=>({chats:[{id,title,date:'오늘',summary:'새 대화',msgs:[]}, ...s.chats], overlay:'chat', chatId:id, homeInput:'', buyInput:''}), () => this.pushUser(text));
+  };
+  pushUser(text){
+    const id = this.state.chatId;
+    this.setState(s=>({chats:s.chats.map(c=>c.id===id?{...c,msgs:[...c.msgs,{from:'user',text}]}:c), typing:true, chatInput:''}));
+    setTimeout(()=>{
+      const c = this.state.chats.find(x=>x.id===id); if(!c) return;
+      const replies = this.reply(text, c.msgs);
+      this.setState(s=>({typing:false, chats:s.chats.map(x=>x.id===id?{...x,msgs:[...x.msgs,...replies],summary:this.summarize(replies,x)}:x)}));
+    }, 1100);
+  }
+  summarize(replies, c){ const r = replies[0]; if (c.summary!=='새 대화') return c.summary; return (r.text||'').slice(0,60) + ((r.text||'').length>60?'…':''); }
+  reply(t, msgs){
+    const n = +((t.match(/(\d+)\s*명/)||[])[1]||4);
+    if (/고기|삼겹|목살|한우|뒤풀이/.test(t)) return [
+      {from:'bot',text:`상품 고기 · 인원 ${n}명 조건으로 공동구매 3개를 가격·양·마감·모집 상황 기준으로 비교했어요.`,compare:['p8','p9','p10'],n,best:'p9'},
+      {from:'bot',text:n===4?this.PRODUCT_EXPLAIN:`${n}명 기준으로 보면 목살 1.5kg이 양 대비 가격이 가장 균형 있어요. 인원이 많으면 2개 구매도 함께 비교해 드릴게요.`}];
+    const fruitCtx = /과일|딸기|귤|사과/.test(t) || msgs.some(m=>/과일/.test(m.text||''));
+    if (/과일|딸기|귤|사과/.test(t) && !/\d/.test(t)) return [{from:'bot',text:'몇 명이 함께 구매하시나요? 그리고 전체 예산은 어느 정도인가요?'}];
+    if (fruitCtx && /\d/.test(t)) return [{from:'bot',text:`좋아요. ${n}명이 나눠 먹기 좋고 예산 내외의 공동구매를 비교해볼게요. 학교 근처에서 직접 받을 수 있는 상품을 우선했어요.`,compare:['p5','p7','p1'],n,best:'p5'}];
+    if (/여행|제주/.test(t)) return [{from:'bot',text:'제주 여행 총 486,000원을 4명 균등 분담으로 계산했어요.',split:[['진주',121500],['진우',121500],['민재',121500],['지현',121500]],groupName:'제주 여행'}];
+    // AI Dispute Agent: 판정은 CLAUDE.md 7번 항목에 명시된 3개 카테고리(NORMAL_APPROVAL/GENUINE_ERROR/
+    // BAD_FAITH_DISPUTE) 중 하나로만 귀결된다. 실제 /dispute/investigate, /dispute/resolve API가 붙으면
+    // 그 API가 이 3개 문자열 중 하나를 verdict로 내려주게 되므로, 지금부터 그 값을 그대로 키로 써서
+    // 나중에 이 if/else 블록만 fetch 호출로 바꿔 끼우면 아래 표시 로직(mapMsg의 verdictStyle)은 안 바뀌어도 된다.
+    if (/분쟁|이의|문제가 있|이상해요|틀렸|잘못됐/.test(t)) {
+      let verdict, verdictReason;
+      if (/제외|빠졌|인원|참여자/.test(t)) {
+        verdict = 'GENUINE_ERROR';
+        verdictReason = '참여자 구성에 착오가 있었던 것으로 확인됐어요. refund_participant로 자동 환불 처리할게요.';
+      } else if (/영수증|가격|품목|바가지|비쌌/.test(t)) {
+        verdict = 'BAD_FAITH_DISPUTE';
+        verdictReason = '영수증 금액과 등록된 정산 데이터가 일치해서 계산 오류로 보기 어려워요. 이의제기를 기각하고 근거를 기록에 남길게요.';
+      } else {
+        verdict = 'NORMAL_APPROVAL';
+        verdictReason = '계산 로직(코드 전용, AI 미개입)으로 원본 데이터를 재검증한 결과 최초 계산된 금액이 정확했어요. 정산 결과를 그대로 유지하고 이의는 기각할게요.';
+      }
+      return [{from:'bot',text:'접수하신 내용을 확인해서 AI 분쟁 조사를 완료했어요.',verdict,verdictReason}];
+    }
+    if (/정산|나눠|나누|분담|더치|적게/.test(t)) return [{from:'bot',text:'삼겹살 공동구매 총 35,900원을 계산했어요. 진주님은 5,000원 적게, 나머지 세 명은 동일하게 부담해요.',split:[['진주',5225],['진우',10225],['민재',10225],['지현',10225]],groupName:'삼겹살 공동구매'}];
+    return [{from:'bot',text:'찾고 싶은 상품이나 나눌 비용을 편하게 말해 주세요. 예: “4명이서 먹을 고기, 1인 1만원 정도” 또는 “총 12만원을 3명이 나눠줘”.'}];
+  }
+  sendChat = () => { const t = this.state.chatInput.trim(); if (t && !this.state.typing) this.pushUser(t); };
+
+  // group chat
+  sendGchat = () => {
+    const t = this.state.gchatInput.trim(); if (!t) return; const id = this.state.gchatId;
+    this.setState(s=>({gchatInput:'', groups:s.groups.map(g=>g.id===id?{...g,msgs:[...g.msgs,{id:'m'+Date.now(), from:'진주', text:t}]}:g)}));
+    setTimeout(()=>{
+      this.setState(s=>({groups:s.groups.map(g=>{
+        if (g.id!==id) return g;
+        // Stage 1(AI 해석) — 여기서는 이해만 하고, 실제 금액 계산은 절대 하지 않는다.
+        const parsed = this.parseSettlementText(t, g.members);
+        const itemsTotal = parsed.mode==='ITEM' ? (parsed.items||[]).reduce((a,it)=>a+it.price,0) : parsed.total;
+        if (!itemsTotal || itemsTotal<=0) {
+          return {...g, msgs:[...g.msgs,{id:'m'+Date.now(), from:'sys', text:'금액을 잘 이해하지 못했어요. 예: "삼겹살 35,900원 다같이 나눠줘"처럼 품목과 총액을 함께 말씀해 주세요.'}]};
+        }
+        if (!parsed.participants || parsed.participants.length===0) {
+          return {...g, msgs:[...g.msgs,{id:'m'+Date.now(), from:'sys', text:'나눠 낼 사람이 없어요. 다시 한 번 말씀해 주세요.'}]};
+        }
+        // 계산 전 확인 카드만 띄운다 — 실제 계산(Stage2)은 사용자가 확인을 눌러야 실행된다.
+        return {...g, msgs:[...g.msgs,{id:'m'+Date.now(), from:'sys', kind:'confirm', confirmData:{...parsed, total:itemsTotal}, resolved:false}]};
+      })}));
+    }, 900);
+  };
+  // 사용자가 확인 카드에서 "확인·정산 시작"을 눌렀을 때 — 여기서만 실제 계산(Stage2, 코드 전용)이 실행된다.
+  confirmSettlement = (groupId, msgId) => {
+    this.setState(s => {
+      const g = s.groups.find(x=>x.id===groupId); if (!g) return {};
+      const msg = g.msgs.find(m=>m.id===msgId); if (!msg || msg.resolved) return {};
+      const cd = msg.confirmData;
+      let results, total;
+      try {
+        if (cd.mode === 'EQUAL') { results = this.calcEqual(cd.participants, cd.total); total = cd.total; }
+        else if (cd.mode === 'RATIO') { results = this.calcRatio(cd.participants, cd.ratios, cd.total); total = cd.total; }
+        else if (cd.mode === 'ADJUST') { results = this.calcAdjust(cd.participants, cd.adjustments, cd.total); total = cd.total; }
+        else if (cd.mode === 'ITEM') { const r = this.calcItem(cd.participants, cd.items); results = r.results; total = r.total; }
+        else throw new Error('알 수 없는 정산 방식이에요.');
+      } catch (err) {
+        return { groups: s.groups.map(x=>x.id===groupId ? {...x, msgs:[...x.msgs,{id:'m'+Date.now(), from:'sys', text: err.message || '계산 중 문제가 생겼어요. 다시 설명해 주세요.'}]} : x) };
+      }
+      // participants가 members의 부분집합일 수 있으므로, 빠진 멤버는 0원으로 채운다 (방어적 처리)
+      const shares = g.members.map(m => { const r = results.find(x=>x.name===m); return r ? r.amount : 0; });
+      const approvals = g.members.map(m => m===this.me);
+      return {
+        groups: s.groups.map(x=>x.id===groupId ? {
+          ...x, shares, approvals, status:'승인 대기',
+          msgs: x.msgs.map(m=>m.id===msgId?{...m,resolved:true,accepted:true}:m)
+            .concat([{id:'m'+Date.now()+1, from:'sys', text:`정산을 시작했어요 · 총 ${this.won(total)}. 멤버들에게 승인 요청을 보냈어요.`}])
+        } : x)
+      };
+    });
+  };
+  cancelSettlement = (groupId, msgId) => {
+    this.setState(s => ({
+      groups: s.groups.map(x=>x.id===groupId ? {
+        ...x,
+        msgs: x.msgs.map(m=>m.id===msgId?{...m,resolved:true,accepted:false}:m)
+          .concat([{id:'m'+Date.now(), from:'sys', text:'알겠어요, 정산 조건을 다시 설명해 주세요.'}])
+      } : x)
+    }));
+  };
+
+  // products / groups
+  openProduct = (id) => this.setState({sheet:'product', productId:id, panel:null});
+  joinProduct = () => {
+    const pid = this.state.productId, p = this.P[pid];
+if ((this.state.joinedIds||[]).includes(pid)) return this.showToast('이미 참여한 공동구매예요');
+if (p.joined >= p.cap) return this.showToast('모집이 마감됐어요');
+p.joined += 1; this.setState(s=>({joinedIds:[...(s.joinedIds||[]), pid]})); const total = p.price; const members=['진주','진우','민재','지현'];
+    const id='g'+Date.now();
+    let shares;
+    try { const results = this.calcEqual(members, total); shares = members.map(m => results.find(r=>r.name===m).amount); }
+    catch (err) { this.showToast(err.message || '정산 계산 중 문제가 생겼어요'); return; }
+    const g = {id,name:p.name+' 공동구매',members,shares,approvals:[true,false,false,false],status:'승인 대기',msgs:[{from:'sys',text:`${p.name} 공동구매에서 정산방이 만들어졌어요 · 총 ${this.won(total)}`},{from:'sys',text:'분담 조건을 채팅으로 알려주면 Pie가 다시 계산해요. 지금은 4명 균등 분담이에요.'}]};
+    this.setState(s=>({groups:[g,...s.groups], sheet:null, overlay:null, tab:'group', openGroup:id}));
+    this.showToast('공동구매 참여 완료 · 정산방이 만들어졌어요');
+  };
+  openCreate = (name, split) => this.setState({sheet:'create', newGroupName:name||'', newMembers: split? split.map(r=>r[0]).filter(x=>x!=='진주') : ['진우','민재','지현'], prefill: split||null, friendSearchQ:''});
+  openFriendSearch = () => this.setState({sheet:'friendSearch', friendSearchQ:''});
+  closeFriendSearch = () => this.setState({sheet:'create'});
+
+  // ============================================================
+  // Pie ID로 친구 추가
+  // from: 이 시트를 연 곳. 'friendSearch'(그룹 만들기 중)면 추가한 친구를 바로 멤버로 선택하고
+  // 친구 검색 화면으로 돌아가고, null(MY 탭)이면 시트를 닫는다.
+  // ⚠️ TEMP: lookupFriendId는 this.USERS(목업 DB)에서 찾는다. 실제 백엔드가 붙으면
+  // "Pie ID로 사용자 조회" API 응답({id, name} 또는 404)으로 교체하고, addFriend는 "친구 추가" API 성공 후에만
+  // friends 상태를 갱신하도록 바꾼다.
+  // ============================================================
+  openFriendAdd = (from) => this.setState({sheet:'friendAdd', friendAddFrom:from||null, friendAddQ:'', friendAddErr:'', friendAddResult:null});
+  closeFriendAdd = () => this.setState(s=>({sheet:s.friendAddFrom||null, friendAddFrom:null, friendAddQ:'', friendAddErr:'', friendAddResult:null}));
+  lookupFriendId = () => {
+    const s = this.state;
+    const id = this.normalizePieId(s.friendAddQ);
+    const fmtErr = this.pieIdError(id);
+    if (fmtErr) return this.setState({friendAddErr:fmtErr, friendAddResult:null});
+    if (id === s.userId) return this.setState({friendAddErr:'내 Pie ID예요. 친구의 ID를 입력해 주세요.', friendAddResult:null});
+    const u = this.USERS.find(x => x.id === id);
+    if (!u) return this.setState({friendAddErr:'이 Pie ID를 쓰는 사용자가 없어요. 아직 가입 전이라면 초대 링크를 보내 주세요.', friendAddResult:null});
+    this.setState({friendAddErr:'', friendAddResult:{id:u.id, name:u.name}});
+  };
+  // 그룹 멤버·정산 내역은 아직 이름으로 사람을 구분하므로, 이미 있는 친구(또는 나)와 이름이 겹치면
+  // 표시 이름에 ID를 붙여 구분한다. 그대로 두면 같은 이름 두 명이 한 그룹에 들어가 계산이 꼬인다.
+  friendDisplayName(u, friends){
+    const clash = u.name === this.me || friends.some(f => f.id !== u.id && f.name === u.name);
+    return clash ? `${u.name}(@${u.id})` : u.name;
+  }
+  addFriend = () => {
+    const s = this.state, r = s.friendAddResult;
+    if (!r) return;
+    if (s.friends.some(f => f.id === r.id)) return this.showToast('이미 친구로 등록된 사용자예요');
+    const name = this.friendDisplayName(r, s.friends);
+    const fromSearch = s.friendAddFrom === 'friendSearch';
+    this.setState(x => ({
+      friends: [...x.friends, {id:r.id, name}],
+      newMembers: fromSearch && !x.newMembers.includes(name) ? [...x.newMembers, name] : x.newMembers,
+      sheet: x.friendAddFrom || null, friendAddFrom:null, friendAddQ:'', friendAddErr:'', friendAddResult:null,
+    }));
+    this.showToast(fromSearch ? `${name}님을 친구로 추가하고 그룹 멤버로 선택했어요` : `${name}님을 친구로 추가했어요`);
+  };
+  copyMyId = () => {
+    const text = '@' + this.state.userId;
+    if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).catch(()=>{});
+    this.showToast(`내 Pie ID ${text}를 복사했어요`);
+  };
+  generateInviteLink = () => {
+    const code = Math.random().toString(36).slice(2,8) + Math.random().toString(36).slice(2,5);
+    const link = `https://sharepie.app/invite/${code}`;
+    this.setState({inviteLink: link});
+    if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(link).catch(()=>{});
+    }
+    this.showToast('초대 링크를 만들어 복사했어요');
+  };
+  // 프로필 사진 업로드: 파일을 바로 데이터 URL로 읽어 미리보기(draftAvatar)에만 반영하고,
+  // "완료"를 눌러야 avatarUrl로 실제 반영된다(이름 수정과 동일한 draft → save 패턴).
+  onAvatarFile = (e) => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    if (!file.type.startsWith('image/')) return this.showToast('이미지 파일만 올릴 수 있어요');
+    if (file.size > 8 * 1024 * 1024) return this.showToast('8MB 이하 사진만 올릴 수 있어요');
+    const reader = new FileReader();
+    reader.onload = () => this.setState({ draftAvatar: reader.result });
+    reader.onerror = () => this.showToast('사진을 불러오지 못했어요');
+    reader.readAsDataURL(file);
+  };
+  resetAvatar = () => this.setState({ draftAvatar: null });
+  openEditField = (field, value) => this.setState({ sheet:'editField', editField:field, editFieldDraft:value });
+  closeEditField = () => this.setState({ sheet:'privacy' });
+  // 동네 변경: 홈 상단 위치 아이콘에서 열고, 인증 없이 새 동네를 입력해 바로 저장한다.
+  openAddressSheet = () => this.setState({ sheet:'address', panel:null, draftAddress:this.state.userAddress });
+  closeAddressSheet = () => this.setState({ sheet:null });
+  saveAddress = () => {
+    const v = (this.state.draftAddress||'').trim();
+    if (v.length < 2) return this.showToast('동네를 입력해주세요');
+    if (v === this.state.userAddress) return this.setState({ sheet:null });
+    this.setState({ userAddress:v, sheet:null });
+    this.showToast('우리 동네를 변경했어요');
+  };
+
+  createGroup = () => {
+    const {newGroupName, newMembers, prefill} = this.state;
+    if (!newGroupName.trim()) return this.showToast('그룹 이름을 입력해 주세요');
+    if (!newMembers.filter(m=>m!==this.me).length) return this.showToast('함께할 멤버를 1명 이상 선택해 주세요');
+    const members = ['진주', ...newMembers]; const id='g'+Date.now();
+    let shares = members.map(()=>0), status='비용 입력 대기', approvals = members.map(()=>false), msgs;
+
+    if (prefill) {
+      // AI 공동구매 비교/채팅에서 넘어온 사전 계산 결과. 멤버 구성이 그대로면 그 결과를
+      // 그대로 쓰고, 멤버를 바꿨다면 코드(calcEqual)로 다시 계산한다 — AI가 재계산하지 않는다.
+      try {
+        const total = prefill.reduce((a,r)=>a+r[1],0);
+        const same = members.length===prefill.length && members.every(m=>prefill.some(r=>r[0]===m));
+        const results = same ? prefill.map(([name,amount])=>({name,amount})) : this.calcEqual(members, total);
+        shares = members.map(m => results.find(r=>r.name===m).amount);
+        status='승인 대기'; approvals = members.map((_,i)=>i===0);
+        msgs = [{id:'m'+Date.now(), from:'sys', text:'Pie가 계산한 분담액으로 승인 요청을 보냈어요.'}];
+      } catch (err) {
+        return this.showToast(err.message || '정산 계산 중 문제가 생겼어요');
+      }
+    } else {
+      // 정산 방식/총 금액은 여기서 미리 받지 않는다. 그룹방에 들어가면 Pie mate가
+      // 채팅으로 조건을 어떻게 말하면 되는지 양식을 안내하고, 자연어 설명을 받아
+      // 해석 → 확인 → 계산(Stage2, 코드 전용) 순서로 진행한다.
+      msgs = [{id:'m'+Date.now(), from:'sys', guide:true}];
+    }
+
+    const g = {id, name:newGroupName.trim(), members, shares, approvals, status, msgs};
+    this.setState(s=>({groups:[g,...s.groups], sheet:null, overlay:null, tab:'group', openGroup:id, prefill:null, friendSearchQ:''}));
+    this.showToast('그룹을 만들었어요');
+  };
+remind = (id) => {
+  this.showToast('승인 요청을 다시 보냈어요');
+  setTimeout(()=>{
+    this.setState(s=>{
+      const g = s.groups.find(x=>x.id===id); if (!g) return {};
+      const docId = 'd'+Date.now(), t = new Date(), p2 = n=>String(n).padStart(2,'0');
+      const date = `${t.getFullYear()}.${p2(t.getMonth()+1)}.${p2(t.getDate())} ${p2(t.getHours())}:${p2(t.getMinutes())}`;
+      const hash = '0x'+Array.from({length:60},()=>'0123456789abcdef'[Math.floor(Math.random()*16)]).join('');
+      const block = '#'+(18204331+Math.floor(Math.random()*90000)).toLocaleString('en-US');
+      const cert = {id:docId, kind:'cert', title:g.name, date, rows:g.members.map((m,i)=>[m,g.shares[i]]), hash, block, rule:'Pie 계산 분담'};
+      // 내(진주) 몫만큼 파이페이 잔액에서 차감하고 내역에 기록한다. Web3 인증 누적액(certTotal)은
+      // certs 목록에서 매번 다시 계산되므로, 여기서는 cert를 추가하는 것만으로 자동 반영된다.
+      const myIdx = g.members.indexOf(this.me);
+      const myShare = myIdx>=0 ? (g.shares[myIdx]||0) : (g.shares[0]||0);
+      // CLAUDE.md lock_for_settlement 스펙: 잔액이 분담금보다 적으면 잠금을 거부하고
+      // 정산 자체가 진행되지 않는다(일부만 잠기는 상태 금지). 실제 스마트컨트랙트가 붙으면
+      // 이 if문을 lock_for_settlement 호출 결과(성공/거부)로 그대로 교체하면 된다.
+      if (s.balance < myShare) {
+        return {
+          groups: s.groups.map(x=>x.id===id ? {...x, msgs:[...x.msgs,{from:'sys',text:`잔액 부족으로 잠금이 거부됐어요. Pie Pay를 충전한 뒤 다시 시도해 주세요. (필요 금액 ${this.won(myShare)}, 현재 잔액 ${this.won(s.balance)})`}]} : x),
+        };
+      }
+      return {
+        groups: s.groups.map(x=>x.id===id ? {...x, approvals:x.members.map(()=>true), status:'정산 완료', cert:docId, msgs:[...x.msgs,{from:'sys',text:'전원 승인 · 가상 결제 완료 · Web3 인증서가 발급됐어요'}]} : x),
+        docs: [cert, ...s.docs],
+        notifs: [{cat:'인증서', text:`‘${g.name}’ 전원 승인 완료. 정산 인증서가 발급됐어요.`, time:'방금', read:false, go:['doc',docId]}, ...s.notifs],
+        balance: s.balance - myShare,
+        pay: [{d:this.today(), t:`${g.name} 정산 결제`, s:'파이페이', a:-myShare}, ...s.pay],
+      };
+    });
+  }, 1800);
+};
+  goNotif(n){
+    const [k,v] = n.go; const patch = {panel:null};
+    if (k==='group') Object.assign(patch,{overlay:null,tab:'group',openGroup:v});
+    if (k==='doc') Object.assign(patch,{overlay:'doc',docId:v});
+    if (k==='gchat') Object.assign(patch,{overlay:'gchat',gchatId:v});
+    if (k==='tab') Object.assign(patch,{overlay:null,tab:v});
+    if (k==='product') Object.assign(patch,{sheet:'product',productId:v});
+    this.setState(patch);
+  }
+  logout = () => this.ask({title:'로그아웃할까요?',body:'다시 로그인하면 그룹과 정산 기록을 그대로 볼 수 있어요.',ok:'로그아웃',okBg:'#EE6A26',fn:()=>{this.setState({screen:'auth',authMode:'login',overlay:null,tab:'home'}); this.showToast('로그아웃했어요');}});
+  withdraw = () => this.ask({title:'정말 탈퇴하시겠어요?',body:'파이페이 잔액과 진행 중인 정산을 먼저 정리해야 해요. 발급된 Web3 인증서 기록은 블록체인에 남아요.',ok:'탈퇴하기',okBg:'#B8401A',fn:()=>{this.setState({screen:'auth',authMode:'signup',overlay:null,tab:'home',email:'',name:''}); this.showToast('탈퇴가 완료됐어요');}});
+
+  renderVals(){
+    const s = this.state, won = this.won;
+    const prod = (id, i) => { const p=this.P[id]; return {...p, id, priceStr:won(p.price),  per4:won(p.price/4), pct:Math.round(p.joined/p.cap*100)+'%', recruit:`${p.joined}/${p.cap}명`, rankLabel:`HOT ${i+1}`, open:()=>this.openProduct(id)}; };
+    const unread = s.notifs.filter(n=>!n.read).length;
+    const profileNickV = (s.draftName||'').trim();
+    const profileNickErr = profileNickV.length < 2 ? '닉네임은 2자 이상 입력해주세요'
+      : profileNickV.length > 12 ? '닉네임은 12자 이하로 입력해주세요'
+      : !/^[가-힣a-zA-Z0-9]+$/.test(profileNickV) ? '한글, 영문, 숫자만 쓸 수 있어요' : '';
+    const editFieldLabelMap = {name:'이름', email:'이메일', phone:'휴대폰 번호'};
+    const editFieldTypeMap = {name:'text', email:'email', phone:'tel'};
+    const editFieldPlaceholderMap = {name:'이름을 입력하세요', email:'이메일을 입력하세요', phone:'010-0000-0000'};
+    const editFieldRaw = (s.editFieldDraft||'').trim();
+    let editFieldErr = '';
+    if (s.editField==='name') {
+      if (editFieldRaw.length<2) editFieldErr='이름은 2자 이상 입력해주세요';
+      else if (editFieldRaw.length>12) editFieldErr='이름은 12자 이하로 입력해주세요';
+      else if (!/^[가-힣a-zA-Z0-9]+$/.test(editFieldRaw)) editFieldErr='한글, 영문, 숫자만 쓸 수 있어요';
+    } else if (s.editField==='email') {
+      if (!/^\S+@\S+\.\S+$/.test(editFieldRaw)) editFieldErr='올바른 이메일 형식이 아니에요';
+    } else if (s.editField==='phone') {
+      if (!/^01[0-9]-?\d{3,4}-?\d{4}$/.test(editFieldRaw)) editFieldErr='올바른 휴대폰 번호 형식이 아니에요';
+    }
+    const TABS = [
+      ['home','홈','M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z'],
+      ['buy','공동구매','M5 8h14l-1.2 12.1a1 1 0 0 1-1 .9H7.2a1 1 0 0 1-1-.9zM9 8V6.5a3 3 0 0 1 6 0V8'],
+      ['group','그룹','M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21v-.5a7 7 0 0 1 14 0v.5M16 3.3a4 4 0 0 1 0 7.4M22 21v-.5a7 7 0 0 0-4-6.3'],
+      ['settle','정산','M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6M9 16h3'],
+      ['my','MY','M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zM4 21a8 8 0 0 1 16 0'],
+    ];
+    const titles = {home:'홈',buy:'공동구매',group:'그룹',settle:'정산',my:'MY'};
+    const chat = s.chats.find(c=>c.id===s.chatId);
+    // 백엔드 /dispute/resolve가 내려주는 verdict 문자열(NORMAL_APPROVAL/GENUINE_ERROR/BAD_FAITH_DISPUTE)을
+    // 그대로 키로 쓴다. 화면 표시용 한글 라벨/색만 여기서 매핑하므로, 실제 API로 교체돼도 이 매핑은 안 바뀐다.
+    // 알 수 없는 값이 오면(스펙 변경 등) 로그로 남기고 원문 그대로 보여준다 — 조용히 깨지지 않게 하기 위함.
+    const verdictStyle = {
+      NORMAL_APPROVAL:{label:'정산 유지', bg:'#E1F0E4', fg:'#2F6B45'},
+      GENUINE_ERROR:{label:'환불 처리', bg:'#FDEBC8', fg:'#7A4E08'},
+      BAD_FAITH_DISPUTE:{label:'이의 기각', bg:'#FCE3D3', fg:'#B8401A'},
+    };
+    const mapMsg = (m) => ({...m, isUser:m.from==='user', isBot:m.from==='bot', hasCompare:!!m.compare, hasSplit:!!m.split, hasVerdict:!!m.verdict,
+      compareItems:(m.compare||[]).map((id,i)=>{const p=this.P[id]; return {name:p.name,cat:p.cat,tint:p.tint,letter:'ABC'[i],price:won(p.price),per:'약 '+won(p.price/(m.n||4)),deadline:p.deadline,recruit:`${p.joined}/${p.cap}명`,isBest:m.best===id,border:m.best===id?'#EE6A26':'#EEE1CB',onPick:()=>this.openProduct(id)};}),
+      splitRows:(m.split||[]).map(([name,a])=>({name,amt:won(a)})), splitTotal:m.split?won(m.split.reduce((a,r)=>a+r[1],0)):'',
+      onSettle:()=>this.openCreate(m.groupName, m.split),
+      verdictReason:m.verdictReason,
+      verdictLabel: m.verdict ? (verdictStyle[m.verdict]?.label || m.verdict) : '',
+      verdictBg: m.verdict ? (verdictStyle[m.verdict]?.bg || '#F1E6D3') : '',
+      verdictFg: m.verdict ? (verdictStyle[m.verdict]?.fg || '#6E5A4A') : ''});
+    const pill = {'정산 완료':['#E1F0E4','#2F6B45'],'승인 대기':['#FDEBC8','#7A4E08'],'결제 진행':['#FCE3D3','#A8481A'],'비용 입력 대기':['#F1E8DA','#6E5A4A']};
+    const groupList = s.groups.map(g=>{
+      const ap = g.approvals.filter(Boolean).length, total = g.shares.reduce((a,b)=>a+b,0), exp = s.openGroup===g.id;
+      return {...g, meta:`${g.members.length}명 · ${total?won(total):'금액 입력 전'}`, pillBg:(pill[g.status]||pill['비용 입력 대기'])[0], pillFg:(pill[g.status]||pill['비용 입력 대기'])[1],
+        avatars:g.members.slice(0,5).map(n=>({name:n,bg:this.TINT[n]||'#EAE0D2'})), pct:Math.round(ap/g.members.length*100)+'%', barColor:ap===g.members.length?'#3D8457':'#EE6A26',
+        approvedStr:`${ap}/${g.members.length}명 승인`, expanded:exp, expandLabel:exp?'접기':'정산 현황',
+        rows:g.members.map((n,i)=>({name:n+(n==='진주'?' (나)':''),amt:g.shares[i]?won(g.shares[i]):'-',label:g.approvals[i]?'승인':'대기',bg:g.approvals[i]?'#E1F0E4':'#F1E6D3',fg:g.approvals[i]?'#2F6B45':'#6E5A4A'})),
+        canRemind:g.status!=='비용 입력 대기' && ap<g.members.length, hasCert:!!g.cert || g.status==='정산 완료',
+        toggle:()=>this.setState({openGroup:exp?null:g.id}), chat:()=>this.setState({overlay:'gchat',gchatId:g.id,gchatInput:''}),
+        remind:()=>this.remind(g.id), openCert:()=>g.cert?this.setState({overlay:'doc',docId:g.cert}):this.setState({tab:'settle'})};
+    });
+    const gcG = s.groups.find(g=>g.id===s.gchatId);
+    const gc = gcG ? (()=>{const ap=gcG.approvals.filter(Boolean).length, t=gcG.shares.reduce((a,b)=>a+b,0); return {name:gcG.name, memberStr:gcG.members.join(', '), status:gcG.status, totalStr:t?won(t):'금액 입력 전', approvedStr:`· ${ap}/${gcG.members.length}명 승인`, pct:Math.round(ap/gcG.members.length*100)+'%'};})() : {};
+    const gcMsgs = gcG ? gcG.msgs.map(m=>{
+      const isConfirm = m.kind==='confirm';
+      const base = {...m,
+        isSys: m.from==='sys' && !isConfirm && !m.guide,
+        isMe: m.from==='진주',
+        isOther: m.from!=='sys' && m.from!=='진주',
+        isGuide: !!m.guide,
+        isConfirm,
+        bg:this.TINT[m.from]||'#EAE0D2'};
+      if (!isConfirm) return base;
+      const cd = m.confirmData || {};
+      const modeLabel = {EQUAL:'균등 분배', RATIO:'비율 분배', ADJUST:'차등 분배', ITEM:'항목별 분배'}[cd.mode] || cd.mode;
+      let detailLines = [];
+      if (cd.mode==='RATIO') detailLines = Object.entries(cd.ratios||{}).map(([n,p])=>`${n} ${Math.round(p)}%`);
+      if (cd.mode==='ADJUST') detailLines = Object.entries(cd.adjustments||{}).map(([n,d])=>`${n} ${d>0?'+':''}${won(d)}`);
+      if (cd.mode==='ITEM') detailLines = (cd.items||[]).map(it=>`${it.name} ${won(it.price)}`);
+      return {...base,
+        confirmItemName: cd.itemName || '정산',
+        confirmTotal: won(cd.total||0),
+        confirmParticipants: (cd.participants||[]).join(', '),
+        confirmModeLabel: modeLabel,
+        confirmDetailLines: detailLines,
+        hasConfirmDetail: detailLines.length>0,
+        confirmPending: !m.resolved,
+        confirmResolved: !!m.resolved,
+        confirmStatusText: m.resolved ? (m.accepted?'확인 완료 · 정산을 시작했어요':'취소됨 · 다시 설명해 주세요') : '',
+        confirmStatusColor: m.accepted ? '#2F6B45' : '#A8481A',
+        onConfirmYes: ()=>this.confirmSettlement(gcG.id, m.id),
+        onConfirmNo: ()=>this.cancelSettlement(gcG.id, m.id),
+      };
+    }) : [];
+    const certs = s.docs.filter(d=>d.kind==='cert'), rcpts = s.docs.filter(d=>d.kind==='rcpt');
+    const docList = (s.settleSeg==='cert'?certs:rcpts).map(d=>{const t=d.rows.reduce((a,r)=>a+r[1],0), c=d.kind==='cert';
+      return {title:d.title, sub:c?`${d.date.slice(0,10)} · ${d.rows.length}명 · 블록 ${d.block}`:`${d.date.slice(0,10)} · ${d.store}`, totalStr:won(t), tag:c?'Web3 검증':'파이페이 결제', tagFg:c?'#2F6B45':'#7A6353',
+        icon:c?'M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6zM9 12l2 2 4-4':'M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6M9 16h3', iconBg:c?'#E1F0E4':'#FDEBC8', iconFg:c?'#2F6B45':'#8A5A0B', open:()=>this.setState({overlay:'doc',docId:d.id})};});
+    const dd = s.docs.find(d=>d.id===s.docId);
+    const doc = dd ? {...dd, isCert:dd.kind==='cert', isRcpt:dd.kind==='rcpt', kindLabel:dd.kind==='cert'?'정산 인증서':'영수증', headline:dd.kind==='cert'?'정산 인증서':'결제 영수증', totalStr:won(dd.rows.reduce((a,r)=>a+r[1],0)), rowsFmt:dd.rows.map(([k,v])=>({k,v:won(v)}))} : {};
+    const q = s.searchQ.trim();
+    const searchGroups = q ? [
+      {label:'공동구매', items:Object.keys(this.P).filter(id=>this.P[id].name.includes(q)).map(id=>({title:this.P[id].name, sub:won(this.P[id].price), go:()=>this.openProduct(id)}))},
+      {label:'그룹', items:s.groups.filter(g=>g.name.includes(q)).map(g=>({title:g.name, sub:g.status, go:()=>this.setState({panel:null,overlay:null,tab:'group',openGroup:g.id})}))},
+      {label:'Pie 대화', items:s.chats.filter(c=>c.title.includes(q)||c.summary.includes(q)).map(c=>({title:c.title, sub:c.date, go:()=>this.openChat(c.id)}))},
+    ].filter(g=>g.items.length) : [];
+    const sp0 = s.productId && this.P[s.productId];
+    const sp = sp0 ? {...sp0, priceStr:won(sp0.price), per4:won(sp0.price/4), pct:Math.round(sp0.joined/sp0.cap*100)+'%', recruit:`${sp0.joined}/${sp0.cap}명`, remain:`${sp0.cap-sp0.joined}자리 남음`} : {};
+    const scale = s.scale;
+    // 이름 또는 Pie ID로 검색("@minjae"처럼 @를 붙여도 된다). 결과를 한 번만 계산해 목록/빈상태에 같이 쓴다.
+    const fq = s.friendSearchQ.trim(), fqId = this.normalizePieId(fq);
+    const friendSearchMatches = s.friends.filter(f => !fq || f.name.includes(fq) || (fqId && f.id.includes(fqId)));
+    // 회원가입 Pie ID: 입력 중에는 형식/중복을 바로 알려주고, 비어 있을 땐 안내 문구만 보여준다.
+    const signupIdV = this.normalizePieId(s.signupId);
+    const signupIdErr = !signupIdV ? '' : (this.pieIdError(signupIdV) || (this.isPieIdTaken(signupIdV) ? '이미 사용 중인 Pie ID예요' : ''));
+    // 프로필 편집 Pie ID: 지금 내 ID 그대로면 중복이 아니다.
+    const draftIdV = this.normalizePieId(s.draftUserId);
+    const draftIdErr = this.pieIdError(draftIdV) || (draftIdV !== s.userId && this.isPieIdTaken(draftIdV) ? '이미 사용 중인 Pie ID예요' : '');
+    const profileErr = profileNickErr || draftIdErr;
+    const far = s.friendAddResult;
+    const farAlready = !!far && s.friends.some(f => f.id === far.id);
+    const shortName = n => n.length <= 3 ? n : n.slice(0,2);
+    return {
+      frameW:412*scale+'px', frameH:866*scale+'px', frameT:`scale(${scale})`,
+      isSplash:s.screen==='splash', isAuth:s.screen==='auth', isMain:s.screen==='main',
+      isLogin:s.authMode==='login', isSignup:s.authMode==='signup',
+      loginTabBg:s.authMode==='login'?'#FFFCF6':'transparent', loginTabFg:s.authMode==='login'?'#2E1D12':'#7A6353',
+      signupTabBg:s.authMode==='signup'?'#FFFCF6':'transparent', signupTabFg:s.authMode==='signup'?'#2E1D12':'#7A6353',
+      setLogin:()=>this.setState({authMode:'login',authErr:''}), setSignup:()=>this.setState({authMode:'signup',authErr:''}),
+      email:s.email, pw:s.pw, name:s.name, onEmail:e=>this.setState({email:e.target.value}), onPw:e=>this.setState({pw:e.target.value}), onName:e=>this.setState({name:e.target.value}),
+      onAuthKey:e=>{if(this.isEnter(e))this.submitAuth();}, submitAuth:this.submitAuth, quickLogin:this.quickLogin, findId:()=>this.showToast('가입한 이메일로 안내를 보냈어요'),
+      authErr:s.authErr, hasAuthErr:!!s.authErr, authCta:s.authMode==='login'?'로그인':'가입하고 시작하기',
+      isHome:s.tab==='home', notHome:s.tab!=='home', isBuy:s.tab==='buy', isGroup:s.tab==='group', isSettle:s.tab==='settle', isMy:s.tab==='my', tabTitle:titles[s.tab],
+      tabs:TABS.map(([id,label,d])=>({label,d,color:s.tab===id?'#EE6A26':'#9C8672',fw:s.tab===id?700:500,fill:s.tab===id?'#FDEBC8':'none',go:()=>this.setState({tab:id})})),
+      openSearch:()=>this.setState({panel:'search',searchQ:''}), openNotif:()=>this.setState({panel:'notif'}), closePanel:()=>this.setState({panel:null}),
+      hasUnread:unread>0, unreadCount:unread,
+      firstName:s.userName.length>2?s.userName.slice(1):s.userName,
+      homeInput:s.homeInput, onHomeInput:e=>this.setState({homeInput:e.target.value}), onHomeKey:e=>{if(this.isEnter(e)&&s.homeInput.trim())this.startChat(s.homeInput.trim());},
+      sendHome:()=>{ if(s.homeInput.trim()) this.startChat(s.homeInput.trim()); else this.showToast('Pie에게 할 말을 입력해 주세요'); },
+      suggestions:[['자취방 고기 공동구매','학교 친구들이랑 자취방에서 먹을 고기 사고 싶은데 4명이고 한 명당 만 원 정도였으면 좋겠어.'],['주문자는 5천원 적게','진주는 주문하는 사람이니까 5천원 적게 내고 나머지 세 명이 나눠줘.'],['우리 동네 과일','친구들이랑 과일 좀 싸게 사고 싶어.']].map(([label,t])=>({label,go:()=>this.startChat(t)})),
+      chatCount:s.chats.length, pastChats:s.chats.map(c=>({...c, open:()=>this.openChat(c.id)})),
+      visibleChats:(s.showAllChats ? s.chats : s.chats.slice(0,4)).map(c=>({...c, open:()=>this.openChat(c.id)})),
+      hasMoreChats:s.chats.length>4, moreChatsLabel:s.showAllChats?'접기':'지난 대화 보기',
+      moreChatsIconStyle:s.showAllChats?'transform:rotate(180deg)':'', toggleAllChats:()=>this.setState(x=>({showAllChats:!x.showAllChats})),
+      startGroupSettle:()=>this.openCreate(), openCreateBlank:()=>this.openCreate(),
+      buyInput:s.buyInput, onBuyInput:e=>this.setState({buyInput:e.target.value}), onBuyKey:e=>{if(this.isEnter(e)&&s.buyInput.trim())this.startChat(s.buyInput.trim());},
+      sendBuy:()=>this.startChat(s.buyInput.trim()||'우리 과에서 축제 뒤풀이할 건데 8명 정도 먹을 고기 찾아줘. 총 10만원 넘으면 안 돼.'),
+      hotList:['p1','p2','p3'].map(prod), localList:['p4','p5','p6','p7'].map(prod), recList:['p8','p9','p10'].map(prod),
+      gStat:{total:s.groups.length, active:s.groups.filter(g=>g.status!=='정산 완료').length, done:s.groups.filter(g=>g.status==='정산 완료').length},
+      groupList,
+      certTotal:won(certs.reduce((a,d)=>{ const mine = d.rows.find(r=>r[0]===this.me); return a + (mine?mine[1]:0); },0)), certCount:certs.length, rcptCount:rcpts.length,
+      segCert:()=>this.setState({settleSeg:'cert'}), segRcpt:()=>this.setState({settleSeg:'rcpt'}),
+      segCertBg:s.settleSeg==='cert'?'#FFFCF6':'transparent', segCertFg:s.settleSeg==='cert'?'#2E1D12':'#7A6353',
+      segRcptBg:s.settleSeg==='rcpt'?'#FFFCF6':'transparent', segRcptFg:s.settleSeg==='rcpt'?'#2E1D12':'#7A6353',
+      docList,
+      initial:s.userName.slice(0,1), userName:s.userName, userEmail:s.userEmail, userAddress:s.userAddress, balanceStr:won(s.balance),
+      hasHeaderAvatar:!!s.avatarUrl, noHeaderAvatar:!s.avatarUrl, headerAvatarUrl:s.avatarUrl||'',
+      charge:()=>{this.setState(x=>({balance:x.balance+50000, pay:[{d:this.today(),t:'파이페이 충전',s:'토스뱅크 ****2109',a:50000},...x.pay]})); this.showToast('50,000원을 충전했어요');},
+      sendMoney:()=>this.showToast('연결 계좌 관리 기능은 준비 중이에요'),
+      payList:s.pay.slice(0, s.payVisibleCount).map(h=>({...h, amt:(h.a>0?'+':'')+won(h.a), color:h.a>0?'#2F6B45':'#2E1D12'})),
+      hasMorePay:s.pay.length>s.payVisibleCount, loadMorePay:()=>this.setState(x=>({payVisibleCount:x.payVisibleCount+5})),
+      myMenu:[['프로필 수정',()=>this.setState({sheet:'profile',draftName:s.userName,draftAvatar:s.avatarUrl,draftUserId:s.userId})],['ID로 친구 추가',()=>this.openFriendAdd(null)],['개인정보 관리',()=>this.setState({sheet:'privacy'})],['다른 계정으로 로그인',()=>this.ask({title:'다른 계정으로 로그인할까요?',body:'현재 계정에서 로그아웃돼요.',ok:'계속',okBg:'#EE6A26',fn:()=>this.setState({screen:'auth',authMode:'login',email:''})})],['로그아웃',this.logout],['회원 탈퇴',this.withdraw]].map(([label,go])=>({label,go,color:label==='회원 탈퇴'?'#B8401A':'#2E1D12'})),
+      isChat:s.overlay==='chat', isGChat:s.overlay==='gchat', isDoc:s.overlay==='doc', closeOverlay:()=>this.setState({overlay:null}),
+      chatTitle:chat?chat.title:'Pie', chatMsgs:chat?chat.msgs.map(mapMsg):[], typing:s.typing, chatRef:this.chatRef,
+      chatInput:s.chatInput, onChatInput:e=>this.setState({chatInput:e.target.value}), onChatKey:e=>{if(this.isEnter(e))this.sendChat();}, sendChat:this.sendChat,
+      gc, gcMsgs, gchatRef:this.gchatRef, gchatInput:s.gchatInput, onGchatInput:e=>this.setState({gchatInput:e.target.value}), onGchatKey:e=>{if(this.isEnter(e))this.sendGchat();}, sendGchat:this.sendGchat,
+      doc, shareDoc:()=>this.showToast('인증서 링크를 복사했어요'), saveDoc:()=>this.showToast('PDF로 저장했어요'),
+      dispute:()=>{this.setState({overlay:null}); setTimeout(()=>this.startChat(`${dd?dd.title:''} 정산 금액이 이상해요. 확인해줘.`),50);},
+      isSearch:s.panel==='search', isNotif:s.panel==='notif', searchRef:this.searchRef, searchQ:s.searchQ, onSearchQ:e=>this.setState({searchQ:e.target.value}),
+      searchEmpty:!q, searchHasQ:!!q, noResults:!!q&&!searchGroups.length, searchGroups,
+      recentKw:['삼겹살','딸기','제주 여행','화장지'].map(k=>({label:k,go:()=>this.setState({searchQ:k})})),
+      notifList:s.notifs.map((n,i)=>({...n, bg:n.read?'transparent':'#FFFCF6', dot:n.read?'transparent':'#EE6A26', go:()=>{this.setState(x=>({notifs:x.notifs.map((m,j)=>j===i?{...m,read:true}:m)})); this.goNotif(n);}})),
+      readAll:()=>this.setState(x=>({notifs:x.notifs.map(n=>({...n,read:true}))})),
+      hasSheet:!!s.sheet, closeSheet:()=>this.setState({sheet:null}),
+      isProductSheet:s.sheet==='product', isCreateSheet:s.sheet==='create', isProfileSheet:s.sheet==='profile', isPrivacySheet:s.sheet==='privacy', isEditFieldSheet:s.sheet==='editField',
+      isAddressSheet:s.sheet==='address', openAddressSheet:this.openAddressSheet, closeAddressSheet:this.closeAddressSheet,
+      locationAriaLabel:`우리 동네 변경 (현재 ${s.userAddress})`,
+      draftAddress:s.draftAddress, onDraftAddress:e=>this.setState({draftAddress:e.target.value}),
+      onAddressKey:e=>{ if(this.isEnter(e)) this.saveAddress(); },
+      saveAddressBg: (s.draftAddress||'').trim().length>=2 ? '#EE6A26' : '#E3C4AE',
+      saveAddress:this.saveAddress,
+      sp, joinProduct:this.joinProduct, askPieProduct:()=>{const p=this.P[s.productId]; this.setState({sheet:null}); this.startChat(`${p.name}이랑 비슷한 공동구매 4명 기준으로 비교해줘`);},
+      newGroupName:s.newGroupName, onNewGroupName:e=>this.setState({newGroupName:e.target.value}), newCount:s.newMembers.length+1,
+      openFriendSearch:this.openFriendSearch, closeFriendSearch:this.closeFriendSearch,
+      hasSelectedFriends:s.newMembers.length>0,
+      selectedFriendChips:s.newMembers.map(f=>({name:f, ariaLabel:`${f} 선택 해제`, remove:()=>this.setState(x=>({newMembers:x.newMembers.filter(m=>m!==f)}))})),
+      isFriendSearchSheet:s.sheet==='friendSearch',
+      friendSearchQ:s.friendSearchQ, onFriendSearchQ:e=>this.setState({friendSearchQ:e.target.value}),
+      friendSearchList:friendSearchMatches.map(fr=>{
+        const f=fr.name, on=s.newMembers.includes(f);
+        return {name:f, id:fr.id, initial:shortName(f), on, border:on?'#EE6A26':'#EEE1CB', bg:on?'#FCE3D3':'transparent', fg:on?'#A8481A':'#5E4A3B', toggle:()=>this.setState(x=>({newMembers:on?x.newMembers.filter(m=>m!==f):[...x.newMembers,f]}))};
+      }),
+      friendSearchEmpty:friendSearchMatches.length===0,
+      openFriendAddFromSearch:()=>this.openFriendAdd('friendSearch'),
+      isFriendAddSheet:s.sheet==='friendAdd', closeFriendAdd:this.closeFriendAdd, copyMyId:this.copyMyId, userId:s.userId,
+      friendAddQ:s.friendAddQ, onFriendAddQ:e=>this.setState({friendAddQ:e.target.value, friendAddErr:'', friendAddResult:null}),
+      onFriendAddKey:e=>{ if(this.isEnter(e)) this.lookupFriendId(); },
+      lookupFriendId:this.lookupFriendId, addFriend:()=>{ if(!farAlready) this.addFriend(); },
+      friendAddSearchBg:s.friendAddQ.trim()?'#EE6A26':'#E3C4AE',
+      friendAddBorder:s.friendAddErr?'#F1B4A8':'#EEE1CB',
+      hasFriendAddErr:!!s.friendAddErr, friendAddErr:s.friendAddErr,
+      hasFriendAddResult:!!far,
+      friendAddResult: far ? {id:far.id, name:far.name, initial:shortName(far.name), bg:this.TINT[far.name]||'#EAE0D2',
+        btnLabel:farAlready?'이미 친구예요':'친구 추가', btnBg:farAlready?'#E3C4AE':'#EE6A26'} : {},
+      signupId:s.signupId, onSignupId:e=>this.setState({signupId:e.target.value, authErr:''}),
+      signupIdHelp: signupIdErr || (signupIdV ? '사용할 수 있는 Pie ID예요' : '영문 소문자로 시작 · 4~20자 · 소문자/숫자/./_'),
+      signupIdHelpColor: signupIdErr ? '#B8401A' : (signupIdV ? '#2F6B45' : '#A8927F'),
+      signupIdBorder: signupIdErr ? '#F1B4A8' : '#EEE1CB',
+      draftUserId:s.draftUserId, onDraftUserId:e=>this.setState({draftUserId:e.target.value}),
+      draftIdHelp: draftIdErr || (draftIdV===s.userId ? '친구가 이 ID로 나를 찾을 수 있어요' : '사용할 수 있는 Pie ID예요'),
+      draftIdHelpColor: draftIdErr ? '#B8401A' : (draftIdV===s.userId ? '#A8927F' : '#2F6B45'),
+      draftIdBorder: draftIdErr ? '#F1B4A8' : '#EEE1CB',
+      generateInviteLink:this.generateInviteLink, hasInviteLink:!!s.inviteLink, inviteLink:s.inviteLink||'',
+      copyInviteLink:()=>{ if(s.inviteLink){ if(typeof navigator!=='undefined'&&navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(s.inviteLink).catch(()=>{}); this.showToast('링크를 복사했어요'); } },
+      hasPrefill:!!s.prefill, prefillTotal:s.prefill?won(s.prefill.reduce((a,r)=>a+r[1],0)):'', createGroup:this.createGroup, createBg:s.newGroupName.trim()?'#EE6A26':'#E3C4AE',
+      // 정산 방식/총 금액은 이 화면에서 받지 않는다. 그룹방에 들어가면 Pie mate가
+      // 채팅으로 조건을 어떻게 설명하면 되는지 안내하고, 자연어 해석 → 확인 → 계산(코드 전용) 순으로 진행한다.
+      showChatHint: !s.prefill,
+      draftName:s.draftName, onDraftName:e=>this.setState({draftName:e.target.value}),
+      avatarPreview:s.draftAvatar||'', hasAvatarPreview:!!s.draftAvatar, noAvatarPreview:!s.draftAvatar,
+      avatarInitial:s.userName.slice(0,1), onAvatarFile:this.onAvatarFile, resetAvatar:this.resetAvatar,
+      nickLen:`${s.draftName.trim().length}/12`,
+      nickHelpText:profileNickErr || '2~12자, 한글·영문·숫자만 쓸 수 있어요',
+      nickHelpColor:profileNickErr ? '#B8401A' : '#A8927F',
+      nickBorderColor:profileNickErr ? '#F1B4A8' : '#EEE1CB',
+      saveProfileBg:profileErr ? '#E3C4AE' : '#EE6A26',
+      saveProfile:()=>{
+        const v = s.draftName.trim();
+        if (profileErr) return this.showToast(profileErr);
+        this.setState({userName:v, userId:draftIdV, avatarUrl:s.draftAvatar, sheet:null});
+        this.showToast('프로필을 저장했어요');
+      },
+      privacyRows:[
+        {k:'이메일', v:s.userEmail, editable:true, field:'email'},
+        {k:'휴대폰', v:s.userPhone, editable:true, field:'phone'},
+        {k:'본인인증', v:'완료 · 2026.03.02', editable:false, field:null},
+      ].map(r => ({...r, notEditable:!r.editable, go: r.editable ? ()=>this.openEditField(r.field, r.v) : null})),
+      editFieldLabel: editFieldLabelMap[s.editField] || '',
+      editFieldInputType: editFieldTypeMap[s.editField] || 'text',
+      editFieldPlaceholder: editFieldPlaceholderMap[s.editField] || '',
+      editFieldDraft:s.editFieldDraft, onEditFieldDraft:e=>this.setState({editFieldDraft:e.target.value}),
+      hasEditFieldErr:!!editFieldErr, editFieldErr, editFieldBorderColor: editFieldErr?'#F1B4A8':'#EEE1CB', editFieldSaveBg: editFieldErr?'#E3C4AE':'#EE6A26',
+      closeEditField:this.closeEditField,
+      saveEditField:()=>{
+        if (editFieldErr) return this.showToast(editFieldErr);
+        const patch = {sheet:'privacy'};
+        if (s.editField==='name') patch.userName = editFieldRaw;
+        if (s.editField==='email') patch.userEmail = editFieldRaw;
+        if (s.editField==='phone') patch.userPhone = editFieldRaw;
+        this.setState(patch);
+        this.showToast('변경됐어요');
+      },
+      toggleMarketing:()=>this.setState({marketing:!s.marketing}), marketing:s.marketing, mkBg:s.marketing?'#EE6A26':'#D9C8AE', mkJustify:s.marketing?'flex-end':'flex-start',
+      downloadData:()=>this.showToast('요청을 접수했어요. 이메일로 보내드릴게요'),
+      hasConfirm:!!s.confirm, confirm:s.confirm||{}, cancelConfirm:()=>this.setState({confirm:null}), okConfirm:()=>{const f=s.confirm&&s.confirm.fn; this.setState({confirm:null}); f&&f();},
+      hasToast:!!s.toast, toast:s.toast,
+    };
+  }
+}
+</script>
+</body>
+</html>
