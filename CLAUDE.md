@@ -202,7 +202,7 @@ UI의 `parseSettlementText()`(규칙 기반 임시 해석)를 대체한다.
 
 **POST /dispute/resolve** — body `{ settlementOnchainId, verdict, investigation? }` (verdict = 7번의 3개 중 하나, 그 밖은 `400 INVALID_VERDICT`) → `{ settlementOnchainId, resolve: { txHash, block, verdict, verdictCode }, refunds: [{ uid, amount, txHash, block, ok: true } | { uid, amount, ok: false, error: { code, message } }], state, verdict }`. `GENUINE_ERROR`면 잠근 참여자 전원에게 `refund_participant`를 순서대로 시도(한 명 실패해도 계속 — 실패 건은 `refunds[].error.code`에 `ALREADY_REFUNDED` / `NOT_LOCKED_PARTICIPANT` / `INVALID_STATUS` 등). DISPUTED가 아니면 `409 INVALID_STATUS`. AI 호출 없음 — 판정 실행은 코드 전용. 실행 결과는 `events.jsonl`에 `dispute.action`(`responseKey: verdict=…`, `action`, `resolveTxHash`, `txHashes`)으로 남긴다 (12번)
 
-> ⚠️ TODO(코드 수정 필요): `/dispute/resolve`는 현재 `verdict` 문자열만 검증하고 실행한다. resolve 전에 `compareRecords`(코드의 금액 불일치 확인) 결과를 강제로 확인하는 장치가 아직 없다 (11번 참고).
+> ✅ 확정(코드 반영 완료): `/dispute/resolve`는 실행 전에 **코드의 금액 불일치 확인을 강제**한다. body에 `investigation`(`/dispute/investigate` 결과 — `mismatchDetected` 포함) 또는 investigate 입력(`originalRequest`·`settlementPlan`·`approvalRecord`·`actualTransfer`)이 있어야 하고, 후자는 서버가 `compareRecords`로 다시 확인한다. `GENUINE_ERROR`인데 불일치 없음 → `409 MISMATCH_NOT_FOUND`, 다른 verdict인데 불일치 있음 → `409 MISMATCH_UNRESOLVED`, 둘 다 없음 → `400 INVESTIGATION_REQUIRED`. 검사는 `resolve_dispute` 호출 **전**에 하므로 거부되면 온체인 트랜잭션 0건. `dispute.action` 로그에 `facts`(mismatchDetected·mismatchPoint·expected·actual)가 함께 남는다 (구현: `backend/src/settlement/settlementActions.js`).
 
 **역할 분담**: `/dispute/investigate`는 **AI 판정만** 하고(응답에 txHash 없음 — 설계), 온체인 실행(`resolve_dispute`·`refund_participant`)은 `/dispute/resolve`가 한다.
 
@@ -272,10 +272,15 @@ UI/UX 디자인·화면 제작은 별도 팀원이 전담하며 진행 중이다
 Run 1 (정상):        정산 코어 — 예산 내 정산 → 전원 승인 → open / lock × N / confirm 온체인 기록 → TxHash 확보(인증서 = SettlementConfirmed).
                     보류 기간(holdUntil)이 지난 뒤 release까지 실행하면 Released
                     (contracts: npm run run1:sepolia → 보류 뒤 npm run release:sepolia -- <settlementOnchainId>)
-Run 1.5 (예산 초과 거부): 예산 초과 조건으로 재호출 → 서버가 OVER_BUDGET(409)으로 거부 → 거부 로그 캡처 (12번 체크리스트)
-Run 2 (이의제기):    Locked(보류 중) 상태의 정산에 대해 raise_dispute(동결) → Dispute 모듈 재조사(dispute.investigate)
-                    → resolve_dispute(GENUINE_ERROR) → Cancelled → refund_participant 각자 환불 → TxHash
-                    (contracts: npm run run2:sepolia -- <run1 로그 파일>)
+Run 1.5 (조건 변경 → 코드 중단): ① 예산 40,000→30,000으로 재호출 → OVER_BUDGET(409) ② u3 잔액 100 PIE만 충전 후 승인 → 잠금 전 잔액 선확인에서 INSUFFICIENT_BALANCE(409)
+                    → 둘 다 온체인 트랜잭션 0건, AI 호출 0회. events.jsonl에 settlement.abort("… → 코드 판정 OVER_BUDGET → 중단 (잠금 0건)") 캡처
+                    (contracts: npm run run1.5:sepolia)
+Run 2 (이의제기):    별도 정산 — 합의 조건 해시는 그대로, 등록·잠금 금액만 [8975×4]로 주입(계산 단계 착오 시뮬레이션, 12번 확정 참고)
+                    → raise_dispute(동결) → dispute.investigate(계산 단계 불일치: u0 5,225 vs 8,975 → GENUINE_ERROR)
+                    → resolve_dispute(코드가 불일치 확인 강제) → Cancelled → refund_participant × 4 → 부족분 충전 → 올바른 조건으로 정정 정산(LOCKED)
+                    (contracts: npm run run2:sepolia — Run 1 로그 없이 단독 실행)
+일괄:               npm run preflight(배포 전 점검, 트랜잭션 없음) → npm run demo:all(preflight → Run 1 → 1.5 → 2 → 보류 지났으면 release → verify)
+                    → backend/logs/demo-<timestamp>/summary.md (트랜잭션 표+탐색기 링크, 단계별 AI 토큰 표, AI 응답→행동 로그, verify MATCH). MOCK 모드에서도 끝까지 돈다
 ```
 - **지급(Released) 이후에는 이의제기가 불가능**하다. Run 1의 정산을 Run 2에 재사용하려면 release 전에 이의제기해야 하므로, 그 경우 Run 1은 Released로 끝나지 않는다. → **Run 2는 별도 정산으로 실행하는 것을 기본**으로 한다 (Run 1은 Released까지, Run 2는 새 정산을 Locked 상태에서).
 
@@ -327,7 +332,7 @@ UI_FILE=                        # 선택. 서버가 / 에서 보여줄 UI HTML �
 - 모델명을 코드에 하드코딩하지 않는다 (`KILN_MODEL` 환경변수로만 참조)
 - 코드의 금액 불일치 확인(`compareRecords`) 없이 AI verdict만으로 환불을 실행하지 않는다
 
-> ⚠️ TODO(코드 수정 필요): 위 두 규칙은 아직 코드에서 강제되지 않는다. ① `backend/src/kilnClient.js`·`server.js`에 `KILN_MODEL`이 비어 있을 때의 기본값 문자열(`'gpt-oss-120b'`)이 남아 있다. ② `/dispute/resolve`는 `verdict` 문자열만 검증하고 실행한다 — resolve 전에 `compareRecords` 결과 확인을 강제해야 한다.
+> ✅ 확정(코드 반영 완료): 위 두 규칙은 코드에서 강제된다. ① 모델명 기본값 삭제 — `KILN_MODEL`이 비어 있으면 `kilnClient`가 `KilnConfigError`를 던져 AI 엔드포인트가 `503 KILN_NOT_CONFIGURED`로 거부되고, `/health`에 `kilnModelConfigured: false, model: null`로 드러난다 (서버 시작 시 경고 출력). ② `/dispute/resolve`의 불일치 확인 강제는 6-1 참고. 테스트: `backend/test/api.test.js`(모델 미설정 503), `backend/test/blockchain.test.js`(MISMATCH_NOT_FOUND / MISMATCH_UNRESOLVED / INVESTIGATION_REQUIRED / compareRecords 경로).
 
 ## 12. 제출 전 필수 체크리스트 (README 작성 시 반드시 반영)
 
@@ -341,7 +346,7 @@ UI_FILE=                        # 선택. 서버가 / 에서 보여줄 UI HTML �
 - README에 한계로 명시: "운영자 지갑 하나(`DEPLOYER_PRIVATE_KEY`)가 모든 트랜잭션에 서명하는 데모용 수탁 구조" (멤버가 직접 서명하지 않음)
 - README에 "Run 2의 착오는 의도적으로 주입한 시뮬레이션"임을 명시할 것. 단, 컨트랙트는 lock 금액을 등록 금액과 같게 강제하므로 "조건과 다른 금액이 온체인에 잠긴다"고 쓰면 모순이다 — 착오는 온체인 금액이 아니라 **조사 입력**(이의제기 사유·비교 기록) 쪽에 있다고 서술한다
 
-> ⚠️ TODO(미정): Run 2에서 착오를 실제로 어떻게 주입할지. 현재 `contracts/scripts/run2-dispute.js`는 온체인 `locks[]`를 `approvalRecord`·`actualTransfer` **양쪽에 그대로** 넘기므로 기록이 항상 일치하고, `investigateDispute`의 검증 규칙(기록 일치 시 `GENUINE_ERROR` 금지)에 따라 환불이 나오지 않는다. 주입 방식(예: 조사 입력의 `actualTransfer` 한 건을 의도적으로 바꾼 시뮬레이션 기록, 또는 참여자 구성 착오를 `GENUINE_ERROR`로 인정하는 규칙 확장)을 정한 뒤 코드와 README에 같은 문장으로 서술한다.
+> ✅ 확정 — Run 2 주입 방식 = **A안(계산 단계 착오 시뮬레이션)**, 구현 `contracts/scripts/run2-dispute.js`. 합의 조건(ADJUST, 진주(u0) −5,000 → 올바른 분담 [5225, 10225, 10225, 10225], 예산 40,000)의 **해시는 그대로** `open_settlement`에 기록하고, **등록·잠금 금액만** 균등 [8975 × 4]로 바꿔 넣는다 (`INJECTED_ERROR: shares replaced`, `events.jsonl`에 `run2.injected_error`). lock 금액 = 등록 금액 규칙은 그대로 지켜지므로 컨트랙트와 모순이 없다. 조사 입력은 `originalRequest.structured` = 합의 조건, `settlementPlan.shares` = 주입값, `approvalRecord`·`actualTransfer` = 온체인 locks → `compareRecords`가 **"계산 단계"** 불일치(u0 기대 5,225 vs 실제 8,975)를 검출 → AI는 기존 규칙대로 `GENUINE_ERROR`만 낼 수 있음(규칙 확장 없음) → `resolve_dispute` → `refund_participant` × 4 → 부족분 충전 후 올바른 조건으로 정정 정산(LOCKED, 같은 조건 해시 → verify MATCH). README 문장(코드·문서 동일): **"Run 2의 착오는 의도적으로 주입한 시뮬레이션이며, 온체인에 잠긴 금액이 합의 조건(해시)과 다르게 등록된 '계산 단계 착오'로 만들어진다."** 위 항목의 "조사 입력 쪽" 서술은 A안에서는 이 문장으로 대체해 읽는다. 검증: `contracts/test/SharePieSettlement.test.js`(A안 통합), `backend/test/blockchain.test.js`(demo-all MOCK).
 
 ## 13. 에너지 절감 논리 (README 작성 시 이 문단을 근거로 사용, 숫자는 실제 로그 확보 후 교체)
 
