@@ -88,7 +88,7 @@ describe('SharePieSettlement ★ 함수', () => {
 });
 
 describe('백엔드 연동 (backend/src/blockchain/onchainClient.js)', () => {
-  const MEMBERS = ['진주', '진우', '민재', '지현'];
+  const MEMBERS = ['u0', 'u1', 'u2', 'u3']; // uid — 표시 이름은 체인에 넘기지 않는다
   const SHARES = [5225, 10225, 10225, 10225];
 
   it('에스크로 정산: 전원 잠금 → 결제처 지급, /settlement/approve 응답 형식', async () => {
@@ -112,32 +112,44 @@ describe('백엔드 연동 (backend/src/blockchain/onchainClient.js)', () => {
     const { settlement, owner } = await deploy();
     const client = await createOnchainClient({ signer: owner, contractAddress: await settlement.getAddress() });
     for (let i = 1; i < MEMBERS.length; i++) await client.chargeToken(MEMBERS[i], SHARES[i]);
-    const r = await client.recordSettlement({ settlementId: 'g2', members: MEMBERS, shares: SHARES, payer: '진주' });
+    const r = await client.recordSettlement({ settlementId: 'g2', members: MEMBERS, shares: SHARES, payer: 'u0' });
     expect(r.viaEscrow).to.equal(false);
-    expect(r.locks.map((l) => l.from)).to.deep.equal(['진우', '민재', '지현']);
-    expect(await client.balanceOf('진주')).to.equal(30675);
+    expect(r.recipient).to.equal('u0');
+    expect(r.locks.map((l) => l.from)).to.deep.equal(['u1', 'u2', 'u3']);
+    expect(await client.balanceOf('u0')).to.equal(30675);
   });
 
   it('한 명이라도 잔액 부족이면 InsufficientBalanceError, 트랜잭션을 하나도 보내지 않음 (부분 잠금 없음)', async () => {
     const { settlement, owner, merchant } = await deploy();
     const client = await createOnchainClient({ signer: owner, contractAddress: await settlement.getAddress(), merchantAddress: merchant.address });
-    await client.chargeToken('진주', 5225);
-    await client.chargeToken('진우', 10225);
-    await client.chargeToken('민재', 10225);
-    await client.chargeToken('지현', 100); // 부족
+    await client.chargeToken('u0', 5225);
+    await client.chargeToken('u1', 10225);
+    await client.chargeToken('u2', 10225);
+    await client.chargeToken('u3', 100); // 부족
     const nonceBefore = await owner.getNonce();
     let caught;
     try { await client.recordSettlement({ settlementId: 'g3', members: MEMBERS, shares: SHARES }); } catch (e) { caught = e; }
     expect(caught).to.be.instanceOf(InsufficientBalanceError);
     expect(caught.code).to.equal('INSUFFICIENT_BALANCE');
-    expect(caught.message).to.contain('지현');
+    expect(caught.message).to.contain('u3'); // 메시지에는 uid — UI가 이름으로 바꿔 표시
     expect(await owner.getNonce()).to.equal(nonceBefore);
-    expect(await client.balanceOf('진주')).to.equal(5225);
+    expect(await client.balanceOf('u0')).to.equal(5225);
   });
 
-  it('멤버 주소는 이름마다 고정 (같은 이름 = 같은 주소)', () => {
-    expect(addressOf('진주')).to.equal(addressOf('진주'));
-    expect(addressOf('진주')).to.not.equal(addressOf('진우'));
-    expect(ethers.isAddress(addressOf('진주'))).to.equal(true);
+  it('멤버 주소는 uid마다 고정: 같은 uid = 같은 주소, 다른 uid = 다른 주소', () => {
+    expect(addressOf('u0')).to.equal(addressOf('u0'));
+    expect(addressOf('u0')).to.not.equal(addressOf('u1'));
+    expect(ethers.isAddress(addressOf('u0'))).to.equal(true);
+  });
+
+  it('이름이 같은 두 사용자(u1·u11 = 둘 다 "진우")는 서로 다른 지갑', () => {
+    expect(addressOf('u1')).to.not.equal(addressOf('u11'));
+  });
+
+  it('표시 이름·공백 등 uid 형식이 아니면 에러 (이름으로 지갑을 만드는 실수 방지)', () => {
+    for (const bad of ['진주', 'u 1', '', 'u1\n', 'x'.repeat(65)]) {
+      expect(() => addressOf(bad), JSON.stringify(bad)).to.throw(/uid여야 해요/);
+    }
+    expect(() => addressOf('진주')).to.throw(/받은 값: "진주"/);
   });
 });

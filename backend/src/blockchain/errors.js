@@ -25,4 +25,15 @@ class BlockchainError extends Error {
   }
 }
 
-module.exports = { ESCROW_RECIPIENT, InsufficientBalanceError, BlockchainError };
+// 멤버 식별자(uid) 형식 — UI가 붙이는 'u0', 'u1' 같은 고정 번호. 표시 이름('진주')은 동명이인이 있어 지갑 키로 쓰면 안 된다.
+// 한글·공백이 들어오면 즉시 실패시켜 "이름으로 지갑을 만드는 실수"를 막는다. (MOCK 모드에서도 같은 검사를 쓴다)
+const UID_PATTERN = /^[A-Za-z0-9._@-]{1,64}$/;
+
+function assertUid(uid) {
+  if (typeof uid !== 'string' || !UID_PATTERN.test(uid)) {
+    throw new BlockchainError(`멤버 식별자는 uid여야 해요 (받은 값: ${JSON.stringify(uid)}). 표시 이름이 아니라 UI의 uid를 넘겨 주세요.`, 'INVALID_MEMBER_UID', 400);
+  }
+  return uid;
+}
+
+module.exports = { ESCROW_RECIPIENT, InsufficientBalanceError, BlockchainError, UID_PATTERN, assertUid };

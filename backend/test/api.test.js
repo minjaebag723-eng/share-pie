@@ -7,7 +7,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const http = require('http');
 
-const FOUR = ['진주', '진우', '민재', '지현'];
+const FOUR = ['u0', 'u1', 'u2', 'u3']; // uid — /settlement/approve는 MOCK 포함 uid만 허용
 const SERVED_MODELS = ['qwen3-32b', 'deepseek-v4.1-flash'];
 const kilnRequests = [];
 let nextReplies = [];
@@ -60,8 +60,8 @@ async function post(path, body, raw = false) {
 test('POST /settlement/analyze: Kiln 스펙대로 호출 + 토큰 로그 + UI 모양 응답', async () => {
   nextReplies = [JSON.stringify({
     needsClarification: false, clarificationQuestion: null, mode: 'ADJUST', itemName: '삼겹살', total: 35900,
-    participants: 'all', ratios: null, adjustments: { 진주: -5000 }, items: null,
-    members: FOUR, totalBudget: null, payer: '진주',
+    participants: 'all', ratios: null, adjustments: { u0: -5000 }, items: null,
+    members: FOUR, totalBudget: null, payer: 'u0',
   })];
   const r = await post('/settlement/analyze', { text: '삼겹살 35,900원, 진주는 5천원 적게 내고 나머지 세 명이 나눠줘. 진주가 결제했어.', previousState: { members: FOUR } });
   assert.equal(r.status, 200);
@@ -83,7 +83,7 @@ test('POST /settlement/analyze: Kiln 스펙대로 호출 + 토큰 로그 + UI �
 });
 
 test('POST /settlement/explain → /settlement/approve: 인증서가 UI 모양 그대로', async () => {
-  const settlement = { members: FOUR, mode: 'ADJUST', itemName: '삼겹살', total: 35900, adjustments: { 진주: -5000 }, totalBudget: null, payer: '진주' };
+  const settlement = { members: FOUR, mode: 'ADJUST', itemName: '삼겹살', total: 35900, adjustments: { u0: -5000 }, totalBudget: null, payer: 'u0' };
   const calc = await post('/settlement/calculate', settlement);
   assert.equal(calc.status, 200);
 
@@ -101,23 +101,28 @@ test('POST /settlement/explain → /settlement/approve: 인증서가 UI 모양 �
   const { cert, group, onchain } = ok.body;
   assert.deepEqual(Object.keys(cert), ['id', 'kind', 'title', 'date', 'rows', 'hash', 'block', 'rule']);
   assert.equal(cert.kind, 'cert');
-  assert.deepEqual(cert.rows, [['진주', 5225], ['진우', 10225], ['민재', 10225], ['지현', 10225]]);
+  assert.deepEqual(cert.rows, [['u0', 5225], ['u1', 10225], ['u2', 10225], ['u3', 10225]]); // rows는 uid 기준 — UI가 이름으로 표시
   assert.match(cert.hash, /^0x[0-9a-f]{64}$/);
   assert.match(cert.block, /^#[\d,]+$/);
   assert.match(cert.date, /^\d{4}\.\d{2}\.\d{2} \d{2}:\d{2}$/);
-  assert.equal(cert.rule, '진주 5,000원 감면 후 4인 분담');
+  assert.equal(cert.rule, 'u0 5,000원 감면 후 4인 분담'); // TODO(uid 전환): 이름 표시는 analyze/approve 입력을 uid+이름으로 바꾼 뒤
   assert.deepEqual(group, { members: FOUR, shares: [5225, 10225, 10225, 10225], approvals: [true, true, true, true], status: '정산 완료', cert: cert.id });
   assert.equal(onchain.mock, true);
-  assert.equal(onchain.locks.length, 3); // payer(진주) 제외
+  assert.equal(onchain.locks.length, 3); // payer(u0) 제외
+  assert.deepEqual(onchain.locks.map((l) => l.from), ['u1', 'u2', 'u3']); // locks[].from은 uid 그대로
 });
 
 test('POST /settlement/approve: UI 정산 폼 방식(members/shares 직접) + 형식 검증', async () => {
-  const ok = await post('/settlement/approve', { settlementId: 'g9', title: '브런치', approvals: [true, true, true], members: ['진주', '서연', '하린'], shares: [28000, 28000, 28000], payer: '진주', rule: '3인 균등 분담' });
+  const ok = await post('/settlement/approve', { settlementId: 'g9', title: '브런치', approvals: [true, true, true], members: ['u0', 'u4', 'u6'], shares: [28000, 28000, 28000], payer: 'u0', rule: '3인 균등 분담' });
   assert.equal(ok.status, 200);
-  assert.deepEqual(ok.body.cert.rows, [['진주', 28000], ['서연', 28000], ['하린', 28000]]);
+  assert.deepEqual(ok.body.cert.rows, [['u0', 28000], ['u4', 28000], ['u6', 28000]]);
   assert.equal(ok.body.cert.rule, '3인 균등 분담');
-  const bad = await post('/settlement/approve', { settlementId: 'g9', title: '브런치', approvals: [true, true], members: ['진주', '서연'], shares: [100.5, 3], payer: '진주' });
+  const bad = await post('/settlement/approve', { settlementId: 'g9', title: '브런치', approvals: [true, true], members: ['u0', 'u4'], shares: [100.5, 3], payer: 'u0' });
   assert.equal(bad.status, 400);
+  // 표시 이름을 멤버로 넘기면 MOCK에서도 거부 (동명이인 지갑 충돌 방지)
+  const named = await post('/settlement/approve', { settlementId: 'g9', title: '브런치', approvals: [true, true], members: ['진주', '서연'], shares: [1000, 1000], payer: null });
+  assert.equal(named.status, 400);
+  assert.equal(named.body.error.code, 'INVALID_MEMBER_UID');
 });
 
 test('GET /: UI 화면을 보여주고, .env 같은 다른 파일은 절대 노출하지 않음', async () => {
@@ -139,7 +144,7 @@ test('POST /settlement/approve: payer 없음 = Pie 에스크로가 전원 분담
   assert.equal(escrow.body.onchain.recipient, 'SharePie 정산 에스크로');
   assert.equal(escrow.body.onchain.locks.length, 4); // 요청자 포함 전원 잠금
   assert.ok(escrow.body.onchain.locks.every((l) => l.to === 'SharePie 정산 에스크로' && l.amount === 10000));
-  const over = await post('/settlement/approve', { settlementId: 'g', title: 't', settlement: { ...base, payer: '진주', totalBudget: 30000 }, approvals: [true, true, true, true] });
+  const over = await post('/settlement/approve', { settlementId: 'g', title: 't', settlement: { ...base, payer: 'u0', totalBudget: 30000 }, approvals: [true, true, true, true] });
   assert.equal(over.status, 409);
   assert.equal(over.body.error.code, 'OVER_BUDGET');
 });

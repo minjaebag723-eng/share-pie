@@ -8,8 +8,9 @@
 // ⚠️ 테스트넷 전용. PieCoin은 실화폐 가치가 없다.
 //
 // /settlement/approve 에서 쓸 함수:
-//   recordSettlementOnchain({ settlementId, members, shares, payer })
-//   → { mock, recipient, viaEscrow, locks: [{ from, to, amount, txHash }], release: { txHash, block, ... } }
+//   recordSettlementOnchain({ settlementId, members, shares, payer })   ← members·payer는 uid('u0', 'u1', …)
+//   → { mock, recipient, viaEscrow, locks: [{ from, to, amount, txHash }], release: { txHash, block, ... } }  ← from·recipient도 uid
+//   표시 이름('진주')을 넘기면 MOCK/실제 체인 모두 INVALID_MEMBER_UID 에러 (동명이인 지갑 충돌 방지)
 //
 // (구) lockForSettlement / releaseToRecipient 는 MOCK 모드 호환용으로만 남겨 둔다.
 //
@@ -18,7 +19,7 @@
 // ============================================================================
 
 const crypto = require('crypto');
-const { InsufficientBalanceError, BlockchainError, ESCROW_RECIPIENT } = require('./errors');
+const { InsufficientBalanceError, BlockchainError, ESCROW_RECIPIENT, assertUid } = require('./errors'); // errors.js는 ethers 없이 동작
 
 function isConfigured() {
   const { BLOCKCHAIN_RPC_URL, CONTRACT_ADDRESS, DEPLOYER_PRIVATE_KEY } = process.env;
@@ -51,11 +52,16 @@ function mockTx(payload) {
 }
 
 function mockRecordSettlement({ settlementId, members, shares, payer = null }) {
+  if (!Array.isArray(members) || !Array.isArray(shares) || members.length !== shares.length) {
+    throw new BlockchainError('members와 shares 길이가 달라요.', 'INVALID_INPUT', 400);
+  }
+  members.forEach(assertUid); // 실제 체인 모드와 같은 uid 검사 (addressOf를 거치지 않으므로 여기서)
+  if (payer !== null) assertUid(payer);
   const recipient = payer || ESCROW_RECIPIENT;
   const locks = members
-    .map((name, i) => ({ name, amount: shares[i] }))
-    .filter((p) => p.name !== payer && p.amount > 0)
-    .map((p) => ({ from: p.name, to: recipient, amount: p.amount, txHash: mockTx({ fn: 'lock_for_settlement', settlementId, ...p }).txHash }));
+    .map((uid, i) => ({ uid, amount: shares[i] }))
+    .filter((p) => p.uid !== payer && p.amount > 0)
+    .map((p) => ({ from: p.uid, to: recipient, amount: p.amount, txHash: mockTx({ fn: 'lock_for_settlement', settlementId, ...p }).txHash }));
   return { mock: true, recipient, viaEscrow: !payer, locks, release: mockTx({ fn: 'release_to_recipient', settlementId, recipient }) };
 }
 
@@ -66,14 +72,14 @@ async function recordSettlementOnchain(args) {
   return client.recordSettlement(args);
 }
 
-async function chargeToken(name, amount) {
-  if (IS_MOCK) return { name, amount, ...mockTx({ fn: 'charge_token', name, amount }) };
-  return (await getOnchainClient()).chargeToken(name, amount);
+async function chargeToken(uid, amount) {
+  if (IS_MOCK) { assertUid(uid); return { uid, amount, ...mockTx({ fn: 'charge_token', uid, amount }) }; }
+  return (await getOnchainClient()).chargeToken(uid, amount);
 }
 
-async function getBalance(name) {
-  if (IS_MOCK) return null; // MOCK에는 잔액 개념이 없음
-  return (await getOnchainClient()).balanceOf(name);
+async function getBalance(uid) {
+  if (IS_MOCK) { assertUid(uid); return null; } // MOCK에는 잔액 개념이 없음
+  return (await getOnchainClient()).balanceOf(uid);
 }
 
 // (구) 참여자 한 명씩 부르는 방식 — 실제 체인에서는 open_settlement 없이 잠글 수 없으므로 MOCK에서만 동작

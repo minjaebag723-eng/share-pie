@@ -8,6 +8,8 @@ const { SETTLEMENT_ABI, PIECOIN_ABI } = require('./abi');
 const { addressOf } = require('./members');
 const { ESCROW_RECIPIENT, InsufficientBalanceError, BlockchainError } = require('./errors');
 
+// 멤버는 모두 uid('u0', 'u1', …)로 받는다 (addressOf가 형식을 검사). 표시 이름은 절대 지갑 키로 쓰지 않는다.
+
 const ALLOWED_CHAINS = { 11155111: 'sepolia', 31337: 'hardhat-local' };
 const TX_TIMEOUT_MS = 180_000;
 
@@ -29,8 +31,8 @@ async function createOnchainClient({ signer, contractAddress, merchantAddress = 
   const pieCoin = new ethers.Contract(await settlement.pieCoin(), PIECOIN_ABI, provider);
   const explorer = (hash) => (network === 'sepolia' ? `https://sepolia.etherscan.io/tx/${hash}` : null);
 
-  // 컨트랙트 revert → 우리 에러로 변환
-  function translate(err, nameOf = {}) {
+  // 컨트랙트 revert → 우리 에러로 변환 (uidOf: 주소 → uid)
+  function translate(err, uidOf = {}) {
     let parsed = err && err.revert ? err.revert : null;
     const data = err && (err.data || (err.info && err.info.error && err.info.error.data));
     if (!parsed && data) {
@@ -38,44 +40,46 @@ async function createOnchainClient({ signer, contractAddress, merchantAddress = 
     }
     if (parsed && parsed.name === 'InsufficientBalance') {
       const [addr, balance, required] = parsed.args;
-      return new InsufficientBalanceError(nameOf[ethers.getAddress(addr)] || addr, Number(required), Number(balance));
+      // 에러 메시지에는 uid가 들어간다 — UI가 uid → 이름으로 바꿔 표시한다
+      return new InsufficientBalanceError(uidOf[ethers.getAddress(addr)] || addr, Number(required), Number(balance));
     }
     if (parsed && parsed.name) return new BlockchainError(`컨트랙트가 거부했어요: ${parsed.name}(${parsed.args.map(String).join(', ')})`, 'CONTRACT_REVERTED', 409);
     return new BlockchainError(`블록체인 호출 실패: ${err.shortMessage || err.message}`);
   }
 
-  async function send(fnName, args, nameOf) {
+  async function send(fnName, args, uidOf) {
     try {
       const tx = await settlement[fnName](...args);
       return tx;
     } catch (err) {
-      throw translate(err, nameOf);
+      throw translate(err, uidOf);
     }
   }
 
-  async function waitFor(tx, nameOf) {
+  async function waitFor(tx, uidOf) {
     try {
       const receipt = await tx.wait(1, TX_TIMEOUT_MS);
       return receipt;
     } catch (err) {
-      throw translate(err, nameOf);
+      throw translate(err, uidOf);
     }
   }
 
-  async function balanceOf(name) {
-    return Number(await pieCoin.balanceOf(addressOf(name)));
+  async function balanceOf(uid) {
+    return Number(await pieCoin.balanceOf(addressOf(uid)));
   }
 
   // PieCoin 충전 (★ charge_token)
-  async function chargeToken(name, amount) {
+  async function chargeToken(uid, amount) {
     if (!Number.isSafeInteger(amount) || amount <= 0) throw new BlockchainError('충전 금액은 1 이상의 정수여야 해요.', 'INVALID_INPUT', 400);
-    const address = addressOf(name);
+    const address = addressOf(uid);
     const receipt = await waitFor(await send('charge_token', [address, amount]));
-    return { name, address, amount, txHash: receipt.hash, block: formatBlock(receipt.blockNumber), explorerUrl: explorer(receipt.hash) };
+    return { uid, address, amount, txHash: receipt.hash, block: formatBlock(receipt.blockNumber), explorerUrl: explorer(receipt.hash) };
   }
 
   // /settlement/approve 에서 부르는 본체: 정산 등록 → 전원 잠금 → 지급
-  // 반환: { mock:false, recipient, viaEscrow, locks:[{from,to,amount,txHash}], release:{...} } (CLAUDE.md 6-1)
+  // members·payer는 uid. 반환의 locks[].from / recipient 에도 uid가 들어간다.
+  // 반환: { mock:false, recipient, viaEscrow, locks:[{from,to,amount,txHash,fromAddress,block}], release:{...} } (CLAUDE.md 6-1)
   async function recordSettlement({ settlementId, members, shares, payer = null }) {
     if (!Array.isArray(members) || !Array.isArray(shares) || members.length !== shares.length) {
       throw new BlockchainError('members와 shares 길이가 달라요.', 'INVALID_INPUT', 400);
@@ -94,30 +98,30 @@ async function createOnchainClient({ signer, contractAddress, merchantAddress = 
 
     // payer는 이미 결제했으므로 잠그지 않는다. 0원 멤버도 제외.
     const participants = members
-      .map((name, i) => ({ name, address: addressOf(name), amount: shares[i] }))
-      .filter((p) => p.name !== payer && p.amount > 0);
+      .map((uid, i) => ({ uid, address: addressOf(uid), amount: shares[i] }))
+      .filter((p) => p.uid !== payer && p.amount > 0);
     if (!participants.length) throw new BlockchainError('잠글 분담금이 없어요.', 'INVALID_INPUT', 400);
-    const nameOf = Object.fromEntries(participants.map((p) => [p.address, p.name]));
+    const uidOf = Object.fromEntries(participants.map((p) => [p.address, p.uid]));
 
     // 1) 잔액 선확인 — 한 명이라도 부족하면 트랜잭션을 하나도 보내지 않는다 (부분 잠금 방지)
     for (const p of participants) {
       const bal = Number(await pieCoin.balanceOf(p.address));
-      if (bal < p.amount) throw new InsufficientBalanceError(p.name, p.amount, bal);
+      if (bal < p.amount) throw new InsufficientBalanceError(p.uid, p.amount, bal);
     }
 
     // 같은 그룹을 여러 번 승인해도 충돌하지 않도록 매번 새 온체인 id
     const onchainId = ethers.keccak256(ethers.toUtf8Bytes(`${settlementId}:${Date.now()}:${Math.random()}`));
 
     // 2) 정산 등록
-    const openReceipt = await waitFor(await send('open_settlement', [onchainId, participants.map((p) => p.address), participants.map((p) => p.amount)], nameOf), nameOf);
+    const openReceipt = await waitFor(await send('open_settlement', [onchainId, participants.map((p) => p.address), participants.map((p) => p.amount)], uidOf), uidOf);
 
     // 3) 잠금 — 트랜잭션을 연달아 보낸 뒤 한꺼번에 확정을 기다린다 (Sepolia 블록 대기 시간 절약)
     const sent = [];
-    for (const p of participants) sent.push({ p, tx: await send('lock_for_settlement', [onchainId, p.address, p.amount], nameOf) });
-    const lockReceipts = await Promise.all(sent.map(({ tx }) => waitFor(tx, nameOf)));
+    for (const p of participants) sent.push({ p, tx: await send('lock_for_settlement', [onchainId, p.address, p.amount], uidOf) });
+    const lockReceipts = await Promise.all(sent.map(({ tx }) => waitFor(tx, uidOf)));
 
     // 4) 지급 — 컨트랙트가 "전원 잠금 완료"가 아니면 거부
-    const releaseReceipt = await waitFor(await send('release_to_recipient', [onchainId, recipientAddress], nameOf), nameOf);
+    const releaseReceipt = await waitFor(await send('release_to_recipient', [onchainId, recipientAddress], uidOf), uidOf);
 
     return {
       mock: false,
@@ -130,7 +134,7 @@ async function createOnchainClient({ signer, contractAddress, merchantAddress = 
       viaEscrow,
       open: { txHash: openReceipt.hash, block: formatBlock(openReceipt.blockNumber) },
       locks: sent.map(({ p }, i) => ({
-        from: p.name,
+        from: p.uid,
         to: recipient,
         amount: p.amount,
         txHash: lockReceipts[i].hash,
