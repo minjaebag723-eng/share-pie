@@ -192,7 +192,7 @@ PATCHES = [
         '    def send_gas(self, to: str, eth: float) -> dict[str, Any] | None:\n        return None\n\n'
         '    def mock_transfer(self, frm: str, to: str, amount: int) -> dict[str, Any]:')]),
 
-    ("agent/chain.py", "가스 자동 지급 (실제 체인 send_gas)", "def send_gas(self, to: str, eth: float) -> dict[str, Any] | None:\n        with self._send_lock", [(
+    ("agent/chain.py", "가스 자동 지급 (실제 체인 send_gas)", ("count", "def send_gas(", 2), [(
         '        return self._send(self.token.functions.chargeToken(self._cs(to), self._units(amount)))\n',
         '        return self._send(self.token.functions.chargeToken(self._cs(to), self._units(amount)))\n' + SEND_GAS_FN)]),
 
@@ -261,7 +261,7 @@ PATCHES = [
         'SERPAPI_API_BASE = _get("SERPAPI_API_BASE", "https://serpapi.com").rstrip("/")\n'
         'SERPAPI_SHOP_ENGINES = [e.strip() for e in (_get("SERPAPI_SHOP_ENGINES", "naver,google_shopping") or "").split(",") if e.strip()]  # 네이버(관련도 높음) → 구글 쇼핑(기프티콘 등 보조)\n')]),
 
-    ("agent/websearch.py", "SERPAPI 지원 (serper 소스 대체)", "def _serpapi_shop(", [
+    ("agent/websearch.py", "SERPAPI 지원 (serper 소스 대체)", ["def _serpapi_shop(", "def _serpapi("], [
         ('            "serper": bool(config.SERPER_API_KEY),\n',
          '            "serper": bool(config.SERPAPI_API_KEY or config.SERPER_API_KEY),   # [blockchain 담당] SerpApi 키가 있으면 SerpApi 로\n'),
         ('def serper_shop(query: str, n: int = 20) -> list[dict[str, Any]]:\n'
@@ -298,7 +298,11 @@ def apply_patches(target: Path) -> list[tuple[str, str, str]]:
             results.append((rel, name, "파일 없음 → 수동 확인"))
             continue
         s = f.read_text(encoding="utf-8")
-        if any(m in s for m in (marker if isinstance(marker, (list, tuple)) else [marker])):
+        if isinstance(marker, tuple) and len(marker) == 3 and marker[0] == "count":
+            applied = s.count(marker[1]) >= marker[2]
+        else:
+            applied = any(m in s for m in (marker if isinstance(marker, (list, tuple)) else [marker]))
+        if applied:
             results.append((rel, name, "이미 적용"))
             continue
         ok = True
@@ -332,6 +336,9 @@ def copy_files(src: Path, dst: Path) -> list[str]:
         if not s.exists():
             out.append(f"{item}: 원본 없음")
             continue
+        if item == "run-public.cmd" and d.exists():
+            out.append(f"{item}: 대상에 이미 있음 → 유지")
+            continue
         if s.is_dir():
             shutil.copytree(s, d, dirs_exist_ok=True,
                             ignore=shutil.ignore_patterns("node_modules", "cache", "artifacts", "__pycache__", "members-*.json"))
@@ -360,8 +367,13 @@ def read_env(p: Path) -> dict[str, str]:
 
 def write_env(target: Path, values: dict[str, str]) -> list[str]:
     f = target / ".env"
-    s = f.read_text(encoding="utf-8") if f.exists() else ""
     out = []
+    if not f.exists():
+        src_env = HERE / ".env"
+        if src_env.exists():
+            shutil.copy2(src_env, f)
+            out.append(".env 없음 → 원본 .env 전체 복사 (Kiln·검색·SMTP 키 포함)")
+    s = f.read_text(encoding="utf-8") if f.exists() else ""
     for k in ENV_KEYS:
         v = values.get(k)
         if v is None:
