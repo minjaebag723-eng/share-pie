@@ -120,7 +120,7 @@ input::placeholder{color:#A8927F}
 <sc-if value="{{ isHome }}">
 <div data-screen-label="03 Home" style="animation:spFade .35s ease both">
 <div style="display:flex;flex-direction:column;align-items:center;padding:18px 20px 0;min-height:560px">
-<img src="assets/pie-bot.png" alt="Pie 챗봇" style="width:200px;height:200px;object-fit:cover;mix-blend-mode:multiply;animation:spBob 3.4s ease-in-out infinite">
+<img src="assets/pie-bot.png" alt="Pie 챗봇" style="width:200px;height:200px;object-fit:cover;mix-blend-mode:darken;filter:brightness(1.025);animation:spBob 3.4s ease-in-out infinite">
 <span style="font-size:14px;color:#7A6353;margin-top:2px">안녕하세요, {{ firstName }}님</span>
 <span style="font-weight:800;font-size:24px;letter-spacing:-0.03em;text-align:center;line-height:1.35;margin-top:6px;text-wrap:balance">무엇을 함께 사고, 나눠볼까요?</span>
 <div style="width:100%;margin-top:24px;display:flex;align-items:center;gap:8px;background:#FFFCF6;border:1.5px solid #F1C9A8;border-radius:28px;padding:6px 6px 6px 18px;box-shadow:0 6px 20px rgba(238,106,38,.10)">
@@ -136,7 +136,7 @@ input::placeholder{color:#A8927F}
 <div style="display:flex;flex-direction:column;gap:10px">
 <sc-for list="{{ visibleChats }}" as="c" hint-placeholder-count="3">
 <button onClick="{{ c.open }}" style="text-align:left;border:1px solid #EEE1CB;background:#FFFCF6;border-radius:var(--radius-card);padding:16px;display:flex;gap:12px;cursor:pointer;font-family:inherit;color:inherit" style-hover="border-color:#F1C9A8">
-<div style="width:40px;height:40px;flex:none;border-radius:var(--radius-sm);background:#FDEBC8;overflow:hidden"><img src="assets/pie-bot.png" alt="" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);mix-blend-mode:multiply"></div>
+<div style="width:40px;height:40px;flex:none;border-radius:var(--radius-sm);background:#FDEBC8;overflow:hidden"><img src="assets/pie-bot.png" alt="" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);mix-blend-mode:darken;filter:brightness(1.025)"></div>
 <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">
 <div style="display:flex;justify-content:space-between;gap:8px"><span style="font-weight:700;font-size:15px">{{ c.title }}</span><span style="font-size:12px;color:#A8927F;flex:none">{{ c.date }}</span></div>
 <span style="font-size:13px;line-height:1.5;color:#7A6353;text-wrap:pretty">{{ c.summary }}</span>
@@ -157,7 +157,7 @@ input::placeholder{color:#A8927F}
 <div data-screen-label="04 Group Buy" style="padding:4px 0 28px;animation:spFade .35s ease both">
 <div style="padding:0 20px">
 <div style="display:flex;align-items:center;gap:10px;background:#FFFCF6;border:1.5px solid #F1C9A8;border-radius:18px;padding:6px 6px 6px 12px">
-<div style="width:34px;height:34px;flex:none;border-radius:10px;background:#FDEBC8;overflow:hidden"><img src="assets/pie-bot.png" alt="" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);mix-blend-mode:multiply"></div>
+<div style="width:34px;height:34px;flex:none;border-radius:10px;background:#FDEBC8;overflow:hidden"><img src="assets/pie-bot.png" alt="" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);mix-blend-mode:darken;filter:brightness(1.025)"></div>
 <input value="{{ buyInput }}" onChange="{{ onBuyInput }}" onKeyDown="{{ onBuyKey }}" placeholder="어떤 상품을 찾고 계신가요?" style="flex:1;min-width:0;border:none;background:transparent;outline:none;font:500 15px Pretendard,sans-serif;color:#2E1D12;height:40px">
 <button onClick="{{ sendBuy }}" style="height:40px;padding:0 14px;border:none;border-radius:var(--radius-sm);background:#EE6A26;color:#fff;font:700 14px Pretendard,sans-serif;cursor:pointer">AI 검색</button>
 </div>
@@ -246,6 +246,7 @@ input::placeholder{color:#A8927F}
 <div style="display:flex;gap:8px">
 <button onClick="{{ g.toggle }}" style="flex:1;height:42px;border:1px solid #EEE1CB;border-radius:var(--radius-sm);background:transparent;font:700 14px Pretendard,sans-serif;color:#2E1D12;cursor:pointer" style-hover="background:#F7EEDD">{{ g.expandLabel }}</button>
 <button onClick="{{ g.chat }}" style="flex:1;height:42px;border:none;border-radius:var(--radius-sm);background:#2E1D12;font:700 14px Pretendard,sans-serif;color:#FBF4E6;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"></path></svg>채팅하기</button>
+<sc-if value="{{ g.canLeave }}"><button onClick="{{ g.leave }}" aria-label="채팅방 나가기" style="flex:none;height:42px;padding:0 14px;border:1px solid #F1C9B8;border-radius:var(--radius-sm);background:transparent;font:700 14px Pretendard,sans-serif;color:#B8401A;cursor:pointer;display:flex;align-items:center;gap:5px" style-hover="background:#FCEFE8"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M10 16l-4-4 4-4M6 12h10"></path></svg>나가기</button></sc-if>
 </div>
 </div>
 </sc-for>
@@ -325,13 +326,30 @@ input::placeholder{color:#A8927F}
 </sc-if>
 <sc-if value="{{ isMyInfo }}">
 <div style="display:flex;flex-direction:column;gap:14px">
-<div style="background:linear-gradient(135deg, #EE6A26 0%, #F5A24C 100%);border-radius:22px;padding:20px;color:#fff;display:flex;flex-direction:column;gap:14px">
+<div role="region" aria-label="Pie Pay 잔액과 AI 사용량(AI원) · 옆으로 넘겨 보기" style="display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:20px;scrollbar-width:none;margin:0 -20px;padding:0 20px">
+<div style="flex:0 0 calc(100% - 26px);scroll-snap-align:start;background:linear-gradient(135deg, #EE6A26 0%, #F5A24C 100%);border-radius:22px;padding:20px;color:#fff;display:flex;flex-direction:column;gap:14px">
 <span style="font-weight:700;font-size:15px">Pie Pay 잔액</span>
 <span style="font-weight:800;font-size:34px;letter-spacing:-0.03em">{{ balanceStr }}</span>
 <span style="font-size:13px;color:#FFF3E8">연결계좌 · 국민은행 ****1234</span>
 <div style="display:flex;gap:8px;margin-top:2px">
 <button onClick="{{ charge }}" style="flex:1;height:44px;border:none;border-radius:var(--radius-sm);background:#FFFCF6;color:#C9531A;font:700 14px Pretendard,sans-serif;cursor:pointer">충전하기</button>
 <button onClick="{{ sendMoney }}" style="flex:1;height:44px;border:1.5px solid rgba(255,255,255,.75);border-radius:var(--radius-sm);background:transparent;color:#fff;font:700 14px Pretendard,sans-serif;cursor:pointer">연결계좌 관리</button>
+</div>
+<button onClick="{{ openAiPay }}" style="height:40px;border:none;border-radius:var(--radius-sm);background:rgba(46,29,18,.22);color:#fff;font:700 13px Pretendard,sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">누적 AI 사용량으로 송금<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+</div>
+<div style="flex:0 0 calc(100% - 26px);scroll-snap-align:start;background:#2E1D12;color:#FBF4E6;border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:9px">
+<button onClick="{{ openAiTokens }}" aria-label="AI 토큰 세부내용 보기" style="border:none;background:transparent;padding:0;text-align:left;cursor:pointer;font-family:inherit;color:inherit;display:flex;flex-direction:column;gap:8px">
+<div style="width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px"><span style="font-size:13px;color:#D9C8AE;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">누적 AI 사용량 · {{ usagePeriod }}</span><span style="flex:none;font-size:11px;font-weight:700;padding:4px 8px;border-radius:8px;background:#4A3323;color:#FDEBC8">목업 추정치</span></div>
+<div style="display:flex;align-items:baseline;gap:6px"><span style="font-weight:800;font-size:32px;letter-spacing:-0.03em">{{ usageTotal }}</span><span style="font-size:15px;color:#D9C8AE">AI원</span></div>
+<span style="font-size:12px;color:#D9C8AE">{{ usageInOut }}</span>
+<div style="display:flex;flex-wrap:wrap;gap:8px;font-size:12px"><span style="padding:5px 9px;border-radius:8px;background:#4A3323;color:#FDEBC8">{{ usageCalls }}</span><span style="padding:5px 9px;border-radius:8px;background:#23402E;color:#CFEBD7">{{ usageSaved }}</span></div>
+</button>
+<div style="margin-top:auto;display:flex;align-items:center;gap:8px;border-top:1px solid #4A3323;padding-top:10px">
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:1px"><span style="font-size:11px;color:#D9C8AE">남은 사용료</span><span style="font-size:15px;font-weight:800;color:#F5A24C">{{ aiUnpaidStr }} AI원</span></div>
+
+<sc-if value="{{ aiAllPaid }}"><span style="font-size:12px;font-weight:700;color:#CFEBD7;flex:none">모두 냈어요</span></sc-if>
+<button onClick="{{ openAiTokens }}" aria-label="세부내용 보기" style="height:36px;padding:0 8px;border:none;background:transparent;color:#F5A24C;font:700 13px Pretendard,sans-serif;cursor:pointer;flex:none">세부 ›</button>
+</div>
 </div>
 </div>
 <div style="background:#FFFCF6;border:1px solid #EEE1CB;border-radius:20px;padding:6px 16px">
@@ -340,7 +358,7 @@ input::placeholder{color:#A8927F}
 <sc-if value="{{ hasMorePay }}"><button onClick="{{ loadMorePay }}" style="width:100%;height:44px;margin-top:6px;border:none;background:transparent;font:600 13px Pretendard,sans-serif;color:#C9531A;cursor:pointer">내역보기</button></sc-if>
 </div>
 <div style="background:#FFFCF6;border:1px solid #EEE1CB;border-radius:20px;overflow:hidden">
-<sc-for list="{{ myMenu }}" as="m" hint-placeholder-count="5"><button onClick="{{ m.go }}" style="width:100%;height:54px;border:none;border-top:1px solid #F4EBDC;background:transparent;display:flex;align-items:center;justify-content:space-between;padding:0 16px;font:600 15px Pretendard,sans-serif;color:{{ m.color }};cursor:pointer" style-hover="background:#F9F1E3">{{ m.label }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C4B09A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></button></sc-for>
+<sc-for list="{{ myMenu }}" as="m" hint-placeholder-count="5"><button onClick="{{ m.go }}" style="width:100%;height:54px;border:none;border-top:1px solid #F4EBDC;background:transparent;display:flex;align-items:center;justify-content:space-between;padding:0 16px;font:600 15px Pretendard,sans-serif;color:{{ m.color }};cursor:pointer" style-hover="background:#F9F1E3"><span style="flex:1;text-align:left">{{ m.label }}</span><sc-if value="{{ m.hasValue }}"><span style="font-size:13px;font-weight:600;color:#A8927F;margin-right:6px">{{ m.value }}</span></sc-if><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C4B09A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></button></sc-for>
 </div>
 </div>
 </sc-if>
@@ -375,7 +393,7 @@ input::placeholder{color:#A8927F}
 <sc-if value="{{ m.isUser }}"><div style="align-self:flex-end;max-width:80%;background:#EE6A26;color:#fff;padding:11px 14px;border-radius:18px 18px 4px 18px;font-size:15px;line-height:1.5;animation:spFade .25s ease both">{{ m.text }}</div></sc-if>
 <sc-if value="{{ m.isBot }}">
 <div style="display:flex;gap:8px;align-items:flex-start;animation:spFade .3s ease both">
-<div style="width:34px;height:34px;flex:none;border-radius:17px;background:#FDEBC8;overflow:hidden"><img src="assets/pie-bot.png" alt="" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);mix-blend-mode:multiply"></div>
+<div style="width:34px;height:34px;flex:none;border-radius:17px;background:#FDEBC8;overflow:hidden"><img src="assets/pie-bot.png" alt="" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);mix-blend-mode:darken;filter:brightness(1.025)"></div>
 <div style="flex:1;min-width:0;max-width:300px;display:flex;flex-direction:column;gap:8px">
 <div style="background:#FFFCF6;border:1px solid #EEE1CB;padding:11px 14px;border-radius:4px 18px 18px 18px;font-size:15px;line-height:1.55;text-wrap:pretty">{{ m.text }}</div>
 <sc-if value="{{ m.hasCompare }}">
@@ -412,7 +430,7 @@ input::placeholder{color:#A8927F}
 </div>
 </sc-if>
 </sc-for>
-<sc-if value="{{ typing }}"><div style="display:flex;gap:8px;align-items:center"><div style="width:34px;height:34px;border-radius:17px;background:#FDEBC8;overflow:hidden"><img src="assets/pie-bot.png" alt="" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);mix-blend-mode:multiply"></div><div style="background:#FFFCF6;border:1px solid #EEE1CB;border-radius:4px 18px 18px 18px;padding:14px 16px;display:flex;gap:5px"><span style="width:7px;height:7px;border-radius:4px;background:#EE6A26;animation:spDot 1.2s infinite"></span><span style="width:7px;height:7px;border-radius:4px;background:#EE6A26;animation:spDot 1.2s .2s infinite"></span><span style="width:7px;height:7px;border-radius:4px;background:#EE6A26;animation:spDot 1.2s .4s infinite"></span></div></div></sc-if>
+<sc-if value="{{ typing }}"><div style="display:flex;gap:8px;align-items:center"><div style="width:34px;height:34px;border-radius:17px;background:#FDEBC8;overflow:hidden"><img src="assets/pie-bot.png" alt="" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);mix-blend-mode:darken;filter:brightness(1.025)"></div><div style="background:#FFFCF6;border:1px solid #EEE1CB;border-radius:4px 18px 18px 18px;padding:14px 16px;display:flex;gap:5px"><span style="width:7px;height:7px;border-radius:4px;background:#EE6A26;animation:spDot 1.2s infinite"></span><span style="width:7px;height:7px;border-radius:4px;background:#EE6A26;animation:spDot 1.2s .2s infinite"></span><span style="width:7px;height:7px;border-radius:4px;background:#EE6A26;animation:spDot 1.2s .4s infinite"></span></div></div></sc-if>
 </div>
 <div style="flex:none;padding:10px 12px 30px;border-top:1px solid #EEE1CB;background:#FFFCF6;display:flex;gap:8px;align-items:center">
 <input value="{{ chatInput }}" onChange="{{ onChatInput }}" onKeyDown="{{ onChatKey }}" placeholder="Pie에게 물어보세요" style="flex:1;min-width:0;height:44px;border:1.5px solid #EEE1CB;border-radius:22px;padding:0 16px;background:#FBF4E6;outline:none;font:500 15px Pretendard,sans-serif;color:#2E1D12" style-focus="border-color:#EE6A26">
@@ -436,12 +454,12 @@ input::placeholder{color:#A8927F}
 </div>
 <div ref="{{ gchatRef }}" style="flex:1;overflow-y:auto;padding:14px 16px 20px;display:flex;flex-direction:column;gap:10px">
 <sc-for list="{{ gcMsgs }}" as="m">
-<sc-if value="{{ m.isSys }}"><div style="align-self:center;max-width:90%;background:#FDEBC8;color:#6B4210;border-radius:14px;padding:9px 14px;font-size:13px;line-height:1.5;text-align:center;display:flex;gap:8px;align-items:center;animation:spFade .25s ease both"><img src="assets/pie-bot.png" alt="" style="width:22px;height:22px;object-fit:cover;transform:scale(1.5);mix-blend-mode:multiply;flex:none">{{ m.text }}</div></sc-if>
+<sc-if value="{{ m.isSys }}"><div style="align-self:center;max-width:90%;background:#FDEBC8;color:#6B4210;border-radius:14px;padding:9px 14px;font-size:13px;line-height:1.5;text-align:center;display:flex;gap:8px;align-items:center;animation:spFade .25s ease both"><img src="assets/pie-bot.png" alt="" style="width:22px;height:22px;object-fit:cover;transform:scale(1.5);mix-blend-mode:darken;filter:brightness(1.025);flex:none">{{ m.text }}</div></sc-if>
 <sc-if value="{{ m.isMe }}"><div style="align-self:flex-end;max-width:78%;background:#EE6A26;color:#fff;padding:10px 14px;border-radius:18px 18px 4px 18px;font-size:15px;line-height:1.5;animation:spFade .25s ease both">{{ m.text }}</div></sc-if>
 <sc-if value="{{ m.isOther }}"><div style="display:flex;gap:8px;align-items:flex-start;animation:spFade .25s ease both"><div style="width:32px;height:32px;flex:none;border-radius:16px;background:{{ m.bg }};display:grid;place-items:center;font-size:10px;font-weight:700;color:#5E3A22">{{ m.fromShort }}</div><div style="display:flex;flex-direction:column;gap:3px;max-width:75%"><span style="font-size:12px;color:#7A6353">{{ m.fromName }}</span><div style="background:#FFFCF6;border:1px solid #EEE1CB;padding:10px 14px;border-radius:4px 18px 18px 18px;font-size:15px;line-height:1.5">{{ m.text }}</div></div></div></sc-if>
 <sc-if value="{{ m.isGuide }}">
 <div style="align-self:center;width:92%;background:#FFFCF6;border:1.5px solid #F1C9A8;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;animation:spFade .25s ease both">
-<div style="display:flex;align-items:center;gap:8px"><img src="assets/pie-bot.png" alt="" style="width:22px;height:22px;object-fit:cover;transform:scale(1.5);mix-blend-mode:multiply;flex:none"><span style="font-weight:800;font-size:13px;color:#5E3A12">Pie mate</span></div>
+<div style="display:flex;align-items:center;gap:8px"><span style="width:26px;height:26px;flex:none;border-radius:13px;background:#FDEBC8;overflow:hidden;display:block"><img src="assets/pie-bot.png" alt="" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);mix-blend-mode:darken;filter:brightness(1.025);display:block"></span><span style="font-weight:800;font-size:13px;color:#5E3A12">Pie mate</span></div>
 <span style="font-size:13px;line-height:1.55;color:#5E4A3B">정산 조건을 아래 항목에 맞춰 편하게 말씀해 주세요.</span>
 <div style="display:flex;flex-direction:column;gap:4px;font-size:13px;color:#5E4A3B">
 <span>· 분배 항목 — 무엇에 대한 비용인가요? (예: 삼겹살, 숙소비)</span>
@@ -470,7 +488,7 @@ input::placeholder{color:#A8927F}
 </sc-if>
 <sc-if value="{{ m.isConfirm }}">
 <div style="align-self:center;width:92%;background:#FFFCF6;border:1.5px solid #F1C9A8;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;animation:spFade .25s ease both">
-<div style="display:flex;align-items:center;gap:8px"><img src="assets/pie-bot.png" alt="" style="width:22px;height:22px;object-fit:cover;transform:scale(1.5);mix-blend-mode:multiply;flex:none"><span style="font-weight:800;font-size:13px;color:#5E3A12">Pie가 이렇게 이해했어요</span></div>
+<div style="display:flex;align-items:center;gap:8px"><span style="width:26px;height:26px;flex:none;border-radius:13px;background:#FDEBC8;overflow:hidden;display:block"><img src="assets/pie-bot.png" alt="" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);mix-blend-mode:darken;filter:brightness(1.025);display:block"></span><span style="font-weight:800;font-size:13px;color:#5E3A12">Pie가 이렇게 이해했어요</span></div>
 <div style="display:flex;flex-direction:column;gap:5px;font-size:13px;color:#5E4A3B">
 <div style="display:flex;justify-content:space-between"><span style="color:#7A6353">항목</span><span style="font-weight:700">{{ m.confirmItemName }}</span></div>
 <div style="display:flex;justify-content:space-between"><span style="color:#7A6353">총 금액</span><span style="font-weight:700">{{ m.confirmTotal }}</span></div>
@@ -493,6 +511,54 @@ input::placeholder{color:#A8927F}
 <div style="flex:none;padding:10px 12px 30px;border-top:1px solid #EEE1CB;background:#FFFCF6;display:flex;gap:8px;align-items:center">
 <input value="{{ gchatInput }}" onChange="{{ onGchatInput }}" onKeyDown="{{ onGchatKey }}" placeholder="예: 총 12만원 똑같이 나눠줘" style="flex:1;min-width:0;height:44px;border:1.5px solid #EEE1CB;border-radius:22px;padding:0 16px;background:#FBF4E6;outline:none;font:500 15px Pretendard,sans-serif;color:#2E1D12" style-focus="border-color:#EE6A26">
 <button onClick="{{ sendGchat }}" style="width:44px;height:44px;flex:none;border:none;border-radius:22px;background:#EE6A26;color:#fff;display:grid;place-items:center;cursor:pointer" aria-label="보내기"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"></path></svg></button>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isUsage }}">
+<div data-screen-label="13 AI Token Details" style="position:absolute;inset:0;z-index:20;background:#FBF4E6;padding-top:47px;display:flex;flex-direction:column;animation:spSlide .3s cubic-bezier(.2,.8,.2,1) both">
+<div style="height:56px;flex:none;display:flex;align-items:center;gap:4px;padding:0 12px 0 6px">
+<button onClick="{{ closeOverlay }}" style="width:40px;height:40px;border:none;background:transparent;border-radius:20px;display:grid;place-items:center;cursor:pointer;color:#2E1D12" aria-label="닫기"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></button>
+<span style="flex:1;font-weight:800;font-size:17px">AI 토큰 세부내용</span>
+<button onClick="{{ downloadUsage }}" style="height:34px;padding:0 12px;border:1px solid #EEE1CB;border-radius:10px;background:#FFFCF6;font:700 12px Pretendard,sans-serif;color:#5E4A3B;cursor:pointer;display:flex;align-items:center;gap:5px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>CSV</button>
+</div>
+<div style="flex:1;overflow-y:auto;padding:4px 20px 24px;display:flex;flex-direction:column;gap:14px">
+<div style="background:#2E1D12;color:#FBF4E6;border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;color:#D9C8AE">누적 AI 사용량 · {{ usagePeriod }}</span><span style="font-size:11px;font-weight:700;padding:4px 8px;border-radius:8px;background:#4A3323;color:#FDEBC8">목업 추정치</span></div>
+<div style="display:flex;align-items:baseline;gap:6px"><span style="font-weight:800;font-size:32px;letter-spacing:-0.03em">{{ usageTotal }}</span><span style="font-size:15px;color:#D9C8AE">AI원</span></div>
+<span style="font-size:12px;color:#D9C8AE">{{ usageInOut }}</span>
+<div style="display:flex;flex-wrap:wrap;gap:8px;font-size:12px"><span style="padding:5px 9px;border-radius:8px;background:#4A3323;color:#FDEBC8">{{ usageCalls }}</span><span style="padding:5px 9px;border-radius:8px;background:#23402E;color:#CFEBD7">{{ usageSaved }}</span></div>
+<div style="display:flex;align-items:center;gap:8px;border-top:1px solid #4A3323;padding-top:10px;margin-top:2px">
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:1px"><span style="font-size:11px;color:#D9C8AE">남은 사용료 · 낸 금액 {{ aiPaidStr }} AI원</span><span style="font-size:15px;font-weight:800;color:#F5A24C">{{ aiUnpaidStr }} AI원</span></div>
+
+<sc-if value="{{ aiAllPaid }}"><span style="font-size:12px;font-weight:700;color:#CFEBD7;flex:none">모두 냈어요</span></sc-if>
+</div>
+</div>
+<div style="background:#FFFCF6;border:1px solid #EEE1CB;border-radius:20px;padding:14px 16px;display:flex;flex-direction:column;gap:12px">
+<span style="font-weight:800;font-size:16px">단계별 사용량</span>
+<sc-for list="{{ usageStages }}" as="us"><div style="display:flex;flex-direction:column;gap:5px">
+<div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:14px;font-weight:700">{{ us.label }}</span><span style="flex:1;font-size:11px;color:#A8927F;font-family:ui-monospace,Menlo,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ us.tag }}</span><span style="font-size:12px;color:#7A6353">{{ us.callsStr }}</span><span style="font-size:14px;font-weight:800;color:{{ us.tokColor }}">{{ us.tokStr }}</span></div>
+<sc-if value="{{ us.notCode }}"><div style="height:6px;border-radius:3px;background:#F1E6D3;overflow:hidden"><div style="height:100%;width:{{ us.width }};background:#EE6A26;border-radius:3px"></div></div></sc-if>
+<sc-if value="{{ us.isCode }}"><span style="font-size:11px;font-weight:700;color:#2F6B45">{{ us.step }} · 금액 계산은 AI를 부르지 않아요</span></sc-if>
+</div></sc-for>
+</div>
+<div style="display:flex;gap:8px"><sc-for list="{{ usageChips }}" as="uc"><button onClick="{{ uc.go }}" style="height:34px;padding:0 13px;border:1px solid {{ uc.border }};border-radius:17px;background:{{ uc.bg }};font:700 13px Pretendard,sans-serif;color:{{ uc.fg }};cursor:pointer">{{ uc.label }}</button></sc-for></div>
+<sc-if value="{{ usageEmpty }}"><span style="text-align:center;padding:30px 0;font-size:14px;color:#A8927F">기록이 없어요</span></sc-if>
+<sc-for list="{{ usageDays }}" as="ud"><div style="display:flex;flex-direction:column;gap:6px">
+<span style="font-size:13px;font-weight:700;color:#7A6353;padding:0 2px">{{ ud.label }}</span>
+<div style="background:#FFFCF6;border:1px solid #EEE1CB;border-radius:18px;overflow:hidden">
+<sc-for list="{{ ud.items }}" as="ui"><div style="border-top:1px solid #F4EBDC">
+<button onClick="{{ ui.toggle }}" style="width:100%;border:none;background:transparent;display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;font-family:inherit;text-align:left;color:#2E1D12">
+<span style="width:36px;height:36px;flex:none;border-radius:18px;background:{{ ui.iconBg }};color:{{ ui.iconFg }};display:grid;place-items:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ui.icon }}"></path></svg></span>
+<span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:700">{{ ui.title }}</span><span style="font-size:12px;color:#7A6353;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ ui.sub }}</span></span>
+<span style="flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:3px"><span style="font-size:14px;font-weight:800;color:{{ ui.tokColor }}">{{ ui.tokStr }}</span><span style="font-size:11px;font-weight:600;color:#A8927F">{{ ui.tagLabel }}</span></span>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C4B09A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;{{ ui.chevron }}"><path d="M6 9l6 6 6-6"></path></svg>
+</button>
+<sc-if value="{{ ui.open }}"><div style="margin:0 14px 12px 62px;background:#FBF4E6;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:5px"><sc-for list="{{ ui.details }}" as="dt"><div style="display:flex;justify-content:space-between;gap:10px;font-size:12px"><span style="color:#7A6353;flex:none">{{ dt.k }}</span><span style="font-weight:600;text-align:right;word-break:break-all">{{ dt.v }}</span></div></sc-for></div></sc-if>
+</div></sc-for>
+</div>
+</div></sc-for>
+<div style="background:#FDEBC8;border-radius:14px;padding:12px 14px;font-size:12px;line-height:1.6;color:#5E3A12">1 AI원은 AI 토큰 1개예요. 남은 사용료는 Pie Pay에서 1 AI원 = 1원으로 송금할 수 있어요. 지금 숫자는 화면 확인용 추정치이고, 실제 연동 뒤에는 AI(Kiln API) 응답에 담긴 토큰 수가 그대로 기록돼요. 금액 계산과 결제·승인·환불·충전은 AI를 쓰지 않아서 0 AI원이에요.</div>
 </div>
 </div>
 </sc-if>
@@ -712,6 +778,26 @@ input::placeholder{color:#A8927F}
 </div>
 </sc-if>
 
+<sc-if value="{{ isAiPaySheet }}">
+<div style="display:flex;flex-direction:column;gap:14px">
+<span style="font-weight:800;font-size:21px">누적 AI 사용량으로 송금</span>
+<div style="display:grid;grid-template-columns:1fr 26px 1fr;gap:4px;align-items:center">
+<div style="background:linear-gradient(135deg, #EE6A26 0%, #F5A24C 100%);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:3px;color:#fff"><span style="font-size:11px;font-weight:700;opacity:.9">보내는 곳</span><span style="font-size:13px;font-weight:700">Pie Pay 잔액</span><span style="font-size:16px;font-weight:800">{{ balanceWon }}</span></div>
+<span style="display:grid;place-items:center;color:#C9531A" aria-label="에서 으로"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+<div style="background:#2E1D12;border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:3px"><span style="font-size:11px;font-weight:700;color:#D9C8AE">받는 곳</span><span style="font-size:13px;font-weight:700;color:#FBF4E6">누적 AI 사용량</span><span style="font-size:16px;font-weight:800;color:#F5A24C">{{ aiUnpaidStr }} AI원 남음</span></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<span style="font-size:13px;font-weight:600;color:#7A6353">보낼 금액</span>
+<div style="height:52px;display:flex;align-items:center;gap:6px;border:1.5px solid {{ aiPayBorder }};border-radius:14px;padding:0 14px;background:#FBF4E6"><input value="{{ aiPayAmountFmt }}" onChange="{{ onAiPayAmount }}" onKeyDown="{{ onAiPayKey }}" inputmode="numeric" aria-label="보낼 금액" placeholder="0" style="flex:1;min-width:0;border:none;background:transparent;outline:none;font:800 20px Pretendard,sans-serif;color:#2E1D12;text-align:right"><span style="font:700 15px Pretendard,sans-serif;color:#7A6353">원</span></div>
+<div style="display:flex;gap:6px"><sc-for list="{{ aiPayQuick }}" as="aq"><button onClick="{{ aq.go }}" style="height:32px;padding:0 12px;border:1px solid #EEE1CB;border-radius:16px;background:#FFFCF6;font:600 12px Pretendard,sans-serif;color:#5E4A3B;cursor:pointer">{{ aq.label }}</button></sc-for></div>
+<sc-if value="{{ hasAiPayErr }}"><span style="font-size:12px;color:#B8401A;padding:0 4px">{{ aiPayErr }}</span></sc-if>
+<sc-if value="{{ aiPayAfter }}"><span style="font-size:12px;color:#7A6353;padding:0 4px">{{ aiPayAfter }}</span></sc-if>
+</div>
+<div style="background:#FDEBC8;border-radius:14px;padding:12px 14px;font-size:13px;line-height:1.55;color:#5E3A12">보낸 금액만큼 Pie Pay 잔액에서 빠져나가 누적 AI 사용량의 남은 사용료를 채워요 (1원 = 1 AI원). 송금 기록은 파이페이 내역과 AI 토큰 세부내용에 함께 남고, 환불되지 않아요.</div>
+<button onClick="{{ confirmAiPay }}" style="height:54px;border:none;border-radius:var(--radius-btn);background:{{ aiPayBg }};color:#fff;font:700 17px Pretendard,sans-serif;cursor:pointer">송금하기</button>
+</div>
+</sc-if>
+
 <sc-if value="{{ isRefundSheet }}">
 <div style="display:flex;flex-direction:column;gap:14px">
 <span style="font-weight:800;font-size:21px">환불 요청</span>
@@ -907,6 +993,9 @@ class Component extends DCLogic {
     mySeg:'info',               // MY 탭 안의 '내 정보 | 친구' 전환
     refundPayId:null, refundReason:'', refundNote:'',
     roomInviteSel:[], roomInviteQ:'', roomNameDraft:'',
+    usage:this.seedUsage(),    // 사용량 명세서 (Pie Pay 내역과 분리)
+    usageFilter:'all', usageOpen:null,
+    aiPaid:0, aiPayAmount:'',  // Pie Pay에서 AI 사용료로 송금한 누적 금액 / 송금 창 입력값
     banner:null,               // 화면 위 채팅 미리보기 배너 {gid, from, groupName, text, action, myShareStr}
     userId:'jinju.pie', signupId:'', draftUserId:'',
     friendAddQ:'', friendAddErr:'', friendAddResult:null, friendAddFrom:null,
@@ -1227,7 +1316,8 @@ class Component extends DCLogic {
     setTimeout(()=>{
       const c = this.state.chats.find(x=>x.id===id); if(!c) return;
       const replies = this.reply(text, c.msgs);
-      this.setState(s=>({typing:false, chats:s.chats.map(x=>x.id===id?{...x,msgs:[...x.msgs,...replies],summary:this.summarize(replies,x)}:x)}));
+      const used = this.usageForReply(text, replies, c.title);
+      this.setState(s=>({typing:false, chats:s.chats.map(x=>x.id===id?{...x,msgs:[...x.msgs,...replies],summary:this.summarize(replies,x)}:x), usage:[...used, ...s.usage]}));
     }, 1100);
   }
   summarize(replies, c){ const r = replies[0]; if (c.summary!=='새 대화') return c.summary; return (r.text||'').slice(0,60) + ((r.text||'').length>60?'…':''); }
@@ -1268,10 +1358,12 @@ class Component extends DCLogic {
     const t = this.state.gchatInput.trim(); if (!t) return; const id = this.state.gchatId;
     this.setState(s=>({gchatInput:'', groups:s.groups.map(g=>g.id===id?{...g,lastAt:Date.now(),msgs:[...g.msgs,{id:this.nid('m'), from:this.ME, text:t}]}:g)}));
     setTimeout(()=>{
-      this.setState(s=>({groups:s.groups.map(g=>{
+      this.setState(s=>{ let used=null; const groups=s.groups.map(g=>{
         if (g.id!==id) return g;
         // Stage 1(AI 해석) — 여기서는 이해만 하고, 실제 금액 계산은 절대 하지 않는다.
         const parsed = this.parseSettlementText(t, g.members);
+        const modeKo = {EQUAL:'균등',RATIO:'비율',ADJUST:'차등',ITEM:'항목별',ASK:'누구인지 되묻기'}[parsed.mode]||parsed.mode;
+        used = this.aiUse('settlement.analyze', t, parsed.mode==='ASK' ? parsed.question : JSON.stringify({...parsed, raw:undefined}), {where:'group', title:'정산 조건 해석', ctx:g.name, note:`해석 결과: ${modeKo}`});
         if (parsed.mode==='ASK') return {...g, msgs:[...g.msgs,{id:this.nid('m'), from:'sys', text:parsed.question}]};
         const itemsTotal = parsed.mode==='ITEM' ? (parsed.items||[]).reduce((a,it)=>a+it.price,0) : parsed.total;
         if (!itemsTotal || itemsTotal<=0) {
@@ -1282,7 +1374,7 @@ class Component extends DCLogic {
         }
         // 계산 전 확인 카드만 띄운다 — 실제 계산(Stage2)은 사용자가 확인을 눌러야 실행된다.
         return {...g, msgs:[...g.msgs,{id:this.nid('m'), from:'sys', kind:'confirm', confirmData:{...parsed, total:itemsTotal}, resolved:false}]};
-      })}));
+      }); return used ? {groups, usage:[used, ...s.usage]} : {groups}; });
     }, 900);
   };
   // 사용자가 확인 카드에서 "확인·정산 시작"을 눌렀을 때 — 여기서만 실제 계산(Stage2, 코드 전용)이 실행된다.
@@ -1304,7 +1396,10 @@ class Component extends DCLogic {
       // participants가 members의 부분집합일 수 있으므로, 빠진 멤버는 0원으로 채운다 (방어적 처리)
       const shares = g.members.map(m => { const r = results.find(x=>x.name===m); return r ? r.amount : 0; });
       const approvals = g.members.map(m => m===this.ME);
+      const explainText = `정산을 시작했어요 · 총 ${this.won(total)}. 멤버들에게 승인 요청을 보냈어요.`;
       return {
+        usage: [this.aiUse('settlement.explain', '', explainText, {where:'group', title:'정산 결과 설명', ctx:g.name}),
+                this.calcUse({where:'group', title:'분담금 계산', ctx:g.name, note:`코드로 계산 · Kiln 호출 없음 (0 tokens) · ${cd.participants.length}명 · 합계 ${this.won(total)} 검증`}), ...s.usage],
         groups: s.groups.map(x=>x.id===groupId ? {
           ...x, shares, approvals, status:'승인 대기',
           msgs: x.msgs.map(m=>m.id===msgId?{...m,resolved:true,accepted:true}:m)
@@ -1335,7 +1430,7 @@ p.joined += 1; this.setState(s=>({joinedIds:[...(s.joinedIds||[]), pid]})); cons
     try { const results = this.calcEqual(members, total); shares = members.map(m => results.find(r=>r.name===m).amount); }
     catch (err) { this.showToast(err.message || '정산 계산 중 문제가 생겼어요'); return; }
     const g = {id,name:p.name+' 공동구매',members,shares,approvals:[true,false,false,false],status:'승인 대기',unread:0,lastAt:Date.now(),msgs:[{from:'sys',text:`${p.name} 공동구매에서 정산방이 만들어졌어요 · 총 ${this.won(total)}`},{from:'sys',text:'분담 조건을 채팅으로 알려주면 Pie가 다시 계산해요. 지금은 4명 균등 분담이에요.'}]};
-    this.setState(s=>({groups:[g,...s.groups], sheet:null, overlay:null, tab:'group', openGroup:id}));
+    this.setState(s=>({groups:[g,...s.groups], sheet:null, overlay:null, tab:'group', openGroup:id, usage:[this.calcUse({where:'group', title:'공동구매 균등 분담 계산', ctx:g.name}), ...s.usage]}));
     this.showToast('공동구매 참여 완료 · 정산방이 만들어졌어요');
   };
   openCreate = (name, split) => this.setState({sheet:'create', newGroupName:name||'', newMembers: split? split.map(r=>r[0]).filter(x=>x!==this.ME) : ['u1','u2','u3'], prefill: split||null, friendSearchQ:''});
@@ -1466,7 +1561,8 @@ p.joined += 1; this.setState(s=>({joinedIds:[...(s.joinedIds||[]), pid]})); cons
       this.setState(x => ({ groups:x.groups.map(y => y.id===gid ? {...y, lastAt:Date.now(), msgs:[...y.msgs, {id:this.nid('m'), from:'sys', text:`잔액 부족으로 승인(분담금 잠금)이 거부됐어요. Pie Pay를 충전한 뒤 다시 승인해 주세요. (필요 ${this.won(myShare)}, 잔액 ${this.won(x.balance)})`}]} : y) }));
       return this.showToast('잔액이 부족해서 승인하지 못했어요');
     }
-    this.setState(x => ({ groups:x.groups.map(y => {
+    this.setState(x => ({ usage:[this.noAi('money', {where:'money', title:'승인 · 분담금 잠금', ctx:g.name, amount:0, note:`내 몫 ${this.won(myShare)} 잠금 (lock_for_settlement)`}), ...x.usage],
+      groups:x.groups.map(y => {
       if (y.id!==gid) return y;
       const approvals = y.approvals.map((a,j)=>j===i?true:a), all = this.payerIdx(y).every(j=>approvals[j]);
       return {...y, approvals, lastAt:Date.now(),
@@ -1524,6 +1620,100 @@ p.joined += 1; this.setState(s=>({joinedIds:[...(s.joinedIds||[]), pid]})); cons
     this.showToast(g.muted ? '이 방 알림을 켰어요' : '이 방 알림을 껐어요 · 승인 요청은 계속 알려드려요');
   };
   leaveFromMenu = () => { const gid=this.state.gchatId; this.setState({ sheet:null }); this.leaveGroup(gid); };
+
+  // ============================================================
+  // 사용량 명세서 — Pie Pay(돈)와 분리된, AI 사용 기록
+  // AI가 쓰이는 순간마다 1건씩 남긴다. 단계 태그는 CLAUDE.md의 Kiln 호출 태그를 그대로 쓴다(정산 코어 먼저).
+  // 금액 계산(settlement.calculate)과 돈이 오가는 일(결제·승인·환불·충전)은 AI를 부르지 않으므로 0토큰으로 남긴다.
+  // ⚠️ TEMP: 토큰 수는 목업 추정치다. 실제로는 Kiln API 응답의 usage.prompt_tokens / completion_tokens / cost를 그대로 기록한다.
+  //   추정 방식: 한글 1글자 ≈ 1토큰, 그 밖의 글자 3.5자 ≈ 1토큰 + 단계별 고정 프롬프트(시스템 지시문·JSON 스키마·예시).
+  // ============================================================
+  // getter로 둔다: state(사용 내역 초기값)가 이 표보다 먼저 만들어지기 때문 — 클래스 필드는 위에서부터 차례로 초기화된다.
+  get STAGES(){ return this._stages || (this._stages = {
+    'settlement.analyze':  {label:'정산 조건 해석', step:'Stage 1 · AI', base:420},
+    'settlement.calculate':{label:'금액 계산', step:'Stage 2 · 코드 전용', base:0},
+    'settlement.explain':  {label:'결과 설명', step:'Stage 3 · AI', base:260},
+    'dispute.investigate': {label:'분쟁 조사', step:'Dispute · AI', base:900},
+    'shopping.search':     {label:'공동구매 비교', step:'Shopping · AI', base:520},
+    'money':               {label:'결제·정산', step:'AI 미사용 · 블록체인', base:0},
+  }); }
+  estTok(t){ const x=String(t||''), ko=(x.match(/[가-힣]/g)||[]).length; return Math.max(1, Math.ceil(ko + (x.length-ko)/3.5)); }
+  aiUse(stage, input, output, meta){ const b=(this.STAGES[stage]||{}).base||0;
+    return {id:this.nid('u'), at:(meta&&meta.at)||Date.now(), ai:true, stage, inTok:b+this.estTok(input), outTok:this.estTok(output), ...meta}; }
+  noAi(stage, meta){ return {id:this.nid('u'), at:(meta&&meta.at)||Date.now(), ai:false, stage, inTok:0, outTok:0, ...meta}; }
+  calcUse(meta){ return this.noAi('settlement.calculate', {note:'코드로 계산 · Kiln 호출 없음 (0 tokens)', ...meta}); }
+  // 이미 있는 대화·정산 기록에 맞춘 지난 사용 내역 (데모용)
+  seedUsage(){
+    const T=(d,h,m)=>new Date(2026,8,d,h,m).getTime();
+    return [
+      this.noAi('money', {at:T(21,19,42), where:'money', title:'정산 결제 확정', ctx:'삼겹살 공동구매', amount:-35900, note:'분담금 잠금 → 지급 · Web3 인증서 발급'}),
+      this.aiUse('settlement.explain', '', '삼겹살 공동구매 총 35,900원을 계산했어요. 진주님은 5,000원 적게, 나머지 세 명은 동일하게 부담해요.', {at:T(21,19,35), where:'chat', title:'정산 결과 설명', ctx:'삼겹살 공동구매 정산'}),
+      this.calcUse({at:T(21,19,35), where:'chat', title:'분담금 계산', ctx:'삼겹살 공동구매 정산'}),
+      this.aiUse('settlement.analyze', '진주는 주문하는 사람이니까 5천원 적게 내고 나머지 세 명이 나눠줘.', '{"mode":"ADJUST","total":35900,"adjustments":{"u0":-5000},"participants":["u0","u1","u2","u3"]}', {at:T(21,19,35), where:'chat', title:'정산 조건 해석', ctx:'삼겹살 공동구매 정산'}),
+      this.aiUse('shopping.search', '학교 친구들이랑 자취방에서 먹을 고기 사고 싶은데 4명이고 한 명당 만 원 정도였으면 좋겠어.', '상품 고기 · 인원 4명 · 1인 약 10,000원 조건으로 공동구매 3개를 비교했어요. '+this.PRODUCT_EXPLAIN, {at:T(21,19,20), where:'chat', title:'공동구매 비교', ctx:'자취방 고기 공동구매 비교'}),
+      this.noAi('money', {at:T(14,13,10), where:'money', title:'정산 송금', ctx:'성수 브런치 모임', amount:-28000, note:'분담금 지급 · Web3 인증서 발급'}),
+      this.aiUse('shopping.search', '4명이고 3만원 정도.', '좋아요. 4명이 나눠 먹기 좋고 총비용 3만원 내외의 공동구매를 비교해볼게요.', {at:T(12,19,6), where:'chat', title:'공동구매 비교', ctx:'과일 공동구매 찾기'}),
+      this.aiUse('shopping.search', '친구들이랑 과일 좀 싸게 사고 싶어.', '몇 명이 함께 구매하시나요? 그리고 전체 예산은 어느 정도인가요?', {at:T(12,19,5), where:'chat', title:'조건 되묻기', ctx:'과일 공동구매 찾기', note:'인원·예산이 없어 추측하지 않고 되물음'}),
+    ];
+  }
+  // Pie 대화 한 번에 쓰인 AI 단계를 답변 종류로 판단해 기록한다.
+  usageForReply(t, replies, ctx){
+    const r0 = replies[0] || {}, out = replies.map(r=>r.text||'').join(' ');
+    if (r0.split) return [
+      this.aiUse('settlement.explain', '', r0.text, {where:'chat', title:'정산 결과 설명', ctx}),
+      this.calcUse({where:'chat', title:'분담금 계산', ctx}),
+      this.aiUse('settlement.analyze', t, JSON.stringify({split:r0.split}), {where:'chat', title:'정산 조건 해석', ctx}),
+    ];
+    if (r0.verdict) return [this.aiUse('dispute.investigate', t+' [조사 데이터: 최초 요청·Stage1/2/3 로그·승인·결제·온체인 기록]', r0.verdict+' '+r0.verdictReason, {where:'chat', title:'분쟁 조사', ctx, note:`판정 ${r0.verdict}`})];
+    if (r0.compare || /몇 명이 함께 구매/.test(r0.text||'')) return [this.aiUse('shopping.search', t, out, {where:'chat', title: r0.compare?'공동구매 비교':'조건 되묻기', ctx, note: r0.compare?'':'인원·예산이 없어 추측하지 않고 되물음'})];
+    return [this.aiUse('settlement.analyze', t, out, {where:'chat', title:'요청 의도 파악', ctx})];
+  }
+  // ============================================================
+  // AI원: AI 사용량을 돈처럼 보여주는 단위. 1 AI원 = AI 토큰 1개, Pie Pay에서 1원으로 낸다.
+  // 남은 사용료 = 누적 사용량 − 지금까지 송금한 금액.
+  // ⚠️ TEMP: 환산 비율(1토큰=1원)은 화면 확인용 가정이다. 실제로는 Kiln 응답의 usage.cost를 기준으로 정한다.
+  // ============================================================
+  AI_WON_PER_TOKEN = 1;
+  aiTotalWon(s){ return s.usage.filter(u=>u.ai).reduce((a,u)=>a+u.inTok+u.outTok,0) * this.AI_WON_PER_TOKEN; }
+  aiUnpaid(s){ return Math.max(0, this.aiTotalWon(s) - (s.aiPaid||0)); }
+  openAiPay = () => {
+    const due = this.aiUnpaid(this.state);
+    if (due <= 0) return this.showToast('낼 AI 사용료가 없어요');
+    this.setState({ sheet:'aiPay', aiPayAmount:String(Math.min(due, this.state.balance)) });
+  };
+  aiPayError(s){
+    const a = Number(String(s.aiPayAmount||'').replace(/[^0-9]/g,'')), due = this.aiUnpaid(s);
+    if (!a) return '송금할 금액을 입력해 주세요';
+    if (a > due) return `남은 사용료(${due.toLocaleString('ko-KR')} AI원)보다 많이 보낼 수 없어요`;
+    if (a > s.balance) return 'Pie Pay 잔액이 부족해요';
+    return '';
+  }
+  confirmAiPay = () => {
+    const s = this.state, err = this.aiPayError(s);
+    if (err) return this.showToast(err);
+    const a = Number(String(s.aiPayAmount).replace(/[^0-9]/g,''));
+    // Pie Pay 잔액에서 빠지고, 파이페이 내역과 AI 토큰 세부내용 양쪽에 기록된다. (환불 대상 아님)
+    this.setState(x => ({ balance:x.balance - a, aiPaid:(x.aiPaid||0) + a, sheet:null, aiPayAmount:'',
+      pay:[{id:this.nid('pay'), d:this.today(), t:'누적 AI 사용량으로 송금', s:'Pie Pay → 누적 AI 사용량', a:-a, kind:'ai'}, ...x.pay],
+      usage:[this.noAi('money', {where:'money', title:'Pie Pay에서 송금받음', ctx:'Pie Pay → 누적 AI 사용량', amount:-a, note:`${a.toLocaleString('ko-KR')} AI원 납부`}), ...x.usage] }));
+    this.showToast(`Pie Pay에서 누적 AI 사용량으로 ${a.toLocaleString('ko-KR')}원을 송금했어요`);
+  };
+
+  // 명세서 CSV 내려받기 (제출용 증빙). 엑셀에서 한글이 깨지지 않도록 BOM을 붙인다.
+  downloadUsageCsv = () => {
+    const rows = [['일시','구분','단계 태그','단계','내용','맥락','입력(AI원·토큰)','출력(AI원·토큰)','합계(AI원·토큰)','금액(원)','비고']];
+    const p2 = n=>String(n).padStart(2,'0');
+    [...this.state.usage].sort((a,b)=>b.at-a.at).forEach(u => { const d=new Date(u.at), st=this.STAGES[u.stage]||{};
+      rows.push([`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())} ${p2(d.getHours())}:${p2(d.getMinutes())}`, u.ai?'AI 사용':'AI 미사용', u.stage, st.label||'', u.title||'', u.ctx||'', u.inTok, u.outTok, u.inTok+u.outTok, u.amount==null?'':u.amount, u.note||'']); });
+    const csv = '﻿' + rows.map(r => r.map(v => { const x=String(v); return /[",\n]/.test(x) ? '"'+x.replace(/"/g,'""')+'"' : x; }).join(',')).join('\n');
+    try {
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8'}), url = URL.createObjectURL(blob), a = document.createElement('a');
+      const t = new Date(); a.href = url; a.download = `share_pie_ai_tokens_${t.getFullYear()}${p2(t.getMonth()+1)}${p2(t.getDate())}.csv`;
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url), 1000);
+      this.showToast('AI 토큰 세부내용을 내려받았어요');
+    } catch (e) { this.showToast('이 환경에서는 내려받기를 할 수 없어요'); }
+    return csv;
+  };
 
   receiveGroupInvite(inv){
     this.setState(s => ({ invites:[...s.invites, inv],
@@ -1589,6 +1779,7 @@ p.joined += 1; this.setState(s=>({joinedIds:[...(s.joinedIds||[]), pid]})); cons
     if (s.refundReason==='기타' && note.length < 2) return this.showToast('기타 사유를 2자 이상 적어 주세요');
     const amount = -p.a, reason = s.refundReason==='기타' ? `기타(${note})` : s.refundReason;
     this.setState(x => ({
+      usage: [this.noAi('money', {where:'money', title:'환불', ctx:p.t, amount, note:`사유: ${reason}`}), ...x.usage],
       balance: x.balance + amount,
       pay: [{id:this.nid('pay'), d:this.today(), t:`${p.t} 환불`, s:`사유: ${reason}`, a:amount, kind:'refund', groupId:p.groupId},
             ...x.pay.map(e => e.id===p.id ? {...e, refunded:true} : e)],
@@ -1655,6 +1846,7 @@ p.joined += 1; this.setState(s=>({joinedIds:[...(s.joinedIds||[]), pid]})); cons
         const total = prefill.reduce((a,r)=>a+r[1],0);
         const same = members.length===prefill.length && members.every(m=>prefill.some(r=>r[0]===m));
         const results = same ? prefill.map(([uid,amount])=>({name:uid,amount})) : this.calcEqual(members, total);
+        if (!same) this._createCalc = true;
         shares = members.map(m => results.find(r=>r.name===m).amount);
         status='승인 대기'; approvals = members.map((_,i)=>i===0);
         msgs = [{id:this.nid('m'), from:'sys', text:'Pie가 계산한 분담액으로 승인 요청을 보냈어요.'}];
@@ -1669,7 +1861,8 @@ p.joined += 1; this.setState(s=>({joinedIds:[...(s.joinedIds||[]), pid]})); cons
     }
 
     const g = {id, name:newGroupName.trim(), members, shares, approvals, status, msgs, unread:0, lastAt:Date.now()};
-    this.setState(s=>({groups:[g,...s.groups], sheet:null, overlay:null, tab:'group', openGroup:id, prefill:null, friendSearchQ:''}));
+    const recalc = this._createCalc; this._createCalc = false;
+    this.setState(s=>({groups:[g,...s.groups], sheet:null, overlay:null, tab:'group', openGroup:id, prefill:null, friendSearchQ:'', usage: recalc ? [this.calcUse({where:'group', title:'멤버 변경 후 재계산', ctx:g.name}), ...s.usage] : s.usage}));
     this.showToast('그룹을 만들었어요');
   };
 remind = (id) => {
@@ -1692,6 +1885,7 @@ remind = (id) => {
       // 이 if문을 lock_for_settlement 호출 결과(성공/거부)로 그대로 교체하면 된다.
       if (s.balance < myShare) {
         return {
+          usage: [this.noAi('money', {where:'money', title:'분담금 잠금 거부', ctx:g.name, amount:0, note:`잔액 부족 (필요 ${this.won(myShare)}) · lock_for_settlement 거부`}), ...s.usage],
           groups: s.groups.map(x=>x.id===id ? {...x, msgs:[...x.msgs,{from:'sys',text:`잔액 부족으로 잠금이 거부됐어요. Pie Pay를 충전한 뒤 다시 시도해 주세요. (필요 금액 ${this.won(myShare)}, 현재 잔액 ${this.won(s.balance)})`}]} : x),
         };
       }
@@ -1700,6 +1894,7 @@ remind = (id) => {
         docs: [cert, ...s.docs],
         notifs: [{cat:'인증서', text:`‘${g.name}’ 전원 승인 완료. 정산 인증서가 발급됐어요.`, time:'방금', read:false, go:['doc',docId]}, ...s.notifs],
         balance: s.balance - myShare,
+        usage: [this.noAi('money', {where:'money', title:'정산 결제 확정', ctx:g.name, amount:-myShare, note:'분담금 잠금 → 지급 · Web3 인증서 발급'}), ...s.usage],
         pay: [{id:this.nid('pay'), d:this.today(), t:`${g.name} 정산 결제`, s:'파이페이', a:-myShare, kind:'pay', groupId:id}, ...s.pay],
       };
     });
@@ -1717,6 +1912,46 @@ remind = (id) => {
   }
   logout = () => this.ask({title:'로그아웃할까요?',body:'다시 로그인하면 그룹과 정산 기록을 그대로 볼 수 있어요.',ok:'로그아웃',okBg:'#EE6A26',fn:()=>{this.setState({screen:'auth',authMode:'login',overlay:null,tab:'home'}); this.showToast('로그아웃했어요');}});
   withdraw = () => this.ask({title:'정말 탈퇴하시겠어요?',body:'파이페이 잔액과 진행 중인 정산을 먼저 정리해야 해요. 발급된 Web3 인증서 기록은 블록체인에 남아요.',ok:'탈퇴하기',okBg:'#B8401A',fn:()=>{this.setState({screen:'auth',authMode:'signup',overlay:null,tab:'home',email:'',name:''}); this.showToast('탈퇴가 완료됐어요');}});
+
+  // 사용량 명세서 화면에 필요한 값
+  usageView(s){
+    const won=this.won, p2=n=>String(n).padStart(2,'0');
+    const all=[...s.usage].sort((a,b)=>b.at-a.at), ai=all.filter(u=>u.ai), tokOf=u=>u.inTok+u.outTok;
+    const total=ai.reduce((a,u)=>a+tokOf(u),0);
+    const ORDER=['settlement.analyze','settlement.calculate','settlement.explain','dispute.investigate','shopping.search'];   // 정산 코어 먼저
+    const stat=ORDER.map(k=>{ const rows=all.filter(u=>u.stage===k), t=rows.reduce((a,u)=>a+tokOf(u),0); return {k, st:this.STAGES[k], calls:rows.length, t}; });
+    const max=Math.max(1,...stat.map(x=>x.t));
+    const dayKey=ts=>{ const d=new Date(ts); return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`; };
+    const dayLabel=ts=>{ const d=new Date(ts), n=new Date(), y=new Date(n.getFullYear(),n.getMonth(),n.getDate()-1);
+      if (d.toDateString()===n.toDateString()) return '오늘'; if (d.toDateString()===y.toDateString()) return '어제'; return `${d.getMonth()+1}월 ${d.getDate()}일`; };
+    const ICON={chat:'M4 5h16v11H9l-5 4z', group:'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21v-.5a7 7 0 0 1 14 0v.5M16 3.3a4 4 0 0 1 0 7.4', money:'M3 7h18v10H3zM3 11h18M7 15h3'};
+    const shown = s.usageFilter==='ai' ? ai : s.usageFilter==='noai' ? all.filter(u=>!u.ai) : all;
+    const days=[]; shown.forEach(u=>{ const k=dayKey(u.at); let d=days.find(x=>x.k===k); if(!d){ d={k, label:dayLabel(u.at), items:[]}; days.push(d); } d.items.push(u); });
+    const chip=(key,label,n)=>({label:`${label} ${n}`, bg:s.usageFilter===key?'#2E1D12':'#FFFCF6', fg:s.usageFilter===key?'#FBF4E6':'#5E4A3B', border:s.usageFilter===key?'#2E1D12':'#EEE1CB', go:()=>this.setState({usageFilter:key, usageOpen:null})});
+    return {
+      usageTotal: (total*this.AI_WON_PER_TOKEN).toLocaleString('ko-KR'),
+      usageInOut: `입력 ${ai.reduce((a,u)=>a+u.inTok,0).toLocaleString('ko-KR')} · 출력 ${ai.reduce((a,u)=>a+u.outTok,0).toLocaleString('ko-KR')}`,
+      usageCalls: `AI 호출 ${ai.length}회`,
+      usageSaved: `AI 없이 처리 ${all.length-ai.length}건 (계산 ${all.filter(u=>u.stage==='settlement.calculate').length} · 결제 ${all.filter(u=>u.stage==='money').length})`,
+      usagePeriod: all.length ? `${new Date(all[all.length-1].at).getMonth()+1}월 ${new Date(all[all.length-1].at).getDate()}일부터` : '',
+      usageStages: stat.map(x=>({label:x.st.label, step:x.st.step, tag:x.k, callsStr:`${x.calls}회`, tokStr: x.k==='settlement.calculate' ? '0 AI원' : `${x.t.toLocaleString('ko-KR')} AI원`,
+        width: x.k==='settlement.calculate' ? '0%' : Math.round(x.t/max*100)+'%', isCode:x.k==='settlement.calculate', notCode:x.k!=='settlement.calculate', tokColor:x.k==='settlement.calculate'?'#2F6B45':'#2E1D12'})),
+      usageChips: [chip('all','전체',all.length), chip('ai','AI 사용',ai.length), chip('noai','AI 미사용',all.length-ai.length)],
+      usageEmpty: shown.length===0,
+      usageDays: days.map(d=>({label:d.label, items:d.items.map(u=>{ const st=this.STAGES[u.stage]||{}, open=s.usageOpen===u.id, t=new Date(u.at);
+        return {title:u.title, sub:`${u.ctx||''} · ${p2(t.getHours())}:${p2(t.getMinutes())}`, icon:ICON[u.where]||ICON.chat,
+          iconBg:u.ai?'#FDEBC8':'#E1F0E4', iconFg:u.ai?'#C9531A':'#2F6B45',
+          tokStr: u.ai ? `${tokOf(u).toLocaleString('ko-KR')} AI원` : '0 AI원', tokColor:u.ai?'#2E1D12':'#2F6B45',
+          tagLabel: u.ai ? st.label : (u.stage==='settlement.calculate' ? '코드 계산' : 'AI 미사용'),
+          open, chevron: open ? 'transform:rotate(180deg)' : '', toggle:()=>this.setState({usageOpen: open?null:u.id}),
+          details:[['단계', `${st.label||u.stage} · ${st.step||''}`], ['단계 태그', u.stage], ['입력', `${u.inTok.toLocaleString('ko-KR')} AI원`], ['출력', `${u.outTok.toLocaleString('ko-KR')} AI원`], ['합계', `${tokOf(u).toLocaleString('ko-KR')} AI원`]]
+            .concat(u.amount!=null && u.amount!==0 ? [['금액', (u.amount>0?'+':'')+won(u.amount)]] : []).concat(u.note ? [['비고', u.note]] : []).map(([k,v])=>({k,v}))}; })})),
+      downloadUsage:()=>this.downloadUsageCsv(),
+      aiUnpaidStr: this.aiUnpaid(s).toLocaleString('ko-KR'), aiPaidStr: (s.aiPaid||0).toLocaleString('ko-KR'),
+      hasAiUnpaid: this.aiUnpaid(s) > 0, aiAllPaid: this.aiUnpaid(s) <= 0 && this.aiTotalWon(s) > 0,
+      openAiPay: this.openAiPay,
+    };
+  }
 
   renderVals(){
     const s = this.state, won = this.won;
@@ -1775,7 +2010,9 @@ remind = (id) => {
       if (m.from==='sys') return m.text;
       return (m.from===this.ME ? '나' : this.labelIn(m.from,g.members)) + ': ' + m.text;
     };
-    const groupList = [...s.groups].sort((a,b)=>(b.lastAt||0)-(a.lastAt||0)).map(g=>{
+    // 정렬: 최근 대화 순. 단, 정산이 끝난 방은 맨 아래로 (그 안에서도 최근 대화 순)
+    const done = g => g.status==='정산 완료' ? 1 : 0;
+    const groupList = [...s.groups].sort((a,b)=>(done(a)-done(b)) || ((b.lastAt||0)-(a.lastAt||0))).map(g=>{
       const myI = g.members.indexOf(this.ME), needMine = g.status==='승인 대기' && myI>=0 && !g.approvals[myI] && (g.shares[myI]||0)>0;
       const {ap, n} = this.approvalStats(g), total = g.shares.reduce((a,b)=>a+b,0), exp = s.openGroup===g.id;
       return {...g, meta:`${g.members.length}명 · ${total?won(total):'금액 입력 전'}`, pillBg:(pill[g.status]||pill['비용 입력 대기'])[0], pillFg:(pill[g.status]||pill['비용 입력 대기'])[1],
@@ -1790,6 +2027,7 @@ remind = (id) => {
         needMyApproval:needMine, approveLabel:needMine?`내 몫 ${won(g.shares[myI])} 승인하기`:'', approveMine:()=>this.approveMine(g.id),
         canRemind:g.status!=='비용 입력 대기' && ap<n, hasCert:!!g.cert || g.status==='정산 완료',
         toggle:()=>this.setState({openGroup:exp?null:g.id}), chat:()=>this.openGroupChat(g.id),
+        canLeave:g.status==='정산 완료', leave:()=>this.leaveGroup(g.id),
         remind:()=>this.remind(g.id), openCert:()=>g.cert?this.setState({overlay:'doc',docId:g.cert}):this.setState({tab:'settle'})};
     });
     const gcG = s.groups.find(g=>g.id===s.gchatId);
@@ -1903,12 +2141,21 @@ remind = (id) => {
       docList,
       initial:s.userName.slice(0,1), userName:s.userName, userEmail:s.userEmail, userAddress:s.userAddress, balanceStr:won(s.balance),
       hasHeaderAvatar:!!s.avatarUrl, noHeaderAvatar:!s.avatarUrl, headerAvatarUrl:s.avatarUrl||'',
-      charge:()=>{this.setState(x=>({balance:x.balance+50000, pay:[{d:this.today(),t:'파이페이 충전',s:'토스뱅크 ****2109',a:50000},...x.pay]})); this.showToast('50,000원을 충전했어요');},
+      charge:()=>{this.setState(x=>({balance:x.balance+50000, pay:[{d:this.today(),t:'파이페이 충전',s:'토스뱅크 ****2109',a:50000},...x.pay], usage:[this.noAi('money', {where:'money', title:'Pie Pay 충전', ctx:'토스뱅크 ****2109', amount:50000, note:'charge_token'}), ...x.usage]})); this.showToast('50,000원을 충전했어요');},
       sendMoney:()=>this.showToast('연결 계좌 관리 기능은 준비 중이에요'),
       payList:s.pay.slice(0, s.payVisibleCount).map(h=>({...h, amt:(h.a>0?'+':'')+won(h.a), color:h.a>0?'#2F6B45':'#2E1D12',
         canRefund:h.kind==='pay' && !h.refunded, isRefunded:h.kind==='pay' && !!h.refunded, onRefund:()=>this.openRefund(h.id)})),
       hasMorePay:s.pay.length>s.payVisibleCount, loadMorePay:()=>this.setState(x=>({payVisibleCount:x.payVisibleCount+5})),
-      myMenu:[['프로필 수정',()=>this.setState({sheet:'profile',draftName:s.userName,draftAvatar:s.avatarUrl,draftUserId:s.userId})],['친구 관리',()=>this.setState({mySeg:'friends'})],['개인정보 관리',()=>this.setState({sheet:'privacy'})],['다른 계정으로 로그인',()=>this.ask({title:'다른 계정으로 로그인할까요?',body:'현재 계정에서 로그아웃돼요.',ok:'계속',okBg:'#EE6A26',fn:()=>this.setState({screen:'auth',authMode:'login',email:''})})],['로그아웃',this.logout],['회원 탈퇴',this.withdraw]].map(([label,go])=>({label,go,color:label==='회원 탈퇴'?'#B8401A':'#2E1D12'})),
+      myMenu:[['AI 토큰 세부내용',()=>this.setState({overlay:'usage', usageOpen:null}), `${this.aiTotalWon(s).toLocaleString('ko-KR')} AI원`],['프로필 수정',()=>this.setState({sheet:'profile',draftName:s.userName,draftAvatar:s.avatarUrl,draftUserId:s.userId})],['친구 관리',()=>this.setState({mySeg:'friends'})],['개인정보 관리',()=>this.setState({sheet:'privacy'})],['다른 계정으로 로그인',()=>this.ask({title:'다른 계정으로 로그인할까요?',body:'현재 계정에서 로그아웃돼요.',ok:'계속',okBg:'#EE6A26',fn:()=>this.setState({screen:'auth',authMode:'login',email:''})})],['로그아웃',this.logout],['회원 탈퇴',this.withdraw]].map(([label,go,value])=>({label,go,value:value||'',hasValue:!!value,color:label==='회원 탈퇴'?'#B8401A':'#2E1D12'})),
+      isUsage:s.overlay==='usage', ...this.usageView(s),
+      isAiPaySheet:s.sheet==='aiPay', aiPayAmount:s.aiPayAmount, aiPayAmountFmt:s.aiPayAmount?Number(s.aiPayAmount).toLocaleString('ko-KR'):'', balanceWon:won(s.balance),
+      onAiPayAmount:e=>{ const d=e.target.value.replace(/[^0-9]/g,'').slice(0,9); this.setState({aiPayAmount:d}); },
+      onAiPayKey:e=>{ if(this.isEnter(e)) this.confirmAiPay(); },
+      aiPayQuick:[['남은 사용료 전부',()=>this.aiUnpaid(s)],['1,000',()=>1000],['5,000',()=>5000]].map(([label,v])=>({label, go:()=>this.setState({aiPayAmount:String(Math.min(v(), this.aiUnpaid(s)))})})),
+      aiPayErr:this.aiPayError(s), hasAiPayErr:!!s.aiPayAmount && !!this.aiPayError(s),
+      aiPayBg:this.aiPayError(s)?'#E3C4AE':'#EE6A26', aiPayBorder:(!!s.aiPayAmount && !!this.aiPayError(s))?'#F1B4A8':'#EEE1CB',
+      aiPayAfter: s.aiPayAmount && !this.aiPayError(s) ? `송금 후 Pie Pay 잔액 ${won(s.balance-Number(s.aiPayAmount))} · 남은 사용료 ${(this.aiUnpaid(s)-Number(s.aiPayAmount)).toLocaleString('ko-KR')} AI원` : '',
+      confirmAiPay:this.confirmAiPay, openAiTokens:()=>this.setState({overlay:'usage', usageOpen:null}),
       isChat:s.overlay==='chat', isGChat:s.overlay==='gchat', isDoc:s.overlay==='doc', closeOverlay:()=>this.setState({overlay:null}),
       chatTitle:chat?chat.title:'Pie', chatMsgs:chat?chat.msgs.map(mapMsg):[], typing:s.typing, chatRef:this.chatRef,
       chatInput:s.chatInput, onChatInput:e=>this.setState({chatInput:e.target.value}), onChatKey:e=>{if(this.isEnter(e))this.sendChat();}, sendChat:this.sendChat,
