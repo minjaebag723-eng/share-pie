@@ -8,7 +8,8 @@
 // ⚠️ 테스트넷 전용. PieCoin은 실화폐 가치가 없다.
 //
 // /settlement/approve 에서 쓸 함수:
-//   recordSettlementOnchain({ settlementId, members, shares, payer })   ← members·payer는 uid('u0', 'u1', …)
+//   recordSettlementOnchain({ settlementId, members, shares, payer, conditionsHash })   ← members·payer는 uid('u0', 'u1', …)
+//   conditionsHash = 승인 조건의 keccak256 (conditionsHash.js). 없으면 MOCK/실제 체인 모두 MISSING_CONDITIONS_HASH
 //   → { mock, recipient, viaEscrow, locks: [{ from, to, amount, txHash }], release: { txHash, block, ... } }  ← from·recipient도 uid
 //   표시 이름('진주')을 넘기면 MOCK/실제 체인 모두 INVALID_MEMBER_UID 에러 (동명이인 지갑 충돌 방지)
 //
@@ -20,6 +21,7 @@
 
 const crypto = require('crypto');
 const { InsufficientBalanceError, BlockchainError, ESCROW_RECIPIENT, assertUid } = require('./errors'); // errors.js는 ethers 없이 동작
+const { isConditionsHash } = require('./conditionsHash'); // @noble/hashes 사용, ethers 없음
 
 function isConfigured() {
   const { BLOCKCHAIN_RPC_URL, CONTRACT_ADDRESS, DEPLOYER_PRIVATE_KEY } = process.env;
@@ -51,9 +53,12 @@ function mockTx(payload) {
   return { txHash, block: '#' + mockBlock.toLocaleString('en-US'), mock: true };
 }
 
-function mockRecordSettlement({ settlementId, members, shares, payer = null }) {
+function mockRecordSettlement({ settlementId, members, shares, payer = null, conditionsHash }) {
   if (!Array.isArray(members) || !Array.isArray(shares) || members.length !== shares.length) {
     throw new BlockchainError('members와 shares 길이가 달라요.', 'INVALID_INPUT', 400);
+  }
+  if (!isConditionsHash(conditionsHash)) {
+    throw new BlockchainError('conditionsHash가 없어요. 승인 조건을 hashConditions()로 해시해서 넘겨 주세요.', 'MISSING_CONDITIONS_HASH', 400);
   }
   members.forEach(assertUid); // 실제 체인 모드와 같은 uid 검사 (addressOf를 거치지 않으므로 여기서)
   if (payer !== null) assertUid(payer);
@@ -62,7 +67,8 @@ function mockRecordSettlement({ settlementId, members, shares, payer = null }) {
     .map((uid, i) => ({ uid, amount: shares[i] }))
     .filter((p) => p.uid !== payer && p.amount > 0)
     .map((p) => ({ from: p.uid, to: recipient, amount: p.amount, txHash: mockTx({ fn: 'lock_for_settlement', settlementId, ...p }).txHash }));
-  return { mock: true, recipient, viaEscrow: !payer, locks, release: mockTx({ fn: 'release_to_recipient', settlementId, recipient }) };
+  const open = mockTx({ fn: 'open_settlement', settlementId, conditionsHash });
+  return { mock: true, recipient, viaEscrow: !payer, conditionsHash, open, locks, release: mockTx({ fn: 'release_to_recipient', settlementId, recipient }) };
 }
 
 // ── 공개 함수 ──────────────────────────────────────────────────────────────

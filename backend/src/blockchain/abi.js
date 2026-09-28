@@ -7,11 +7,13 @@ const SETTLEMENT_ABI = [
   'function owner() view returns (address)',
   'function pieCoin() view returns (address)',
   'function charge_token(address user, uint256 amount)',
-  'function open_settlement(bytes32 settlementId, address[] participants, uint256[] amounts)',
+  'function open_settlement(bytes32 settlementId, address[] participants, uint256[] amounts, bytes32 conditionsHash)',
   'function lock_for_settlement(bytes32 settlementId, address participant, uint256 amount)',
   'function release_to_recipient(bytes32 settlementId, address recipient)',
   'function getSettlement(bytes32 settlementId) view returns (tuple(bool opened, bool released, uint256 participantCount, uint256 lockedCount, uint256 totalExpected, uint256 totalLocked, address recipient))',
   'function isLocked(bytes32 settlementId, address participant) view returns (bool)',
+  'function conditionsHashOf(bytes32 settlementId) view returns (bytes32)',
+  'event SettlementOpened(bytes32 indexed settlementId, uint256 participantCount, uint256 totalExpected, bytes32 conditionsHash)',
   'error InsufficientBalance(address participant, uint256 balance, uint256 required)',
   'error SettlementAlreadyOpened(bytes32 settlementId)',
   'error SettlementNotOpened(bytes32 settlementId)',
@@ -21,6 +23,7 @@ const SETTLEMENT_ABI = [
   'error AlreadyLocked(address participant)',
   'error NotAllLocked(uint256 locked, uint256 required)',
   'error ZeroAddress()',
+  'error MissingConditionsHash()',
   'error OwnableUnauthorizedAccount(address account)',
 ];
 

@@ -16,6 +16,7 @@ require(path.join(BACKEND, 'node_modules', 'dotenv')).config({ path: path.join(B
 const { computeSettlement } = require(path.join(BACKEND, 'src', 'settlement', 'calculateSettlement'));
 const blockchain = require(path.join(BACKEND, 'src', 'blockchain', 'blockchainClient'));
 const { addressOf } = require(path.join(BACKEND, 'src', 'blockchain', 'members'));
+const { hashConditions, canonicalize } = require(path.join(BACKEND, 'src', 'blockchain', 'conditionsHash'));
 
 async function main() {
   if (blockchain.IS_MOCK) {
@@ -32,13 +33,18 @@ async function main() {
   const who = (uid) => ({ uid, name: NAME_OF[uid] || uid, address: addressOf(uid) });
 
   // 1) 정산 계산 — 정산 코어 Stage 2 (코드 전용, AI 토큰 0)
-  const calc = computeSettlement({
+  // conditions = 승인된 조건(계산 입력) 그대로. 이 객체를 해시해 open_settlement에 기록한다 (제3자 검증용)
+  const conditions = {
     members, mode: 'ADJUST', itemName: '삼겹살 1.2kg', total: 35900,
     participants: members, adjustments: { u0: -5000 }, ratios: null, items: null, totalBudget: 40000, payer: null,
-  });
+  };
+  const calc = computeSettlement(conditions);
+  const conditionsCanonical = canonicalize(conditions);
+  const conditionsHash = hashConditions(conditions);
+  log.conditions = conditions; log.conditionsCanonical = conditionsCanonical; log.conditionsHash = conditionsHash;
   step('1. 정산 계산 (settlement.calculate: AI 토큰 0, code-only)', {
     members: calc.members.map((uid, i) => ({ ...who(uid), share: calc.shares[i] })),
-    total: calc.total, withinBudget: calc.withinBudget, rule: calc.rule,
+    total: calc.total, withinBudget: calc.withinBudget, rule: calc.rule, conditionsHash,
   });
   if (!calc.withinBudget) throw new Error('예산 초과 — Run 1은 예산 내 정산이어야 해요.');
 
@@ -55,7 +61,8 @@ async function main() {
 
   // 3) 전원 승인 → 온체인 기록 (백엔드 /settlement/approve 와 같은 함수)
   console.log('\n… Sepolia에 정산 등록·잠금·지급 트랜잭션을 보내는 중 (약 1분)');
-  const onchain = await blockchain.recordSettlementOnchain({ settlementId: 'run1-demo', members: calc.members, shares: calc.shares, payer: calc.payer });
+  const onchain = await blockchain.recordSettlementOnchain({ settlementId: 'run1-demo', members: calc.members, shares: calc.shares, payer: calc.payer, conditionsHash });
+  log.openTxHash = onchain.open && onchain.open.txHash; log.settlementOnchainId = onchain.settlementOnchainId;
   step('3. 온체인 기록 (open → lock × N → release)', { ...onchain, locks: onchain.locks.map((l) => ({ ...l, fromName: NAME_OF[l.from] || l.from })) });
 
   // 4) 잔액 재확인 (전원 잠금 → 결제처로 지급됐는지)
@@ -71,7 +78,10 @@ async function main() {
   fs.writeFileSync(file, JSON.stringify(log, null, 2) + '\n');
 
   console.log('\n✅ Run 1 완료');
+  console.log(`   조건 해시(conditionsHash): ${conditionsHash}`);
+  console.log(`   등록(open) TxHash    : ${log.openTxHash}`);
   console.log(`   지급(release) TxHash : ${onchain.release.txHash}`);
+  console.log(`   제3자 검증: node scripts/verify-conditions.js <조건 JSON> ${log.settlementOnchainId}`);
   if (onchain.release.explorerUrl) console.log(`   Etherscan            : ${onchain.release.explorerUrl}`);
   console.log(`   로그 파일            : ${file}`);
 }

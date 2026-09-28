@@ -7,6 +7,7 @@ const { ethers } = require('ethers');
 const { SETTLEMENT_ABI, PIECOIN_ABI } = require('./abi');
 const { addressOf } = require('./members');
 const { ESCROW_RECIPIENT, InsufficientBalanceError, BlockchainError } = require('./errors');
+const { isConditionsHash } = require('./conditionsHash');
 
 // 멤버는 모두 uid('u0', 'u1', …)로 받는다 (addressOf가 형식을 검사). 표시 이름은 절대 지갑 키로 쓰지 않는다.
 
@@ -79,10 +80,14 @@ async function createOnchainClient({ signer, contractAddress, merchantAddress = 
 
   // /settlement/approve 에서 부르는 본체: 정산 등록 → 전원 잠금 → 지급
   // members·payer는 uid. 반환의 locks[].from / recipient 에도 uid가 들어간다.
-  // 반환: { mock:false, recipient, viaEscrow, locks:[{from,to,amount,txHash,fromAddress,block}], release:{...} } (CLAUDE.md 6-1)
-  async function recordSettlement({ settlementId, members, shares, payer = null }) {
+  // conditionsHash: 승인 조건의 keccak256 (conditionsHash.js) — open_settlement에 함께 기록. 없으면 트랜잭션을 보내기 전에 거부
+  // 반환: { mock:false, recipient, viaEscrow, conditionsHash, locks:[{from,to,amount,txHash,fromAddress,block}], release:{...} } (CLAUDE.md 6-1)
+  async function recordSettlement({ settlementId, members, shares, payer = null, conditionsHash }) {
     if (!Array.isArray(members) || !Array.isArray(shares) || members.length !== shares.length) {
       throw new BlockchainError('members와 shares 길이가 달라요.', 'INVALID_INPUT', 400);
+    }
+    if (!isConditionsHash(conditionsHash)) {
+      throw new BlockchainError('conditionsHash가 없어요. 승인 조건을 hashConditions()로 해시해서 넘겨 주세요.', 'MISSING_CONDITIONS_HASH', 400);
     }
     const viaEscrow = !payer;
     const recipient = payer || ESCROW_RECIPIENT;
@@ -113,7 +118,7 @@ async function createOnchainClient({ signer, contractAddress, merchantAddress = 
     const onchainId = ethers.keccak256(ethers.toUtf8Bytes(`${settlementId}:${Date.now()}:${Math.random()}`));
 
     // 2) 정산 등록
-    const openReceipt = await waitFor(await send('open_settlement', [onchainId, participants.map((p) => p.address), participants.map((p) => p.amount)], uidOf), uidOf);
+    const openReceipt = await waitFor(await send('open_settlement', [onchainId, participants.map((p) => p.address), participants.map((p) => p.amount), conditionsHash], uidOf), uidOf);
 
     // 3) 잠금 — 트랜잭션을 연달아 보낸 뒤 한꺼번에 확정을 기다린다 (Sepolia 블록 대기 시간 절약)
     const sent = [];
@@ -132,6 +137,7 @@ async function createOnchainClient({ signer, contractAddress, merchantAddress = 
       recipient,
       recipientAddress,
       viaEscrow,
+      conditionsHash,
       open: { txHash: openReceipt.hash, block: formatBlock(openReceipt.blockNumber) },
       locks: sent.map(({ p }, i) => ({
         from: p.uid,

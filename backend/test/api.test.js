@@ -99,7 +99,10 @@ test('POST /settlement/explain → /settlement/approve: 인증서가 UI 모양 �
   const ok = await post('/settlement/approve', { settlementId: 'g1', title: '삼겹살 공동구매', settlement, approvals: [true, true, true, true] });
   assert.equal(ok.status, 200);
   const { cert, group, onchain } = ok.body;
-  assert.deepEqual(Object.keys(cert), ['id', 'kind', 'title', 'date', 'rows', 'hash', 'block', 'rule']);
+  assert.deepEqual(Object.keys(cert), ['id', 'kind', 'title', 'date', 'rows', 'hash', 'block', 'rule', 'conditionsHash']);
+  assert.match(cert.conditionsHash, /^0x[0-9a-f]{64}$/);
+  assert.equal(onchain.conditionsHash, cert.conditionsHash);
+  assert.equal(typeof onchain.conditionsCanonical, 'string');
   assert.equal(cert.kind, 'cert');
   assert.deepEqual(cert.rows, [['u0', 5225], ['u1', 10225], ['u2', 10225], ['u3', 10225]]); // rows는 uid 기준 — UI가 이름으로 표시
   assert.match(cert.hash, /^0x[0-9a-f]{64}$/);

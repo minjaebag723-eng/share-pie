@@ -7,8 +7,11 @@ const BACKEND = path.join(__dirname, '..', '..', 'backend');
 process.env.NODE_ENV = 'test';
 const { createOnchainClient, InsufficientBalanceError } = require(path.join(BACKEND, 'src', 'blockchain', 'onchainClient'));
 const { addressOf } = require(path.join(BACKEND, 'src', 'blockchain', 'members'));
+const { hashConditions } = require(path.join(BACKEND, 'src', 'blockchain', 'conditionsHash'));
+const { verifyConditions } = require(path.join(__dirname, '..', 'scripts', 'verify-conditions'));
 
 const id = (s) => ethers.id(s);
+const COND = id('cond-1'); // 테스트용 조건 해시 (bytes32)
 
 async function deploy() {
   const [owner, alice, bob, carol, merchant, stranger] = await ethers.getSigners();
@@ -43,7 +46,7 @@ describe('SharePieSettlement ★ 함수', () => {
   it('lock_for_settlement: 잔액 부족이면 InsufficientBalance로 거부하고 한 푼도 움직이지 않음', async () => {
     const { settlement, pie, alice } = await deploy();
     await settlement.charge_token(alice.address, 4000);
-    await settlement.open_settlement(id('s1'), [alice.address], [5000]);
+    await settlement.open_settlement(id('s1'), [alice.address], [5000], COND);
     await expect(settlement.lock_for_settlement(id('s1'), alice.address, 5000))
       .to.be.revertedWithCustomError(settlement, 'InsufficientBalance').withArgs(alice.address, 4000, 5000);
     expect(await pie.balanceOf(alice.address)).to.equal(4000);
@@ -55,7 +58,7 @@ describe('SharePieSettlement ★ 함수', () => {
     const { settlement, alice, bob } = await deploy();
     await settlement.charge_token(alice.address, 50000);
     await expect(settlement.lock_for_settlement(id('none'), alice.address, 100)).to.be.revertedWithCustomError(settlement, 'SettlementNotOpened');
-    await settlement.open_settlement(id('s2'), [alice.address], [10000]);
+    await settlement.open_settlement(id('s2'), [alice.address], [10000], COND);
     await expect(settlement.lock_for_settlement(id('s2'), alice.address, 9999)).to.be.revertedWithCustomError(settlement, 'UnexpectedAmount');
     await expect(settlement.lock_for_settlement(id('s2'), bob.address, 10000)).to.be.revertedWithCustomError(settlement, 'UnexpectedAmount');
     await settlement.lock_for_settlement(id('s2'), alice.address, 10000);
@@ -65,7 +68,7 @@ describe('SharePieSettlement ★ 함수', () => {
   it('release_to_recipient: 전원 잠금 전에는 거부 → 전원 잠금 후 총액 지급, 두 번 지급 불가', async () => {
     const { settlement, pie, alice, bob, carol, merchant } = await deploy();
     for (const s of [alice, bob, carol]) await settlement.charge_token(s.address, 20000);
-    await settlement.open_settlement(id('s3'), [alice.address, bob.address, carol.address], [5225, 10225, 10225]);
+    await settlement.open_settlement(id('s3'), [alice.address, bob.address, carol.address], [5225, 10225, 10225], COND);
     await settlement.lock_for_settlement(id('s3'), alice.address, 5225);
     await settlement.lock_for_settlement(id('s3'), bob.address, 10225);
     await expect(settlement.release_to_recipient(id('s3'), merchant.address)).to.be.revertedWithCustomError(settlement, 'NotAllLocked').withArgs(2, 3);
@@ -79,25 +82,41 @@ describe('SharePieSettlement ★ 함수', () => {
 
   it('open_settlement: 같은 id 재등록·0원·중복 참여자·빈 목록 거부', async () => {
     const { settlement, alice, bob } = await deploy();
-    await settlement.open_settlement(id('s4'), [alice.address], [1]);
-    await expect(settlement.open_settlement(id('s4'), [bob.address], [1])).to.be.revertedWithCustomError(settlement, 'SettlementAlreadyOpened');
-    await expect(settlement.open_settlement(id('s5'), [alice.address], [0])).to.be.revertedWithCustomError(settlement, 'InvalidParticipants');
-    await expect(settlement.open_settlement(id('s6'), [alice.address, alice.address], [1, 1])).to.be.revertedWithCustomError(settlement, 'InvalidParticipants');
-    await expect(settlement.open_settlement(id('s7'), [], [])).to.be.revertedWithCustomError(settlement, 'InvalidParticipants');
+    await settlement.open_settlement(id('s4'), [alice.address], [1], COND);
+    await expect(settlement.open_settlement(id('s4'), [bob.address], [1], COND)).to.be.revertedWithCustomError(settlement, 'SettlementAlreadyOpened');
+    await expect(settlement.open_settlement(id('s5'), [alice.address], [0], COND)).to.be.revertedWithCustomError(settlement, 'InvalidParticipants');
+    await expect(settlement.open_settlement(id('s6'), [alice.address, alice.address], [1, 1], COND)).to.be.revertedWithCustomError(settlement, 'InvalidParticipants');
+    await expect(settlement.open_settlement(id('s7'), [], [], COND)).to.be.revertedWithCustomError(settlement, 'InvalidParticipants');
+  });
+
+  it('open_settlement: 조건 해시가 저장되고 conditionsHashOf·SettlementOpened 이벤트로 확인, bytes32(0)이면 거부', async () => {
+    const { settlement, alice } = await deploy();
+    await expect(settlement.open_settlement(id('s8'), [alice.address], [100], COND))
+      .to.emit(settlement, 'SettlementOpened').withArgs(id('s8'), 1, 100, COND);
+    expect(await settlement.conditionsHashOf(id('s8'))).to.equal(COND);
+    expect((await settlement.getSettlement(id('s8'))).conditionsHash).to.equal(COND);
+    expect(await settlement.conditionsHashOf(id('never'))).to.equal(ethers.ZeroHash);
+    await expect(settlement.open_settlement(id('s9'), [alice.address], [100], ethers.ZeroHash))
+      .to.be.revertedWithCustomError(settlement, 'MissingConditionsHash');
   });
 });
 
 describe('백엔드 연동 (backend/src/blockchain/onchainClient.js)', () => {
   const MEMBERS = ['u0', 'u1', 'u2', 'u3']; // uid — 표시 이름은 체인에 넘기지 않는다
   const SHARES = [5225, 10225, 10225, 10225];
+  // 승인 조건(계산 입력) — 백엔드 approve가 해시하는 것과 같은 형식
+  const CONDITIONS = { members: MEMBERS, mode: 'ADJUST', itemName: '삼겹살', total: 35900, participants: MEMBERS, ratios: null, adjustments: { u0: -5000 }, items: null, totalBudget: null, payer: null };
+  const CHASH = hashConditions(CONDITIONS);
 
   it('에스크로 정산: 전원 잠금 → 결제처 지급, /settlement/approve 응답 형식', async () => {
     const { settlement, pie, owner, merchant } = await deploy();
     const client = await createOnchainClient({ signer: owner, contractAddress: await settlement.getAddress(), merchantAddress: merchant.address });
     for (let i = 0; i < MEMBERS.length; i++) await client.chargeToken(MEMBERS[i], SHARES[i]);
 
-    const r = await client.recordSettlement({ settlementId: 'g1', members: MEMBERS, shares: SHARES, payer: null });
+    const r = await client.recordSettlement({ settlementId: 'g1', members: MEMBERS, shares: SHARES, payer: null, conditionsHash: CHASH });
     expect(r.mock).to.equal(false);
+    expect(r.conditionsHash).to.equal(CHASH);
+    expect(await settlement.conditionsHashOf(r.settlementOnchainId)).to.equal(CHASH);
     expect(r.viaEscrow).to.equal(true);
     expect(r.recipient).to.equal('SharePie 정산 에스크로');
     expect(r.locks.map((l) => [l.from, l.amount])).to.deep.equal(MEMBERS.map((m, i) => [m, SHARES[i]]));
@@ -112,7 +131,7 @@ describe('백엔드 연동 (backend/src/blockchain/onchainClient.js)', () => {
     const { settlement, owner } = await deploy();
     const client = await createOnchainClient({ signer: owner, contractAddress: await settlement.getAddress() });
     for (let i = 1; i < MEMBERS.length; i++) await client.chargeToken(MEMBERS[i], SHARES[i]);
-    const r = await client.recordSettlement({ settlementId: 'g2', members: MEMBERS, shares: SHARES, payer: 'u0' });
+    const r = await client.recordSettlement({ settlementId: 'g2', members: MEMBERS, shares: SHARES, payer: 'u0', conditionsHash: CHASH });
     expect(r.viaEscrow).to.equal(false);
     expect(r.recipient).to.equal('u0');
     expect(r.locks.map((l) => l.from)).to.deep.equal(['u1', 'u2', 'u3']);
@@ -128,12 +147,47 @@ describe('백엔드 연동 (backend/src/blockchain/onchainClient.js)', () => {
     await client.chargeToken('u3', 100); // 부족
     const nonceBefore = await owner.getNonce();
     let caught;
-    try { await client.recordSettlement({ settlementId: 'g3', members: MEMBERS, shares: SHARES }); } catch (e) { caught = e; }
+    try { await client.recordSettlement({ settlementId: 'g3', members: MEMBERS, shares: SHARES, conditionsHash: CHASH }); } catch (e) { caught = e; }
     expect(caught).to.be.instanceOf(InsufficientBalanceError);
     expect(caught.code).to.equal('INSUFFICIENT_BALANCE');
     expect(caught.message).to.contain('u3'); // 메시지에는 uid — UI가 이름으로 바꿔 표시
     expect(await owner.getNonce()).to.equal(nonceBefore);
     expect(await client.balanceOf('u0')).to.equal(5225);
+  });
+
+  it('conditionsHash 없이 recordSettlement를 부르면 트랜잭션을 보내기 전에 MISSING_CONDITIONS_HASH', async () => {
+    const { settlement, owner, merchant } = await deploy();
+    const client = await createOnchainClient({ signer: owner, contractAddress: await settlement.getAddress(), merchantAddress: merchant.address });
+    for (let i = 0; i < MEMBERS.length; i++) await client.chargeToken(MEMBERS[i], SHARES[i]);
+    const nonceBefore = await owner.getNonce();
+    for (const bad of [undefined, null, '', ethers.ZeroHash, '0x1234']) {
+      let caught;
+      try { await client.recordSettlement({ settlementId: 'g4', members: MEMBERS, shares: SHARES, conditionsHash: bad }); } catch (e) { caught = e; }
+      expect(caught && caught.code, String(bad)).to.equal('MISSING_CONDITIONS_HASH');
+    }
+    expect(await owner.getNonce()).to.equal(nonceBefore);
+  });
+
+  it('제3자 검증: 백엔드 hashConditions로 넣은 해시를 verify-conditions가 MATCH, 조건을 한 글자 바꾸면 MISMATCH', async () => {
+    const { settlement, owner, merchant } = await deploy();
+    const contractAddress = await settlement.getAddress();
+    const client = await createOnchainClient({ signer: owner, contractAddress, merchantAddress: merchant.address });
+    for (let i = 0; i < MEMBERS.length; i++) await client.chargeToken(MEMBERS[i], SHARES[i]);
+    const r = await client.recordSettlement({ settlementId: 'g5', members: MEMBERS, shares: SHARES, conditionsHash: CHASH });
+
+    // 키 순서를 바꿔도 같은 조건이면 MATCH (정규화)
+    const reordered = { payer: null, totalBudget: null, items: null, adjustments: { u0: -5000 }, ratios: null, participants: MEMBERS, total: 35900, itemName: '삼겹살', mode: 'ADJUST', members: MEMBERS };
+    const byId = await verifyConditions({ conditions: reordered, ref: r.settlementOnchainId, provider: ethers.provider, contractAddress });
+    expect(byId.match).to.equal(true);
+    expect(byId.onchainHash).to.equal(CHASH);
+    // open 트랜잭션 해시로도 대조 가능 (SettlementOpened 이벤트)
+    const byTx = await verifyConditions({ conditions: CONDITIONS, ref: r.open.txHash, provider: ethers.provider, contractAddress });
+    expect(byTx.match).to.equal(true);
+    expect(byTx.source).to.contain('SettlementOpened');
+    // 조건을 한 글자라도 바꾸면 MISMATCH
+    const tampered = { ...CONDITIONS, total: 35901 };
+    const bad = await verifyConditions({ conditions: tampered, ref: r.settlementOnchainId, provider: ethers.provider, contractAddress });
+    expect(bad.match).to.equal(false);
   });
 
   it('멤버 주소는 uid마다 고정: 같은 uid = 같은 주소, 다른 uid = 다른 주소', () => {

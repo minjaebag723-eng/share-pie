@@ -33,6 +33,7 @@ contract SharePieSettlement is Ownable {
         uint256 totalExpected;
         uint256 totalLocked;
         address recipient;
+        bytes32 conditionsHash; // 승인된 정산 "조건"(방식·총액·감면·예산…)의 keccak256 — 제3자가 조건 원문을 다시 해시해 대조
     }
 
     mapping(bytes32 => Settlement) private settlements;
@@ -40,7 +41,7 @@ contract SharePieSettlement is Ownable {
     mapping(bytes32 => mapping(address => bool)) private lockedBy;
 
     event TokenCharged(address indexed user, uint256 amount);
-    event SettlementOpened(bytes32 indexed settlementId, uint256 participantCount, uint256 totalExpected);
+    event SettlementOpened(bytes32 indexed settlementId, uint256 participantCount, uint256 totalExpected, bytes32 conditionsHash);
     event SettlementLocked(bytes32 indexed settlementId, address indexed participant, uint256 amount);
     event SettlementReleased(bytes32 indexed settlementId, address indexed recipient, uint256 amount);
 
@@ -53,6 +54,7 @@ contract SharePieSettlement is Ownable {
     error AlreadyLocked(address participant);
     error NotAllLocked(uint256 locked, uint256 required);
     error ZeroAddress();
+    error MissingConditionsHash(); // 조건 해시 없이는 정산을 열 수 없다 (실수 방지)
 
     constructor() Ownable(msg.sender) {
         pieCoin = new PieCoin(address(this));
@@ -66,9 +68,12 @@ contract SharePieSettlement is Ownable {
     }
 
     // ── 정산 등록 (lock/release 조건 검증용, 팀 합의로 추가) ───────────────────
-    function open_settlement(bytes32 settlementId, address[] calldata participants, uint256[] calldata amounts) external onlyOwner {
+    // conditionsHash: 백엔드가 승인 시점의 정산 조건 JSON을 정규화해 keccak256한 값 (backend/src/blockchain/conditionsHash.js).
+    //   제출 로그의 조건 원문을 누구나 다시 해시해 이 값과 대조할 수 있다 → "금액이 어떤 조건에서 나왔는지"를 체인이 고정.
+    function open_settlement(bytes32 settlementId, address[] calldata participants, uint256[] calldata amounts, bytes32 conditionsHash) external onlyOwner {
         Settlement storage s = settlements[settlementId];
         if (s.opened) revert SettlementAlreadyOpened(settlementId);
+        if (conditionsHash == bytes32(0)) revert MissingConditionsHash();
         if (participants.length == 0 || participants.length != amounts.length) revert InvalidParticipants();
 
         uint256 total;
@@ -82,7 +87,8 @@ contract SharePieSettlement is Ownable {
         s.opened = true;
         s.participantCount = participants.length;
         s.totalExpected = total;
-        emit SettlementOpened(settlementId, participants.length, total);
+        s.conditionsHash = conditionsHash;
+        emit SettlementOpened(settlementId, participants.length, total, conditionsHash);
     }
 
     // ── ★ lock_for_settlement(settlement_id, participant, amount) ────────────
@@ -132,5 +138,10 @@ contract SharePieSettlement is Ownable {
 
     function isLocked(bytes32 settlementId, address participant) external view returns (bool) {
         return lockedBy[settlementId][participant];
+    }
+
+    /// @notice 제3자 검증용: 등록된 조건 해시 (열리지 않은 정산이면 0)
+    function conditionsHashOf(bytes32 settlementId) external view returns (bytes32) {
+        return settlements[settlementId].conditionsHash;
     }
 }
