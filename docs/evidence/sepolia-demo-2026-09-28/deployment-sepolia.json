@@ -1,0 +1,11 @@
+{
+  "network": "sepolia",
+  "hardhatNetwork": "sepolia",
+  "chainId": 11155111,
+  "settlement": "0x8F7dba19727D5A8808AEe589e6a16482e8e048E9",
+  "pieCoin": "0x5628ec77cb9FeC1AF068424FAf86dB7A54AAA190",
+  "deployer": "0x33f446E980bd8F1CeeAEFA43B2FfDB5e45c46C36",
+  "txHash": "0xd2a2152d2b63de51466225cb1a6f255f205fb36709091ac1dd0e5136b7a67d42",
+  "explorerUrl": "https://sepolia.etherscan.io/address/0x8F7dba19727D5A8808AEe589e6a16482e8e048E9",
+  "deployedAt": "2026-09-28T15:34:02.107Z"
+}

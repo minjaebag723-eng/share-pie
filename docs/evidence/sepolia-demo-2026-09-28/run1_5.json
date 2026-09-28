@@ -1,0 +1,47 @@
+{
+  "run": "Run 1.5 (조건 변경 → 코드 중단)",
+  "mock": false,
+  "startedAt": "2026-09-28T15:35:50.385Z",
+  "aiCalls": 0,
+  "note": "AI는 조건 해석(Stage 1)에만 쓰인다. 중단 판단은 코드(Stage 2 예산 검증 / 잠금 전 잔액 선확인)가 한다. 이 스크립트는 AI를 호출하지 않는다.",
+  "cases": [
+    {
+      "name": "1. 예산 변경 (40,000 → 30,000) → OVER_BUDGET",
+      "aborted": true,
+      "code": "OVER_BUDGET",
+      "status": 409,
+      "message": "예산을 5,900원 초과해서 정산을 진행할 수 없어요.",
+      "expected": "OVER_BUDGET",
+      "ok": true,
+      "detail": {
+        "total": 35900,
+        "budgetBefore": 40000,
+        "budgetAfter": 30000,
+        "overBudgetBy": 5900,
+        "onchainTx": 0,
+        "aiCalled": false
+      },
+      "summary": "예산 40,000→30,000 변경 → overBudgetBy 5900 → 승인 거부(OVER_BUDGET), 잠금 0건"
+    },
+    {
+      "name": "2. 잔액 부족 (u3: 100 PIE < 10,225) → INSUFFICIENT_BALANCE",
+      "aborted": true,
+      "code": "INSUFFICIENT_BALANCE",
+      "status": 409,
+      "message": "u3님의 PieCoin 잔액(100 PIE)이 분담금 10225 PIE보다 적어 잠금이 거부됐어요.",
+      "expected": "INSUFFICIENT_BALANCE",
+      "ok": true,
+      "detail": {
+        "participant": "u3",
+        "participantName": "지현",
+        "balancePIE": 100,
+        "requiredPIE": 10225,
+        "onchainTx": 0,
+        "aiCalled": false
+      },
+      "summary": "u3 잔액 100 PIE < 분담금 10225 → 잠금 전 잔액 선확인에서 거부(INSUFFICIENT_BALANCE), 잠금 0건"
+    }
+  ],
+  "finishedAt": "2026-09-28T15:36:50.777Z",
+  "allAborted": true
+}
