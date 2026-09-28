@@ -66,9 +66,11 @@ SDK: OpenAI SDK 그대로 사용 (base_url만 위 값으로 설정)
 
 **모델 경위**: 챌린지 브리프 원문은 `gpt-oss-120b`를 명시했으나, 주최측(Bricksum)이 텔레그램 공지로 Kiln API 모델을 **Qwen3-32B**로 교체한다고 알렸다(gpt-oss-120b의 tool-calling이 해커톤에 부적합하다는 이유). 현재 개발 키에서 `gpt-oss-120b`가 404인 것도 이 공지와 일치한다. 따라서 사용 모델은 Qwen3-32B(현재 사용 중인 ID: `qwen3-32b`)이며, README에 "브리프는 gpt-oss-120b, 실제 사용은 주최측 공지에 따른 Qwen3-32B"라고 **공지 출처와 함께** 명시한다.
 
-> ⚠️ TODO(미정): Kiln 모델 목록에서 정확한 모델 ID 확인, 공지 날짜/캡처를 README 근거 자료로 보관.
+> ⚠️ TODO(미정): 모델 교체 공지 날짜/캡처를 README 근거 자료로 보관. (모델 ID는 qwen3-32b로 정상 동작 확인 완료)
 
 모델명은 `KILN_MODEL` 환경변수로만 참조하고 코드에 하드코딩하지 않는다. 행사 중 모델이 또 바뀔 수 있으니, **제출 전에 실제 사용 모델로 전체 흐름(Run 1 / 1.5 / 2)을 한 번 돌려본다.**
+
+Kiln API 모델: qwen3-32b, 컨텍스트 한도 32,768 토큰 — 프롬프트와 대화 이력은 이 한도 안에서 짧게 유지할 것
 
 호출 스테이지 태그 (로깅 시 이 이름을 그대로 사용, **정산 코어를 항상 먼저 나열**):
 - `settlement.analyze` (Stage 1, 코어)
@@ -294,7 +296,7 @@ Run 2 (이의제기):    별도 정산 — 합의 조건 해시는 그대로, �
 # Kiln (필수)
 KILN_API_KEY=sk-bk-...
 KILN_BASE_URL=https://api.bricksum.com/v1
-KILN_MODEL=qwen3-32b            # 주최측 공지에 따른 Qwen3-32B (브리프는 gpt-oss-120b). 정확한 ID는 Kiln 모델 목록에서 확인 필요 — 4번 참고
+KILN_MODEL=qwen3-32b            # 주최측 공지에 따른 Qwen3-32B (브리프는 gpt-oss-120b) — 4번 참고
 
 # 블록체인 (Sepolia 테스트넷 전용) — 셋 중 하나라도 비어 있으면 MOCK 모드
 BLOCKCHAIN_RPC_URL=<Sepolia RPC 주소 (Alchemy/Infura)>
