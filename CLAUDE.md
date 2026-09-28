@@ -84,6 +84,13 @@ Stage 2(계산)는 Kiln API를 호출하지 않는다. 토큰 로그에 `settlem
 
 **체인 확정: Solidity + Sepolia 테스트넷** (OpenZeppelin ERC-20, Hardhat — 구현: `contracts/`, 백엔드 연동: `backend/src/blockchain/`). **정산 코어에 필수인 함수(★)를 먼저 구현한다.**
 
+- 테스트넷 확인 (공식 텔레그램, 9/28 22:29~22:30 KST, Kim | Fractalyze Ryan 답변):
+  주최측 전용 테스트넷/데브넷은 없으며, 참가팀이 공개 EVM 호환 테스트넷을 자유롭게 선택해
+  배포하고 tx hash + 로그를 제출하면 됨.
+  단, 로컬 데브넷을 쓸 경우 주최측이 스크립트로 직접 실행할 수 있어야 함.
+  우리는 공개 테스트넷인 Ethereum Sepolia를 사용하므로 해당 조건은 적용되지 않지만,
+  README에 배포 스크립트 실행 명령과 컨트랙트 주소를 반드시 포함한다.
+
 - 서버의 운영자 지갑(`DEPLOYER_PRIVATE_KEY`) 하나가 모든 트랜잭션에 서명하는 데모용 수탁 구조. 멤버 uid → 주소는 `backend/src/blockchain/members.js` (uid = UI가 붙이는 고정 사용자 번호 'u0', 'u1', …)
 - **표시 이름은 절대 지갑 키로 쓰지 않는다(동명이인 충돌)** — 이름·공백이 들어오면 `INVALID_MEMBER_UID`로 거부 (MOCK 모드 포함)
 - PieCoin: `decimals = 0` (1 PIE = 1원). 발행·정산 이동은 정산 컨트랙트만 가능 (멤버 approve 불필요)
@@ -345,6 +352,7 @@ UI_FILE=                        # 선택. 서버가 / 에서 보여줄 UI HTML �
 - Run 2 로그에서 `events.jsonl`의 `dispute.action` 한 줄(`verdict=GENUINE_ERROR → refund_participant × N → txHashes`)을 캡처할 것
 - `node contracts/scripts/verify-conditions.js <조건 JSON> <settlementOnchainId>`의 `✅ MATCH` 출력을 캡처할 것 (제3자 검증 증거)
 - Sepolia Etherscan 링크를 트랜잭션별로 남길 것: open, lock(전원), confirm(마지막 lock), release, raise, resolve, refund(각자)
+- README에 Sepolia 배포 스크립트 실행 명령(npx hardhat run ... --network sepolia)과 배포된 컨트랙트 주소(PieCoin, SharePieSettlement)를 포함했는지 확인
 - README에 한계로 명시: "운영자 지갑 하나(`DEPLOYER_PRIVATE_KEY`)가 모든 트랜잭션에 서명하는 데모용 수탁 구조" (멤버가 직접 서명하지 않음)
 - README에 "Run 2의 착오는 의도적으로 주입한 시뮬레이션"임을 명시할 것. 단, 컨트랙트는 lock 금액을 등록 금액과 같게 강제하므로 "조건과 다른 금액이 온체인에 잠긴다"고 쓰면 모순이다 — 착오는 온체인 금액이 아니라 **조사 입력**(이의제기 사유·비교 기록) 쪽에 있다고 서술한다
 
