@@ -28,7 +28,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent.parent   # 스크립트가 든 백엔드 폴더 (이전 버전)
 ENV_KEYS = ["CHAIN_MODE", "BSC_RPC_URL", "BSC_CHAIN_ID", "BSC_EXPLORER", "LEDGER_ADDRESS", "TOKEN_ADDRESS", "LEDGER_DEPLOY_BLOCK",
-            "AGENT_PRIVATE_KEY", "KILN_TOOL_MODE", "GAS_DRIP_ETH", "GAS_DRIP_MIN_ETH", "GAS_DRIP_COOLDOWN_SEC", "DISPUTE_WINDOW_SEC"]
+            "AGENT_PRIVATE_KEY", "KILN_TOOL_MODE", "SERPAPI_API_KEY", "SERPAPI_SHOP_ENGINES", "BETA_PLAN", "GAS_DRIP_ETH", "GAS_DRIP_MIN_ETH", "GAS_DRIP_COOLDOWN_SEC", "DISPUTE_WINDOW_SEC"]
 COPY_ITEMS = ["hardhat.config.js", "package.json", "hardhat", "contracts/abi", "tools", "run-public.cmd", "docs/BETA-PUBLIC.md", "docs/evidence"]
 
 GAS_DRIP_FN = '''
@@ -130,6 +130,54 @@ CREATE_NEW = '''    PURPOSE_MAX = 60   # [blockchain 담당] 가드 C — 온체
             [self._units(a) for a in shares], self._b32(cond_hash), (purpose or "")[:self.PURPOSE_MAX]))
 '''
 
+SERPAPI_FNS = r'''def _serpapi_get(params: dict[str, Any]) -> dict[str, Any]:
+    with _http() as c:
+        r = c.get(f"{config.SERPAPI_API_BASE}/search.json", params={**params, "api_key": config.SERPAPI_API_KEY})
+        r.raise_for_status()
+        return r.json()
+
+
+def _serpapi_shop(query: str, n: int) -> list[dict[str, Any]]:
+    """[blockchain 담당] SerpApi 쇼핑 검색 — SERPAPI_SHOP_ENGINES 순서(기본 naver → google_shopping)로 시도, 상품이 나오면 멈춤.
+    출력은 serper_shop 과 같은 형식이라 호출부 변경 없음. 가격은 소스 원본에서 코드가 꺼낸다."""
+    for engine in config.SERPAPI_SHOP_ENGINES:
+        try:
+            if engine == "naver":
+                data = _serpapi_get({"engine": "naver", "query": query})
+            else:
+                data = _serpapi_get({"engine": "google_shopping", "q": query, "gl": "kr", "hl": "ko", "num": n})
+        except Exception as e:
+            print(f"[serpapi {engine}] 실패: {e}")
+            continue
+        out = []
+        for it in data.get("shopping_results", []) or []:
+            raw = it.get("extracted_price") if it.get("extracted_price") is not None else it.get("price")
+            price = _price_str(raw)
+            ptxt = str(it.get("price") or "")
+            if price <= 0 or ("$" in ptxt and "₩" not in ptxt and "원" not in ptxt):
+                continue  # 원화가 아닌 가격은 제외
+            title = _clean(it.get("title"))
+            link = it.get("link") or it.get("product_link") or ""
+            out.append({"id": _oid("serpapi", link or title, str(price)), "title": title, "price": price,
+                        "mall": it.get("source") or it.get("seller") or mall_from_host(urlparse(link).hostname or ""),
+                        "url": link, "image": it.get("thumbnail"), "source": "serper", "verified": True,
+                        "qty": parse_qty(title)})
+            if len(out) >= n:
+                break
+        if out:
+            return out
+    return []
+
+
+def _serpapi_web(query: str, n: int) -> list[dict[str, Any]]:
+    """[blockchain 담당] SerpApi 구글 웹 검색 — serper_web 과 같은 형식."""
+    data = _serpapi_get({"engine": "google", "q": query, "gl": "kr", "hl": "ko", "num": n})
+    return [{"title": _clean(x.get("title")), "text": _clean(x.get("snippet"))[:500], "url": x.get("link"),
+             "source": "serper_web", "score": 1.0 / (1 + i)} for i, x in enumerate(data.get("organic_results", []) or [])]
+
+
+'''
+
 # (파일, 이름, 이미적용 마커, [(old, new), ...])
 PATCHES = [
     ("agent/chain.py", "가스 가격 +25% 버퍼", "gas_price * 5 // 4),\n                })" , [(
@@ -204,6 +252,41 @@ PATCHES = [
          '        return max(int(gp * config.GAS_PRICE_MULTIPLIER), gp + int(self.w3.to_wei(0.5, "gwei")))\n\n'
          '    def _send(self, fn) -> dict[str, Any]:\n'),
     ]),
+    # ── SerpApi 검색 공급자 + 베타 요금제 (2026-09-29 밤 추가) ──
+    ("agent/config.py", "SERPAPI 지원 설정", "SERPAPI_API_KEY", [(
+        'SERPER_API_BASE = _get("SERPER_API_BASE", "https://google.serper.dev").rstrip("/")\n',
+        'SERPER_API_BASE = _get("SERPER_API_BASE", "https://google.serper.dev").rstrip("/")\n'
+        '# [blockchain 담당] SerpApi (serpapi.com) — 키가 있으면 Serper 대신 이걸로 구글 쇼핑·구글 웹·네이버 쇼핑 검색 (같은 출력 형식)\n'
+        'SERPAPI_API_KEY = _get("SERPAPI_API_KEY")\n'
+        'SERPAPI_API_BASE = _get("SERPAPI_API_BASE", "https://serpapi.com").rstrip("/")\n'
+        'SERPAPI_SHOP_ENGINES = [e.strip() for e in (_get("SERPAPI_SHOP_ENGINES", "naver,google_shopping") or "").split(",") if e.strip()]  # 네이버(관련도 높음) → 구글 쇼핑(기프티콘 등 보조)\n')]),
+
+    ("agent/websearch.py", "SERPAPI 지원 (serper 소스 대체)", "def _serpapi_shop(", [
+        ('            "serper": bool(config.SERPER_API_KEY),\n',
+         '            "serper": bool(config.SERPAPI_API_KEY or config.SERPER_API_KEY),   # [blockchain 담당] SerpApi 키가 있으면 SerpApi 로\n'),
+        ('def serper_shop(query: str, n: int = 20) -> list[dict[str, Any]]:\n'
+         '    """구글 쇼핑 결과 (여러 쇼핑몰의 가격·판매처·링크)."""\n'
+         '    if not enabled_sources()["serper"]:\n        return []\n\n    def go():\n',
+         SERPAPI_FNS +
+         'def serper_shop(query: str, n: int = 20) -> list[dict[str, Any]]:\n'
+         '    """구글 쇼핑 결과 (여러 쇼핑몰의 가격·판매처·링크). SerpApi 키가 있으면 SerpApi 로."""\n'
+         '    if not enabled_sources()["serper"]:\n        return []\n'
+         '    if config.SERPAPI_API_KEY:\n        return _cached("serpapi:" + query, lambda: _serpapi_shop(query, n))\n\n    def go():\n'),
+        ('    if not enabled_sources()["serper"]:\n        return []\n\n    def go():\n        with _http() as c:\n            r = c.post(f"{config.SERPER_API_BASE}/search"',
+         '    if not enabled_sources()["serper"]:\n        return []\n'
+         '    if config.SERPAPI_API_KEY:\n        return _cached("serpapiweb:" + query, lambda: _serpapi_web(query, n))\n\n    def go():\n        with _http() as c:\n            r = c.post(f"{config.SERPER_API_BASE}/search"'),
+    ]),
+
+    ("agent/service.py", "/api/shopping/search ok_web 직렬화 보완", "인터넷 검색 결과가 응답에서 빠지던 것 보완", [(
+        '    elif r["status"] == "no_match":\n        out["advice"] = r["advice"]\n        out["budget_per_person"] = r.get("budget_per_person")\n    else:\n        out["question"] = r.get("question")\n    return out\n',
+        '    elif r["status"] == "no_match":\n        out["advice"] = r["advice"]\n        out["budget_per_person"] = r.get("budget_per_person")\n'
+        '    elif r["status"] == "ok_web":   # [blockchain 담당] 인터넷 검색 결과가 응답에서 빠지던 것 보완 (채팅 경로 _chat_shop_web 과 같은 내용)\n'
+        '        q = r["query"]\n'
+        '        out["candidates"] = [{"id": c["id"], **shopping.web_product_public(c, q.get("allowed_malls") or []),\n'
+        '                              "per": c.get("per"), "packs": c.get("packs"), "within": c.get("within")} for c in r["candidates"]]\n'
+        '        out["explain"] = r["explain"]\n'
+        '        out["web"] = {"queries": r["web"].get("queries"), "stats": r["web"].get("stats"), "errors": r["web"].get("errors")}\n'
+        '    else:\n        out["question"] = r.get("question")\n    return out\n')]),
 ]
 
 
