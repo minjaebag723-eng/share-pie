@@ -1,0 +1,23 @@
+{
+  "name": "sharepie-backend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SharePie AI Settlement Agent backend (Kiln API, testnet only)",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test \"test/*.test.js\""
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@noble/hashes": "^1.8.0",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.3",
+    "ethers": "^6.17.0",
+    "express": "^5.2.1",
+    "openai": "^7.23.0"
+  }
+}

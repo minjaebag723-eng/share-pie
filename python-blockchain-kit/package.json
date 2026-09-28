@@ -1,0 +1,15 @@
+{
+  "name": "share-pie-ai-chain",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Hardhat tests + scripted deploy for contracts/ (ShareLedger, PieToken). Python backend는 requirements.txt 참고. 테스트넷 전용.",
+  "scripts": {
+    "chain:install": "cd hardhat && npm install",
+    "chain:compile": "hardhat compile",
+    "chain:test": "hardhat test"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "hardhat": "^2.29.1"
+  }
+}

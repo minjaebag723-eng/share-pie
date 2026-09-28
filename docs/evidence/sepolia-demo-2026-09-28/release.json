@@ -1,0 +1,16 @@
+{
+  "released": true,
+  "state": "RELEASED",
+  "holdUntil": 1790609808,
+  "remainingSeconds": 0,
+  "release": {
+    "txHash": "0x043796aa5da93f768e0709edeee5aa16812884cddd061c41d286aba7c8fdaf91",
+    "block": "#11,801,473",
+    "blockNumber": 11801473,
+    "explorerUrl": "https://sepolia.etherscan.io/tx/0x043796aa5da93f768e0709edeee5aa16812884cddd061c41d286aba7c8fdaf91",
+    "amount": 35900,
+    "recipientAddress": "0x39be6b7b0D720eAfCc185581ee277AF68cCad867",
+    "state": "RELEASED"
+  },
+  "recipient": "SharePie 정산 에스크로"
+}

@@ -1,0 +1,7 @@
+# Hardhat 빌드 결과물 (npx hardhat compile 로 다시 만들 수 있음)
+artifacts/
+cache/
+typechain-types/
+coverage/
+# 로컬 테스트 배포 기록 (Sepolia 기록 deployments/sepolia.json 은 커밋해서 팀과 공유)
+deployments/hardhat.json

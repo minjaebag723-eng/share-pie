@@ -1,0 +1,246 @@
+{
+  "run": "Run 1 (정상 정산)",
+  "mock": false,
+  "startedAt": "2026-09-28T15:34:30.548Z",
+  "steps": [
+    {
+      "name": "1. 정산 계산 (settlement.calculate: AI 토큰 0, code-only)",
+      "members": [
+        {
+          "uid": "u0",
+          "name": "진주",
+          "address": "0x6D1f31F089f5646EAe689E9d1a3153802c0A4Ef4",
+          "share": 5225
+        },
+        {
+          "uid": "u1",
+          "name": "진우",
+          "address": "0x1CAaf2EEDa082Dff1C1F7F341951E0cd30986e66",
+          "share": 10225
+        },
+        {
+          "uid": "u2",
+          "name": "민재",
+          "address": "0x4A5224e362EBFB561cd4Fc13fDc29a9764bc1C68",
+          "share": 10225
+        },
+        {
+          "uid": "u3",
+          "name": "지현",
+          "address": "0x6074B895367c7B710E881F24eF44754185865fEF",
+          "share": 10225
+        }
+      ],
+      "total": 35900,
+      "withinBudget": true,
+      "rule": "u0 5,000원 감면 후 4인 분담",
+      "conditionsHash": "0xb31f16323ac656a1ca5773c977ccd33b786aa505eba6f9c6389b226ebe215f80"
+    },
+    {
+      "name": "2. PieCoin 충전 (charge_token)",
+      "members": [
+        {
+          "uid": "u0",
+          "name": "진주",
+          "address": "0x6D1f31F089f5646EAe689E9d1a3153802c0A4Ef4"
+        },
+        {
+          "uid": "u1",
+          "name": "진우",
+          "address": "0x1CAaf2EEDa082Dff1C1F7F341951E0cd30986e66"
+        },
+        {
+          "uid": "u2",
+          "name": "민재",
+          "address": "0x4A5224e362EBFB561cd4Fc13fDc29a9764bc1C68"
+        },
+        {
+          "uid": "u3",
+          "name": "지현",
+          "address": "0x6074B895367c7B710E881F24eF44754185865fEF"
+        }
+      ],
+      "charges": [
+        {
+          "uid": "u0",
+          "name": "진주",
+          "address": "0x6D1f31F089f5646EAe689E9d1a3153802c0A4Ef4",
+          "amount": 5225,
+          "txHash": "0xd41e234093e66c2249beae20e8098f1d86a698919d8edb25e11fb23a07cff09f",
+          "explorerUrl": "https://sepolia.etherscan.io/tx/0xd41e234093e66c2249beae20e8098f1d86a698919d8edb25e11fb23a07cff09f"
+        },
+        {
+          "uid": "u1",
+          "name": "진우",
+          "address": "0x1CAaf2EEDa082Dff1C1F7F341951E0cd30986e66",
+          "amount": 10225,
+          "txHash": "0x45249dd5058a1005181bab6c0583b0415a63b95b158ebf4da000aacf33a54917",
+          "explorerUrl": "https://sepolia.etherscan.io/tx/0x45249dd5058a1005181bab6c0583b0415a63b95b158ebf4da000aacf33a54917"
+        },
+        {
+          "uid": "u2",
+          "name": "민재",
+          "address": "0x4A5224e362EBFB561cd4Fc13fDc29a9764bc1C68",
+          "amount": 10225,
+          "txHash": "0xa8213f43f82443bed47014d09d0514ca8a2d5464460cc9a4cef6dbc9f1ddb857",
+          "explorerUrl": "https://sepolia.etherscan.io/tx/0xa8213f43f82443bed47014d09d0514ca8a2d5464460cc9a4cef6dbc9f1ddb857"
+        },
+        {
+          "uid": "u3",
+          "name": "지현",
+          "address": "0x6074B895367c7B710E881F24eF44754185865fEF",
+          "amount": 10225,
+          "txHash": "0xb4a57ceca9976a7b72fe002921b16ed316df3b224b8a24629b4ccb28dabef42f",
+          "explorerUrl": "https://sepolia.etherscan.io/tx/0xb4a57ceca9976a7b72fe002921b16ed316df3b224b8a24629b4ccb28dabef42f"
+        }
+      ]
+    },
+    {
+      "name": "3. 온체인 기록 (open → lock × N → Locked, 보류 시작) — 인증서 TxHash = confirm",
+      "mock": false,
+      "network": "sepolia",
+      "chainId": 11155111,
+      "contractAddress": "0x8F7dba19727D5A8808AEe589e6a16482e8e048E9",
+      "settlementOnchainId": "0x78173f19a07317bf2f4554959c99695eb4ba7a22d6d5067f2c531d5b0a69030d",
+      "state": "LOCKED",
+      "recipient": "SharePie 정산 에스크로",
+      "recipientAddress": "0x39be6b7b0D720eAfCc185581ee277AF68cCad867",
+      "viaEscrow": true,
+      "conditionsHash": "0xb31f16323ac656a1ca5773c977ccd33b786aa505eba6f9c6389b226ebe215f80",
+      "holdSeconds": 60,
+      "holdUntil": 1790609808,
+      "open": {
+        "txHash": "0x47724de554bb33b08d770cb6800043466e43e0979f2087a74767980364aca7f0",
+        "block": "#11,801,450"
+      },
+      "locks": [
+        {
+          "from": "u0",
+          "to": "SharePie 정산 에스크로",
+          "amount": 5225,
+          "txHash": "0x6135ee032b642061a151049560015ec2ea89b7308889510a40c99302fbf187a1",
+          "fromAddress": "0x6D1f31F089f5646EAe689E9d1a3153802c0A4Ef4",
+          "block": "#11,801,451",
+          "fromName": "진주"
+        },
+        {
+          "from": "u1",
+          "to": "SharePie 정산 에스크로",
+          "amount": 10225,
+          "txHash": "0x639c90ac7ce63b9f66798cca36d34ef5e72558befeac44b2d216957ff4c8e383",
+          "fromAddress": "0x1CAaf2EEDa082Dff1C1F7F341951E0cd30986e66",
+          "block": "#11,801,451",
+          "fromName": "진우"
+        },
+        {
+          "from": "u2",
+          "to": "SharePie 정산 에스크로",
+          "amount": 10225,
+          "txHash": "0xd1267524e119a3d1d6e92d344e5decac019933000355254e39ad7d4175d90717",
+          "fromAddress": "0x4A5224e362EBFB561cd4Fc13fDc29a9764bc1C68",
+          "block": "#11,801,451",
+          "fromName": "민재"
+        },
+        {
+          "from": "u3",
+          "to": "SharePie 정산 에스크로",
+          "amount": 10225,
+          "txHash": "0xe49d307a942269d68b902acea481217efc85f4a37c5a899284559e53033c3e8a",
+          "fromAddress": "0x6074B895367c7B710E881F24eF44754185865fEF",
+          "block": "#11,801,451",
+          "fromName": "지현"
+        }
+      ],
+      "confirm": {
+        "txHash": "0xe49d307a942269d68b902acea481217efc85f4a37c5a899284559e53033c3e8a",
+        "block": "#11,801,451",
+        "blockNumber": 11801451,
+        "holdUntil": 1790609808,
+        "explorerUrl": "https://sepolia.etherscan.io/tx/0xe49d307a942269d68b902acea481217efc85f4a37c5a899284559e53033c3e8a"
+      },
+      "release": null
+    },
+    {
+      "0": {
+        "uid": "u0",
+        "name": "진주",
+        "address": "0x6D1f31F089f5646EAe689E9d1a3153802c0A4Ef4",
+        "balancePIE": 0
+      },
+      "1": {
+        "uid": "u1",
+        "name": "진우",
+        "address": "0x1CAaf2EEDa082Dff1C1F7F341951E0cd30986e66",
+        "balancePIE": 0
+      },
+      "2": {
+        "uid": "u2",
+        "name": "민재",
+        "address": "0x4A5224e362EBFB561cd4Fc13fDc29a9764bc1C68",
+        "balancePIE": 0
+      },
+      "3": {
+        "uid": "u3",
+        "name": "지현",
+        "address": "0x6074B895367c7B710E881F24eF44754185865fEF",
+        "balancePIE": 0
+      },
+      "name": "4. 잠금 후 멤버 PieCoin 잔액 (에스크로 보관 중)"
+    }
+  ],
+  "conditions": {
+    "members": [
+      "u0",
+      "u1",
+      "u2",
+      "u3"
+    ],
+    "mode": "ADJUST",
+    "itemName": "삼겹살 1.2kg",
+    "total": 35900,
+    "participants": [
+      "u0",
+      "u1",
+      "u2",
+      "u3"
+    ],
+    "adjustments": {
+      "u0": -5000
+    },
+    "ratios": null,
+    "items": null,
+    "totalBudget": 40000,
+    "payer": null
+  },
+  "conditionsCanonical": "{\"adjustments\":{\"u0\":-5000},\"itemName\":\"삼겹살 1.2kg\",\"items\":null,\"members\":[\"u0\",\"u1\",\"u2\",\"u3\"],\"mode\":\"ADJUST\",\"participants\":[\"u0\",\"u1\",\"u2\",\"u3\"],\"payer\":null,\"ratios\":null,\"total\":35900,\"totalBudget\":40000}",
+  "conditionsHash": "0xb31f16323ac656a1ca5773c977ccd33b786aa505eba6f9c6389b226ebe215f80",
+  "openTxHash": "0x47724de554bb33b08d770cb6800043466e43e0979f2087a74767980364aca7f0",
+  "settlementOnchainId": "0x78173f19a07317bf2f4554959c99695eb4ba7a22d6d5067f2c531d5b0a69030d",
+  "holdSeconds": 60,
+  "holdUntil": 1790609808,
+  "shares": [
+    5225,
+    10225,
+    10225,
+    10225
+  ],
+  "nameOf": {
+    "u0": "진주",
+    "u1": "진우",
+    "u2": "민재",
+    "u3": "지현"
+  },
+  "requestText": "삼겹살 1.2kg 35,900원, 진주는 5천원 적게 내고 나머지가 똑같이 나눠줘. 예산 4만원.",
+  "finishedAt": "2026-09-28T15:35:50.383Z",
+  "txHash": "0xe49d307a942269d68b902acea481217efc85f4a37c5a899284559e53033c3e8a",
+  "txHashes": {
+    "open": "0x47724de554bb33b08d770cb6800043466e43e0979f2087a74767980364aca7f0",
+    "locks": [
+      "0x6135ee032b642061a151049560015ec2ea89b7308889510a40c99302fbf187a1",
+      "0x639c90ac7ce63b9f66798cca36d34ef5e72558befeac44b2d216957ff4c8e383",
+      "0xd1267524e119a3d1d6e92d344e5decac019933000355254e39ad7d4175d90717",
+      "0xe49d307a942269d68b902acea481217efc85f4a37c5a899284559e53033c3e8a"
+    ],
+    "confirm": "0xe49d307a942269d68b902acea481217efc85f4a37c5a899284559e53033c3e8a"
+  }
+}

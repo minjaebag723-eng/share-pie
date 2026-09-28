@@ -1,0 +1,98 @@
+{
+  "flow": null,
+  "stages": [
+    {
+      "calls": 5,
+      "prompt_tokens": 14408,
+      "completion_tokens": 867,
+      "total_tokens": 15275,
+      "latency_ms": 16099,
+      "stage": "assistant.step",
+      "avg_tokens": 3055,
+      "energy_wh": 0.67079
+    },
+    {
+      "calls": 10,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "latency_ms": 0,
+      "stage": "assistant.tool",
+      "avg_tokens": 0,
+      "energy_wh": 0
+    },
+    {
+      "calls": 1,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "latency_ms": 0,
+      "stage": "chat.route",
+      "avg_tokens": 0,
+      "energy_wh": 0
+    },
+    {
+      "calls": 2,
+      "prompt_tokens": 1584,
+      "completion_tokens": 478,
+      "total_tokens": 2062,
+      "latency_ms": 8467,
+      "stage": "dispute.investigate",
+      "avg_tokens": 1031,
+      "energy_wh": 0.35279
+    },
+    {
+      "calls": 2,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "latency_ms": 0,
+      "stage": "dispute.records",
+      "avg_tokens": 0,
+      "energy_wh": 0
+    },
+    {
+      "calls": 8,
+      "prompt_tokens": 9972,
+      "completion_tokens": 1172,
+      "total_tokens": 11144,
+      "latency_ms": 21445,
+      "stage": "settlement.analyze",
+      "avg_tokens": 1393,
+      "energy_wh": 0.89354
+    },
+    {
+      "calls": 7,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "latency_ms": 0,
+      "stage": "settlement.calculate",
+      "avg_tokens": 0,
+      "energy_wh": 0
+    },
+    {
+      "calls": 8,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "latency_ms": 0,
+      "stage": "settlement.policy",
+      "avg_tokens": 0,
+      "energy_wh": 0
+    }
+  ],
+  "llm_calls": 15,
+  "code_steps": 28,
+  "offline_steps": 0,
+  "total_tokens": 28481,
+  "total_latency_ms": 46011,
+  "energy_wh_upper_bound": 1.91713,
+  "assumptions": {
+    "npu_power_watts": 150,
+    "npu_count": 1,
+    "formula": "Wh = W × cards × latency_s / 3600 (배치 공유 미반영 → 상한)",
+    "source": "RNGD TDP 150W — developer.furiosa.ai/latest/en/overview/rngd.html"
+  },
+  "markdown": "| 단계 | 호출 | 입력 토큰 | 출력 토큰 | 합계 | 평균 | 지연(ms) | 에너지 상한(Wh) |\n|---|---|---|---|---|---|---|---|\n| assistant.step | 5 | 14408 | 867 | 15275 | 3055.0 | 16099 | 0.67079 |\n| assistant.tool | 10 | 0 | 0 | 0 | 0.0 | 0 | 0.0 |\n| chat.route | 1 | 0 | 0 | 0 | 0.0 | 0 | 0.0 |\n| dispute.investigate | 2 | 1584 | 478 | 2062 | 1031.0 | 8467 | 0.35279 |\n| dispute.records | 2 | 0 | 0 | 0 | 0.0 | 0 | 0.0 |\n| settlement.analyze | 8 | 9972 | 1172 | 11144 | 1393.0 | 21445 | 0.89354 |\n| settlement.calculate | 7 | 0 | 0 | 0 | 0.0 | 0 | 0.0 |\n| settlement.policy | 8 | 0 | 0 | 0 | 0.0 | 0 | 0.0 |\n\n총 28481 토큰 · Kiln 호출 15회 · 코드 처리 28단계 · 에너지 상한 1.91713 Wh\n가정: Wh = W × cards × latency_s / 3600 (배치 공유 미반영 → 상한) / NPU 150.0W × 1.0장"
+}

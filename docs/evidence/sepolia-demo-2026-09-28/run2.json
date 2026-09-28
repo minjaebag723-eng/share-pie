@@ -1,0 +1,289 @@
+{
+  "run": "Run 2 (이의제기 재조사 — 계산 단계 착오 시뮬레이션)",
+  "mock": false,
+  "startedAt": "2026-09-28T15:36:50.780Z",
+  "scenario": "A: calculation-stage error simulation",
+  "steps": [
+    {
+      "name": "0. 합의 조건 계산 (settlement.calculate: AI 토큰 0) + 조건 해시",
+      "correctShares": [
+        5225,
+        10225,
+        10225,
+        10225
+      ],
+      "injectedShares": [
+        8975,
+        8975,
+        8975,
+        8975
+      ],
+      "conditionsHash": "0xb31f16323ac656a1ca5773c977ccd33b786aa505eba6f9c6389b226ebe215f80",
+      "rule": "u0 5,000원 감면 후 4인 분담"
+    },
+    {
+      "name": "1. 주입 정산 잠금 — INJECTED_ERROR: shares replaced (calculation-stage error simulation)",
+      "settlementOnchainId": "0xe3869f28b3cce0ae431b4dfba7d98ec5666d8876011a3fa5b197233d56e016c4",
+      "state": "LOCKED",
+      "holdUntil": 1790609916,
+      "conditionsHash": "0xb31f16323ac656a1ca5773c977ccd33b786aa505eba6f9c6389b226ebe215f80",
+      "lockedShares": [
+        8975,
+        8975,
+        8975,
+        8975
+      ],
+      "open": {
+        "txHash": "0x3081fe9bdcef9c4394910420e68a637a032a577ae1f327b312a26f057abf12ef",
+        "block": "#11,801,459"
+      },
+      "confirm": {
+        "txHash": "0x3bcd7f18c2815737d6f332d77d49bbcc3bd63dbd95d0a4332d2e621fa2aa31d9",
+        "block": "#11,801,460",
+        "blockNumber": 11801460,
+        "holdUntil": 1790609916,
+        "explorerUrl": "https://sepolia.etherscan.io/tx/0x3bcd7f18c2815737d6f332d77d49bbcc3bd63dbd95d0a4332d2e621fa2aa31d9"
+      },
+      "locks": [
+        {
+          "from": "u0",
+          "to": "SharePie 정산 에스크로",
+          "amount": 8975,
+          "txHash": "0x79a63b048398b399e171dd064089ba7b3a41d05edef57ecfec58f2c27fbe9359",
+          "fromAddress": "0x6D1f31F089f5646EAe689E9d1a3153802c0A4Ef4",
+          "block": "#11,801,460",
+          "fromName": "진주"
+        },
+        {
+          "from": "u1",
+          "to": "SharePie 정산 에스크로",
+          "amount": 8975,
+          "txHash": "0xd0dbe50f7cc3508345808426a9c1b79f83bc3413b84c8c96ad244556117f7380",
+          "fromAddress": "0x1CAaf2EEDa082Dff1C1F7F341951E0cd30986e66",
+          "block": "#11,801,460",
+          "fromName": "진우"
+        },
+        {
+          "from": "u2",
+          "to": "SharePie 정산 에스크로",
+          "amount": 8975,
+          "txHash": "0xe5efda66edb167fce75bfe88504d45dd8130ebb32436f5bd6d479f06f7abec4c",
+          "fromAddress": "0x4A5224e362EBFB561cd4Fc13fDc29a9764bc1C68",
+          "block": "#11,801,460",
+          "fromName": "민재"
+        },
+        {
+          "from": "u3",
+          "to": "SharePie 정산 에스크로",
+          "amount": 8975,
+          "txHash": "0x3bcd7f18c2815737d6f332d77d49bbcc3bd63dbd95d0a4332d2e621fa2aa31d9",
+          "fromAddress": "0x6074B895367c7B710E881F24eF44754185865fEF",
+          "block": "#11,801,460",
+          "fromName": "지현"
+        }
+      ],
+      "balancesAfterLock": [
+        {
+          "uid": "u0",
+          "name": "진주",
+          "balance": 0
+        },
+        {
+          "uid": "u1",
+          "name": "진우",
+          "balance": 1250
+        },
+        {
+          "uid": "u2",
+          "name": "민재",
+          "balance": 1250
+        },
+        {
+          "uid": "u3",
+          "name": "지현",
+          "balance": 0
+        }
+      ]
+    },
+    {
+      "name": "2. raise_dispute (체인 동결)",
+      "raisedBy": "u0",
+      "reason": "진주(u0)가 5,000원 적게 내기로 했는데 같은 금액이 잠겼어요",
+      "state": "DISPUTED",
+      "txHash": "0xe8b61f7f6ce17e23189fd4cd3273e4dc9c6aaca668fca6a81f0f0ea772847adb",
+      "reasonHash": "0x266110cf9165f0f7d362a6bd00069b777c033c1bfea8154bbf17211dbe9fe2a7"
+    },
+    {
+      "name": "3. AI 재조사 (dispute.investigate — Kiln 호출, AI 토큰 로깅)",
+      "verdict": "GENUINE_ERROR",
+      "mismatchDetected": true,
+      "mismatchPoint": "계산 단계",
+      "expectedAmount": 5225,
+      "actualAmount": 8975,
+      "explanation": "계산 단계에서 u0의 예상 금액 5,225원과 실제 송금 8,975원이 3,750원 차이납니다. 이는 원본 요청서에 명시된 조정 사항이 정산 계산에 반영되지 않았기 때문입니다."
+    },
+    {
+      "name": "4. resolve_dispute → 행동 실행",
+      "summary": "mismatchDetected=true, mismatchPoint=계산 단계 → verdict=GENUINE_ERROR → refund_participant × 4/4",
+      "state": "CANCELLED",
+      "resolveTxHash": "0x0b47441804f43789d5aa82133d418773732a620b7bfc5af97778ab399f4f55db",
+      "resolveExplorerUrl": "https://sepolia.etherscan.io/tx/0x0b47441804f43789d5aa82133d418773732a620b7bfc5af97778ab399f4f55db",
+      "refunds": [
+        {
+          "uid": "u0",
+          "name": "진주",
+          "amount": 8975,
+          "ok": true,
+          "txHash": "0x904fbe4c1ccca8d1f33d6038012fbc43232194ada4a6017a9a245ede2b2d4d67",
+          "error": null
+        },
+        {
+          "uid": "u1",
+          "name": "진우",
+          "amount": 8975,
+          "ok": true,
+          "txHash": "0x5ebd44491dad820c6997defe086e2af05961280f60152d19249685ccea8d87c8",
+          "error": null
+        },
+        {
+          "uid": "u2",
+          "name": "민재",
+          "amount": 8975,
+          "ok": true,
+          "txHash": "0x7f5db134389775980cb6dba120e1c32539d6778c2049377f0e69230fdc275e5d",
+          "error": null
+        },
+        {
+          "uid": "u3",
+          "name": "지현",
+          "amount": 8975,
+          "ok": true,
+          "txHash": "0x14959ada33cbc20bf2c41791e40a1f30872021c750b8653e6e35bdf0675f49d9",
+          "error": null
+        }
+      ],
+      "balances": [
+        {
+          "uid": "u0",
+          "name": "진주",
+          "afterLock": 0,
+          "afterRefund": 8975
+        },
+        {
+          "uid": "u1",
+          "name": "진우",
+          "afterLock": 1250,
+          "afterRefund": 10225
+        },
+        {
+          "uid": "u2",
+          "name": "민재",
+          "afterLock": 1250,
+          "afterRefund": 10225
+        },
+        {
+          "uid": "u3",
+          "name": "지현",
+          "afterLock": 0,
+          "afterRefund": 8975
+        }
+      ]
+    },
+    {
+      "name": "5. 정정 — 부족분 충전 후 올바른 조건으로 새 정산 (LOCKED)",
+      "topUps": [
+        {
+          "uid": "u3",
+          "name": "지현",
+          "amount": 1250,
+          "txHash": "0xdf415da9d6e58ab2b040340ef56119ca91e166c99a37ab4f6c9a5f7b330828bb"
+        }
+      ],
+      "settlementOnchainId": "0x3205db22871abf524c31698fab7a41f4f97e1d5c38f76dedcd863b2fc05551c9",
+      "shares": [
+        5225,
+        10225,
+        10225,
+        10225
+      ],
+      "confirm": {
+        "txHash": "0x7143fe572b361591c727e36dc58fca233d49ace9cab92bf823a8106947fd9fe8",
+        "block": "#11,801,472",
+        "blockNumber": 11801472,
+        "holdUntil": 1790610060,
+        "explorerUrl": "https://sepolia.etherscan.io/tx/0x7143fe572b361591c727e36dc58fca233d49ace9cab92bf823a8106947fd9fe8"
+      },
+      "conditionsHash": "0xb31f16323ac656a1ca5773c977ccd33b786aa505eba6f9c6389b226ebe215f80"
+    }
+  ],
+  "conditions": {
+    "members": [
+      "u0",
+      "u1",
+      "u2",
+      "u3"
+    ],
+    "mode": "ADJUST",
+    "itemName": "삼겹살 1.2kg",
+    "total": 35900,
+    "participants": [
+      "u0",
+      "u1",
+      "u2",
+      "u3"
+    ],
+    "ratios": null,
+    "adjustments": {
+      "u0": -5000
+    },
+    "items": null,
+    "totalBudget": 40000,
+    "payer": null
+  },
+  "conditionsCanonical": "{\"adjustments\":{\"u0\":-5000},\"itemName\":\"삼겹살 1.2kg\",\"items\":null,\"members\":[\"u0\",\"u1\",\"u2\",\"u3\"],\"mode\":\"ADJUST\",\"participants\":[\"u0\",\"u1\",\"u2\",\"u3\"],\"payer\":null,\"ratios\":null,\"total\":35900,\"totalBudget\":40000}",
+  "conditionsHash": "0xb31f16323ac656a1ca5773c977ccd33b786aa505eba6f9c6389b226ebe215f80",
+  "correctShares": [
+    5225,
+    10225,
+    10225,
+    10225
+  ],
+  "injectedShares": [
+    8975,
+    8975,
+    8975,
+    8975
+  ],
+  "nameOf": {
+    "u0": "진주",
+    "u1": "진우",
+    "u2": "민재",
+    "u3": "지현"
+  },
+  "correctionTopUps": [
+    {
+      "uid": "u3",
+      "name": "지현",
+      "amount": 1250,
+      "txHash": "0xdf415da9d6e58ab2b040340ef56119ca91e166c99a37ab4f6c9a5f7b330828bb"
+    }
+  ],
+  "finishedAt": "2026-09-28T15:40:03.831Z",
+  "settlementOnchainId": "0xe3869f28b3cce0ae431b4dfba7d98ec5666d8876011a3fa5b197233d56e016c4",
+  "verdict": "GENUINE_ERROR",
+  "state": "CANCELLED",
+  "txHashes": {
+    "open": "0x3081fe9bdcef9c4394910420e68a637a032a577ae1f327b312a26f057abf12ef",
+    "confirm": "0x3bcd7f18c2815737d6f332d77d49bbcc3bd63dbd95d0a4332d2e621fa2aa31d9",
+    "raise": "0xe8b61f7f6ce17e23189fd4cd3273e4dc9c6aaca668fca6a81f0f0ea772847adb",
+    "resolve": "0x0b47441804f43789d5aa82133d418773732a620b7bfc5af97778ab399f4f55db",
+    "refunds": [
+      "0x904fbe4c1ccca8d1f33d6038012fbc43232194ada4a6017a9a245ede2b2d4d67",
+      "0x5ebd44491dad820c6997defe086e2af05961280f60152d19249685ccea8d87c8",
+      "0x7f5db134389775980cb6dba120e1c32539d6778c2049377f0e69230fdc275e5d",
+      "0x14959ada33cbc20bf2c41791e40a1f30872021c750b8653e6e35bdf0675f49d9"
+    ],
+    "corrected": "0x7143fe572b361591c727e36dc58fca233d49ace9cab92bf823a8106947fd9fe8"
+  },
+  "correctedSettlementOnchainId": "0x3205db22871abf524c31698fab7a41f4f97e1d5c38f76dedcd863b2fc05551c9"
+}

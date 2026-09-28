@@ -1,0 +1,13 @@
+{
+  "network": "sepolia",
+  "chainId": 11155111,
+  "deployedAt": "2026-09-28T16:15:01.642Z",
+  "agent": "0x33f446E980bd8F1CeeAEFA43B2FfDB5e45c46C36",
+  "token": "0xF5cB871A8890bd1D34bf36E749F012D95589E0fD",
+  "tokenTx": "(재사용)",
+  "ledger": "0xF297240957c3aB10458Dc1A4C6eC2eA18292529E",
+  "ledgerTx": "0x71df36db2bc91807a1adc668983528630f68b37046ffc9a1a9111912ec212108",
+  "ledgerDeployBlock": 11801645,
+  "disputeWindowSec": 180,
+  "explorer": "https://sepolia.etherscan.io"
+}
