@@ -180,7 +180,7 @@ def _serpapi_web(query: str, n: int) -> list[dict[str, Any]]:
 
 # (파일, 이름, 이미적용 마커, [(old, new), ...])
 PATCHES = [
-    ("agent/chain.py", "가스 가격 +25% 버퍼", "gas_price * 5 // 4),\n                })" , [(
+    ("agent/chain.py", "가스 가격 +25% 버퍼", ["gas_price * 5 // 4),\n                })" , "def _gas_price"], [(
         '                    "gasPrice": self.w3.eth.gas_price,\n                })',
         '                    # [blockchain 담당] 가스 가격 +25% 버퍼 — 정확히 gas_price 로 보내면 Sepolia 에서 mempool 에 걸려 120초 후 실패\n'
         '                    "gasPrice": int(self.w3.eth.gas_price * 5 // 4),\n                })')]),
@@ -298,7 +298,7 @@ def apply_patches(target: Path) -> list[tuple[str, str, str]]:
             results.append((rel, name, "파일 없음 → 수동 확인"))
             continue
         s = f.read_text(encoding="utf-8")
-        if marker in s:
+        if any(m in s for m in (marker if isinstance(marker, (list, tuple)) else [marker])):
             results.append((rel, name, "이미 적용"))
             continue
         ok = True
