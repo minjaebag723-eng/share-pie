@@ -1,0 +1,30 @@
+# 비밀 값 — 절대 올리지 않기 (키는 각자 .env에만)
+.env
+.env.*
+!.env.example
+!.env.beta.example
+_env
+*.pem
+
+# 데이터 (계정·정산 원본 · 베타 데이터 · 백업)
+data/
+beta-data/
+beta-bundles/
+backups/
+
+# 파이썬 · 노드
+__pycache__/
+*.pyc
+node_modules/
+hardhat/cache/
+hardhat/artifacts/
+hardhat/deployments/members-*.json
+
+# 도구 실행 파일 — 각자 받기 (tools/README.md)
+tools/*.exe
+
+# 병합 흔적 · OS
+.merge-backup-*/
+*.merge-conflict
+.DS_Store
+Thumbs.db

@@ -1,0 +1,19 @@
+# 도커 없이 Linux에서 (systemd) — /opt/share-pie에 코드, .venv에 파이썬 패키지를 설치한 경우
+#   sudo cp deploy/sharepie-beta.service /etc/systemd/system/ && sudo systemctl enable --now sharepie-beta
+# 앞단 HTTPS는 Caddy를 따로 설치해 deploy/Caddyfile의 app:8000을 127.0.0.1:8000, /srv/frontend를 /opt/share-pie/frontend로 바꿔 사용
+[Unit]
+Description=Share Pie beta server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+WorkingDirectory=/opt/share-pie
+Environment=DATA_DIR=/opt/share-pie/data BETA_DATA_DIR=/opt/share-pie/beta-data
+ExecStart=/opt/share-pie/.venv/bin/python -m uvicorn deploy.asgi:app --host 127.0.0.1 --port 8000 --workers 1 --timeout-keep-alive 30 --proxy-headers
+Restart=always
+RestartSec=3
+TimeoutStopSec=30
+User=sharepie
+
+[Install]
+WantedBy=multi-user.target

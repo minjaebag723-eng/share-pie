@@ -1,0 +1,16 @@
+{"type":"pct_add","text":"20만원에 봉사료 10% 붙여서 다섯이 나눠","rule":{"base_amount":200000,"total_pct":10,"total_pct_type":"add","adjustments":[]}}
+{"type":"pct_included","text":"부가세 10% 포함해서 5만 5천원이야 다섯이 똑같이","rule":{"total_amount":55000,"adjustments":[]}}
+{"type":"pct_discount","text":"4만원짜리인데 쿠폰 20% 써서 둘이 나눠","rule":{"base_amount":40000,"total_pct":20,"total_pct_type":"discount","adjustments":[]}}
+{"type":"pct_portion","text":"30만원의 3%만 셋이 나눠","rule":{"base_amount":300000,"total_pct":3,"total_pct_type":"portion","adjustments":[]}}
+{"type":"pct_person","text":"총 6만원, 지현이 전체의 50% 내고 나머지 똑같이","rule":{"total_amount":60000,"adjustments":[{"name":"지현","kind":"percent","value":50}]}}
+{"type":"pct_more","text":"4만 5천원 셋이 나누는데 지현은 50% 더","rule":{"total_amount":45000,"adjustments":[{"name":"지현","kind":"more_pct","value":50}]}}
+{"type":"parts","text":"숙소 30만원 렌트카 12만원 기름값 5만원 넷이","rule":{"amount_parts":[300000,120000,50000],"adjustments":[]}}
+{"type":"parts","text":"5만원인데 포인트 만원 쓰고 나머지 넷이 나눠","rule":{"amount_parts":[50000,-10000],"adjustments":[]}}
+{"type":"per_person","text":"회비 각자 2만원씩 걷자","rule":{"per_person_amount":20000,"adjustments":[]}}
+{"type":"items","text":"12만원 나왔는데 와인 3만원은 지현·진우만","rule":{"total_amount":120000,"items":[{"amount":30000,"members":["지현","진우"],"label":"와인"}],"adjustments":[]}}
+{"type":"ratio_list","text":"민재:지현 = 2:1로 3만원 나눠","rule":{"total_amount":30000,"adjustments":[{"name":"민재","kind":"ratio","value":2},{"name":"지현","kind":"ratio","value":1}]}}
+{"type":"nights","text":"진주·민재·지현 4박 숙소 80만원인데 민재는 1박만 잤어","rule":{"total_amount":800000,"adjustments":[{"name":"민재","kind":"ratio","value":1},{"name":"진주","kind":"ratio","value":4},{"name":"지현","kind":"ratio","value":4}]}}
+{"type":"ratio","text":"2만 4천원인데 진우는 두 배로 내","rule":{"total_amount":24000,"adjustments":[{"name":"진우","kind":"ratio","value":2}]}}
+{"type":"round","text":"7만원 셋이 백원 단위로 맞춰줘, 민재가 계산했어","rule":{"total_amount":70000,"payer":"민재","round_unit":100,"adjustments":[]}}
+{"type":"ask","text":"지현은 3천원 더, 진우는 지현의 절반","rule":{"missing":["vague"],"question":"진우님 금액을 원이나 %로 알려 주세요. 예: 진우는 1만원, 진우는 20% 덜"}}
+{"type":"ask","text":"2:1로 나눠줘","rule":{"missing":["vague"],"question":"2:1에서 누가 몇인지 알려 주세요. 예: 진주:민재 = 2:1"}}

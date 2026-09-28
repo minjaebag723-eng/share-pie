@@ -1,0 +1,25 @@
+# SITE_ADDRESS: 도메인(예 beta.sharepie.kr)이면 HTTPS 인증서 자동 · 도메인이 없으면 서버 IP로 12-34-56-78.sslip.io · 시험만 :80
+{$SITE_ADDRESS::80} {
+	encode zstd gzip
+	@api path /api/* /healthz
+	handle @api {
+		reverse_proxy app:8000 {
+			transport http {
+				read_timeout 180s
+			}
+		}
+	}
+	# 화면 파일(index.html·assets)은 Caddy가 바로 — 파이썬 서버는 API만 처리 (100명이 한꺼번에 열어도 가볍게)
+	handle {
+		root * /srv/frontend
+		try_files {path} /index.html
+		file_server
+		header Cache-Control "no-cache"
+	}
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+}

@@ -1,0 +1,118 @@
+{
+  "cases": [
+    {
+      "label": "1인 한도 9,000원",
+      "caps": {
+        "per_person_cap": 9000,
+        "total_cap": null
+      },
+      "status": "blocked",
+      "blocked": {
+        "code": "OVER_PERSON_CAP",
+        "reason_code": 2,
+        "member": "진우2",
+        "message": "진우2님 10,225원 > 1인 한도 9,000원",
+        "detail": {
+          "share": 10225,
+          "cap": 9000
+        },
+        "tx_hash": "0x58996bc68dc304732cd2b51d97177282e4df635891b3a06f3906d99d7dbcba66",
+        "block": 11802013,
+        "url": "https://sepolia.etherscan.io/tx/0x58996bc68dc304732cd2b51d97177282e4df635891b3a06f3906d99d7dbcba66"
+      },
+      "violations": [
+        {
+          "code": "OVER_PERSON_CAP",
+          "reason_code": 2,
+          "member": "진우2",
+          "message": "진우2님 10,225원 > 1인 한도 9,000원",
+          "detail": {
+            "share": 10225,
+            "cap": 9000
+          }
+        },
+        {
+          "code": "OVER_PERSON_CAP",
+          "reason_code": 2,
+          "member": "민재2",
+          "message": "민재2님 10,225원 > 1인 한도 9,000원",
+          "detail": {
+            "share": 10225,
+            "cap": 9000
+          }
+        },
+        {
+          "code": "OVER_PERSON_CAP",
+          "reason_code": 2,
+          "member": "지현2",
+          "message": "지현2님 10,225원 > 1인 한도 9,000원",
+          "detail": {
+            "share": 10225,
+            "cap": 9000
+          }
+        }
+      ],
+      "error": null,
+      "txs": [
+        {
+          "kind": "block",
+          "tx_hash": "0x58996bc68dc304732cd2b51d97177282e4df635891b3a06f3906d99d7dbcba66",
+          "block": 11802013,
+          "url": "https://sepolia.etherscan.io/tx/0x58996bc68dc304732cd2b51d97177282e4df635891b3a06f3906d99d7dbcba66",
+          "member": null,
+          "at": 1790616516.9683344
+        }
+      ]
+    },
+    {
+      "label": "총 한도 30,000원",
+      "caps": {
+        "per_person_cap": null,
+        "total_cap": 30000
+      },
+      "status": "blocked",
+      "blocked": {
+        "code": "OVER_TOTAL_CAP",
+        "reason_code": 5,
+        "member": null,
+        "message": "총액 35,900원이 총 예산 30,000원을 넘어요",
+        "detail": {
+          "total": 35900,
+          "cap": 30000
+        },
+        "tx_hash": "0x84ed29a0cfff37efda3c9f0de1c73e472a6ca32bb44a3c9b4c27ba9113ec4162",
+        "block": 11802014,
+        "url": "https://sepolia.etherscan.io/tx/0x84ed29a0cfff37efda3c9f0de1c73e472a6ca32bb44a3c9b4c27ba9113ec4162"
+      },
+      "violations": [
+        {
+          "code": "OVER_TOTAL_CAP",
+          "reason_code": 5,
+          "member": null,
+          "message": "총액 35,900원이 총 예산 30,000원을 넘어요",
+          "detail": {
+            "total": 35900,
+            "cap": 30000
+          }
+        }
+      ],
+      "error": null,
+      "txs": [
+        {
+          "kind": "block",
+          "tx_hash": "0x84ed29a0cfff37efda3c9f0de1c73e472a6ca32bb44a3c9b4c27ba9113ec4162",
+          "block": 11802014,
+          "url": "https://sepolia.etherscan.io/tx/0x84ed29a0cfff37efda3c9f0de1c73e472a6ca32bb44a3c9b4c27ba9113ec4162",
+          "member": null,
+          "at": 1790616528.683436
+        }
+      ]
+    }
+  ],
+  "balancesAfter": {
+    "진주2": 415200,
+    "진우2": 261600,
+    "민재2": 261600,
+    "지현2": 261600
+  }
+}

@@ -17,7 +17,7 @@
    ```
    KILN_API_KEY=sk-bk-여기에_발급받은_키
    KILN_BASE_URL=https://api.bricksum.com/v1
-   KILN_MODEL=gpt-oss-120b
+   KILN_MODEL=qwen3-32b
    ```
 4. `.env`는 반드시 `.gitignore`에 추가 — 절대 커밋하지 않는다
 
@@ -29,7 +29,7 @@ curl https://api.bricksum.com/v1/chat/completions \
   -H "Authorization: Bearer $KILN_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "gpt-oss-120b",
+    "model": "qwen3-32b",
     "messages": [{"role": "user", "content": "Hello!"}]
   }'
 ```
@@ -37,7 +37,7 @@ curl https://api.bricksum.com/v1/chat/completions \
 
 ## 3. 블록체인 환경 세팅
 
-- [ ] 체인 확정 (Move/Aptos·Sui 또는 Solidity/EVM 중 팀 결정)
+- [x] 체인 확정: **BNB Smart Chain Testnet (Solidity/EVM)** — 배포는 `docs/DEPLOY.md` 2번 (Remix)
 - [ ] CLI 설치 (Aptos CLI 또는 Hardhat/Foundry)
 - [ ] 테스트넷 지갑 생성 + 테스트넷 토큰(faucet) 받기
 - [ ] `CLAUDE.md` 5번의 함수 7개(`charge_token` 등)를 골격만 먼저 컴파일되게 작성 → devnet 배포 → 컨트랙트 주소를 `CLAUDE.md` 10번(환경변수)에 채워넣기
@@ -49,7 +49,7 @@ curl https://api.bricksum.com/v1/chat/completions \
 
 ## 5. 백엔드 서버 뼈대
 
-1. Node.js(Express) 서버 생성
+1. ~~Node.js(Express)~~ → **확정: Python 백엔드가 이미 있음** (`py -m uvicorn backend.app:app --port 8000`, `docs/DEPLOY.md` 0번)
 2. `CLAUDE.md` 6번의 엔드포인트를 "정산 코어 → Dispute 모듈 → Shopping 모듈" 순서 그대로 빈 함수(스텁)로 먼저 다 만들어두기 — 나중에 하나씩 채움
 3. Kiln API 클라이언트 모듈 하나 만들어서(`kilnClient.js`) 모든 엔드포인트가 이걸 공유해서 쓰게 함 (Stage 태깅·토큰 로깅을 여기서 공통 처리)
 4. **정산 코어(Stage 1~3)를 다턴(multi-turn) 대화로 설계** — 사용자가 조건을 도중에 바꾸면 Stage 1이 최신 JSON을 다시 만들어 Stage 2로 넘기는 구조를 처음부터 염두에 둘 것 (`CLAUDE.md` 3번 참고)

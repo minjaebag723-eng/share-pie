@@ -1,0 +1,526 @@
+{
+  "settlement": {
+    "id": "sp-ad7eae84df",
+    "groupId": null,
+    "chainId": "0xb8200230b409c895a64ecfea1effdb9ba57c2a8829010f43a0e4f1ea17bd5de2",
+    "name": "삼겹살 공동구매 (2차)",
+    "total": 35900,
+    "payer": "진주2",
+    "purpose": "삼겹살 1.2kg 공동구매 분담금(균등)",
+    "ruleText": "진주2는 5천원 적게 내고 나머지 세 명이 나눠줘",
+    "mode": "EQUAL",
+    "perPersonCap": null,
+    "totalCap": 40000,
+    "merchant": "Share Pie 공동구매",
+    "members": [
+      {
+        "name": "진주2",
+        "wallet": "0xAfae051463173d910a48F122BE1FB5807cdcAAC2",
+        "share": 8975,
+        "state": "payee",
+        "locked": true
+      },
+      {
+        "name": "진우2",
+        "wallet": "0x09FA021a7BeE1Cb9B0bC54Dd5B2159Dfc08be2fd",
+        "share": 8975,
+        "state": "locked",
+        "locked": true
+      },
+      {
+        "name": "민재2",
+        "wallet": "0xCDBe8648a551bEb8A51988274931C2842f8Fc871",
+        "share": 8975,
+        "state": "locked",
+        "locked": true
+      },
+      {
+        "name": "지현2",
+        "wallet": "0xb8E7BCFdE023692652D65Bb68D32345714B71F90",
+        "share": 8975,
+        "state": "locked",
+        "locked": true
+      }
+    ],
+    "status": "paid",
+    "releaseAt": 1790614812,
+    "now": 1790614658.805699,
+    "blocked": null,
+    "violations": [],
+    "dispute": {
+      "by": "진우2",
+      "reason": "판매자가 품절로 주문을 취소했어요. 예치금을 전원 돌려받아야 해요",
+      "raised_tx": "0x7e1b4dbb9f771c79a8ced56038c41f1d890a53b3f27add7fafdbd0c5a2eda72a",
+      "raised_url": "https://sepolia.etherscan.io/tx/0x7e1b4dbb9f771c79a8ced56038c41f1d890a53b3f27add7fafdbd0c5a2eda72a",
+      "at": 1790614644.8323238,
+      "verdict": "NORMAL_APPROVAL",
+      "verdict_ko": "정상 승인 (정산 유지)",
+      "refund": "none",
+      "explanation": "",
+      "guard": null,
+      "findings": [
+        {
+          "stage": "최초 요청",
+          "level": "ok",
+          "message": "분담 조건 원문 해시 일치: “진주2는 5천원 적게 내고 나머지 세 명이 나눠줘”"
+        },
+        {
+          "stage": "정산 코어(Stage1·2)",
+          "level": "ok",
+          "message": "코드 계산 합계 35,900원 검증 통과"
+        },
+        {
+          "stage": "온체인 등록",
+          "level": "ok",
+          "message": "4명 분담표가 체인과 일치"
+        },
+        {
+          "stage": "승인(예치)",
+          "level": "ok",
+          "message": "본인 지갑 서명으로 예치: 진우2, 민재2, 지현2"
+        },
+        {
+          "stage": "결제",
+          "level": "ok",
+          "message": "전원 확보 · 에스크로 보관 중 26,925원 (결제자에게 아직 지급 전)"
+        }
+      ],
+      "reason_category": null,
+      "refunded": [],
+      "resolved_tx": "0x6a47d5e0c9cfb1dd6ee8fae84187d4a7f42e9f09b89dc4b29b967ef0dd1eee9b",
+      "resolved_url": "https://sepolia.etherscan.io/tx/0x6a47d5e0c9cfb1dd6ee8fae84187d4a7f42e9f09b89dc4b29b967ef0dd1eee9b",
+      "resolved_at": 1790614657.4494312
+    },
+    "txs": [
+      {
+        "kind": "create",
+        "tx_hash": "0x77c56891fea34a55bf1df523f5e6cdd9967ef0cbc2739894f106a461f4eaea78",
+        "block": 11801849,
+        "url": "https://sepolia.etherscan.io/tx/0x77c56891fea34a55bf1df523f5e6cdd9967ef0cbc2739894f106a461f4eaea78",
+        "member": null,
+        "at": 1790614549.3066776
+      },
+      {
+        "kind": "lock",
+        "tx_hash": "0xa704bb5f7a009d215f6992804bca90554b74e5eca81675c3692a9f049ff7db7b",
+        "block": 11801852,
+        "url": "https://sepolia.etherscan.io/tx/0xa704bb5f7a009d215f6992804bca90554b74e5eca81675c3692a9f049ff7db7b",
+        "member": "진우2",
+        "at": 1790614587.7652519
+      },
+      {
+        "kind": "lock",
+        "tx_hash": "0xe8f7b968be2793bdd871cf301e0f54566ecd4a6b2c31351987cb5feb21b1b0df",
+        "block": 11801854,
+        "url": "https://sepolia.etherscan.io/tx/0xe8f7b968be2793bdd871cf301e0f54566ecd4a6b2c31351987cb5feb21b1b0df",
+        "member": "민재2",
+        "at": 1790614609.8952198
+      },
+      {
+        "kind": "lock",
+        "tx_hash": "0x46e18540023890d5a93e535d7b33c8cabb4b7b4245afce475efed844a14281a0",
+        "block": 11801856,
+        "url": "https://sepolia.etherscan.io/tx/0x46e18540023890d5a93e535d7b33c8cabb4b7b4245afce475efed844a14281a0",
+        "member": "지현2",
+        "at": 1790614636.3108938
+      },
+      {
+        "kind": "escrow",
+        "tx_hash": "0x46e18540023890d5a93e535d7b33c8cabb4b7b4245afce475efed844a14281a0",
+        "block": 11801856,
+        "url": "https://sepolia.etherscan.io/tx/0x46e18540023890d5a93e535d7b33c8cabb4b7b4245afce475efed844a14281a0",
+        "member": null,
+        "at": 1790614636.3109024
+      },
+      {
+        "kind": "dispute",
+        "tx_hash": "0x7e1b4dbb9f771c79a8ced56038c41f1d890a53b3f27add7fafdbd0c5a2eda72a",
+        "block": 11801857,
+        "url": "https://sepolia.etherscan.io/tx/0x7e1b4dbb9f771c79a8ced56038c41f1d890a53b3f27add7fafdbd0c5a2eda72a",
+        "member": "진우2",
+        "at": 1790614644.832335
+      },
+      {
+        "kind": "resolve",
+        "tx_hash": "0x6a47d5e0c9cfb1dd6ee8fae84187d4a7f42e9f09b89dc4b29b967ef0dd1eee9b",
+        "block": 11801858,
+        "url": "https://sepolia.etherscan.io/tx/0x6a47d5e0c9cfb1dd6ee8fae84187d4a7f42e9f09b89dc4b29b967ef0dd1eee9b",
+        "member": null,
+        "at": 1790614657.4493725
+      },
+      {
+        "kind": "paid",
+        "tx_hash": "0x6a47d5e0c9cfb1dd6ee8fae84187d4a7f42e9f09b89dc4b29b967ef0dd1eee9b",
+        "block": 11801858,
+        "url": "https://sepolia.etherscan.io/tx/0x6a47d5e0c9cfb1dd6ee8fae84187d4a7f42e9f09b89dc4b29b967ef0dd1eee9b",
+        "member": null,
+        "at": 1790614657.4494164
+      }
+    ],
+    "network": "BNB Smart Chain Testnet",
+    "cert": {
+      "txHash": "0x6a47d5e0c9cfb1dd6ee8fae84187d4a7f42e9f09b89dc4b29b967ef0dd1eee9b",
+      "block": 11801858,
+      "url": "https://sepolia.etherscan.io/tx/0x6a47d5e0c9cfb1dd6ee8fae84187d4a7f42e9f09b89dc4b29b967ef0dd1eee9b"
+    },
+    "createdAt": 1790614540.2209451,
+    "purchase": null
+  },
+  "locks": [
+    {
+      "member": "진우2",
+      "share": 8975,
+      "tx_hash": "0xa704bb5f7a009d215f6992804bca90554b74e5eca81675c3692a9f049ff7db7b",
+      "block": 11801852,
+      "url": "https://sepolia.etherscan.io/tx/0xa704bb5f7a009d215f6992804bca90554b74e5eca81675c3692a9f049ff7db7b"
+    },
+    {
+      "member": "민재2",
+      "share": 8975,
+      "tx_hash": "0xe8f7b968be2793bdd871cf301e0f54566ecd4a6b2c31351987cb5feb21b1b0df",
+      "block": 11801854,
+      "url": "https://sepolia.etherscan.io/tx/0xe8f7b968be2793bdd871cf301e0f54566ecd4a6b2c31351987cb5feb21b1b0df"
+    },
+    {
+      "member": "지현2",
+      "share": 8975,
+      "tx_hash": "0x46e18540023890d5a93e535d7b33c8cabb4b7b4245afce475efed844a14281a0",
+      "block": 11801856,
+      "url": "https://sepolia.etherscan.io/tx/0x46e18540023890d5a93e535d7b33c8cabb4b7b4245afce475efed844a14281a0"
+    }
+  ],
+  "dispute": {
+    "by": "진우2",
+    "reason": "판매자가 품절로 주문을 취소했어요. 예치금을 전원 돌려받아야 해요",
+    "raise": {
+      "id": "sp-ad7eae84df",
+      "groupId": null,
+      "chainId": "0xb8200230b409c895a64ecfea1effdb9ba57c2a8829010f43a0e4f1ea17bd5de2",
+      "name": "삼겹살 공동구매 (2차)",
+      "total": 35900,
+      "payer": "진주2",
+      "purpose": "삼겹살 1.2kg 공동구매 분담금(균등)",
+      "ruleText": "진주2는 5천원 적게 내고 나머지 세 명이 나눠줘",
+      "mode": "EQUAL",
+      "perPersonCap": null,
+      "totalCap": 40000,
+      "merchant": "Share Pie 공동구매",
+      "members": [
+        {
+          "name": "진주2",
+          "wallet": "0xAfae051463173d910a48F122BE1FB5807cdcAAC2",
+          "share": 8975,
+          "state": "payee",
+          "locked": true
+        },
+        {
+          "name": "진우2",
+          "wallet": "0x09FA021a7BeE1Cb9B0bC54Dd5B2159Dfc08be2fd",
+          "share": 8975,
+          "state": "locked",
+          "locked": true
+        },
+        {
+          "name": "민재2",
+          "wallet": "0xCDBe8648a551bEb8A51988274931C2842f8Fc871",
+          "share": 8975,
+          "state": "locked",
+          "locked": true
+        },
+        {
+          "name": "지현2",
+          "wallet": "0xb8E7BCFdE023692652D65Bb68D32345714B71F90",
+          "share": 8975,
+          "state": "locked",
+          "locked": true
+        }
+      ],
+      "status": "disputed",
+      "releaseAt": 1790614812,
+      "now": 1790614645.4811447,
+      "blocked": null,
+      "violations": [],
+      "dispute": {
+        "by": "진우2",
+        "reason": "판매자가 품절로 주문을 취소했어요. 예치금을 전원 돌려받아야 해요",
+        "raised_tx": "0x7e1b4dbb9f771c79a8ced56038c41f1d890a53b3f27add7fafdbd0c5a2eda72a",
+        "raised_url": "https://sepolia.etherscan.io/tx/0x7e1b4dbb9f771c79a8ced56038c41f1d890a53b3f27add7fafdbd0c5a2eda72a",
+        "at": 1790614644.8323238,
+        "verdict": null
+      },
+      "txs": [
+        {
+          "kind": "create",
+          "tx_hash": "0x77c56891fea34a55bf1df523f5e6cdd9967ef0cbc2739894f106a461f4eaea78",
+          "block": 11801849,
+          "url": "https://sepolia.etherscan.io/tx/0x77c56891fea34a55bf1df523f5e6cdd9967ef0cbc2739894f106a461f4eaea78",
+          "member": null,
+          "at": 1790614549.3066776
+        },
+        {
+          "kind": "lock",
+          "tx_hash": "0xa704bb5f7a009d215f6992804bca90554b74e5eca81675c3692a9f049ff7db7b",
+          "block": 11801852,
+          "url": "https://sepolia.etherscan.io/tx/0xa704bb5f7a009d215f6992804bca90554b74e5eca81675c3692a9f049ff7db7b",
+          "member": "진우2",
+          "at": 1790614587.7652519
+        },
+        {
+          "kind": "lock",
+          "tx_hash": "0xe8f7b968be2793bdd871cf301e0f54566ecd4a6b2c31351987cb5feb21b1b0df",
+          "block": 11801854,
+          "url": "https://sepolia.etherscan.io/tx/0xe8f7b968be2793bdd871cf301e0f54566ecd4a6b2c31351987cb5feb21b1b0df",
+          "member": "민재2",
+          "at": 1790614609.8952198
+        },
+        {
+          "kind": "lock",
+          "tx_hash": "0x46e18540023890d5a93e535d7b33c8cabb4b7b4245afce475efed844a14281a0",
+          "block": 11801856,
+          "url": "https://sepolia.etherscan.io/tx/0x46e18540023890d5a93e535d7b33c8cabb4b7b4245afce475efed844a14281a0",
+          "member": "지현2",
+          "at": 1790614636.3108938
+        },
+        {
+          "kind": "escrow",
+          "tx_hash": "0x46e18540023890d5a93e535d7b33c8cabb4b7b4245afce475efed844a14281a0",
+          "block": 11801856,
+          "url": "https://sepolia.etherscan.io/tx/0x46e18540023890d5a93e535d7b33c8cabb4b7b4245afce475efed844a14281a0",
+          "member": null,
+          "at": 1790614636.3109024
+        },
+        {
+          "kind": "dispute",
+          "tx_hash": "0x7e1b4dbb9f771c79a8ced56038c41f1d890a53b3f27add7fafdbd0c5a2eda72a",
+          "block": 11801857,
+          "url": "https://sepolia.etherscan.io/tx/0x7e1b4dbb9f771c79a8ced56038c41f1d890a53b3f27add7fafdbd0c5a2eda72a",
+          "member": "진우2",
+          "at": 1790614644.832335
+        }
+      ],
+      "network": "BNB Smart Chain Testnet",
+      "cert": {
+        "txHash": "0x46e18540023890d5a93e535d7b33c8cabb4b7b4245afce475efed844a14281a0",
+        "block": 11801856,
+        "url": "https://sepolia.etherscan.io/tx/0x46e18540023890d5a93e535d7b33c8cabb4b7b4245afce475efed844a14281a0",
+        "pending": true
+      },
+      "createdAt": 1790614540.2209451,
+      "purchase": null
+    },
+    "investigate": {
+      "verdict": "NORMAL_APPROVAL",
+      "verdict_ko": "정상 승인 (정산 유지)",
+      "refund": "none",
+      "reason_category": null,
+      "explanation": "",
+      "guard": null,
+      "findings": [
+        {
+          "stage": "최초 요청",
+          "level": "ok",
+          "message": "분담 조건 원문 해시 일치: “진주2는 5천원 적게 내고 나머지 세 명이 나눠줘”"
+        },
+        {
+          "stage": "정산 코어(Stage1·2)",
+          "level": "ok",
+          "message": "코드 계산 합계 35,900원 검증 통과"
+        },
+        {
+          "stage": "온체인 등록",
+          "level": "ok",
+          "message": "4명 분담표가 체인과 일치"
+        },
+        {
+          "stage": "승인(예치)",
+          "level": "ok",
+          "message": "본인 지갑 서명으로 예치: 진우2, 민재2, 지현2"
+        },
+        {
+          "stage": "결제",
+          "level": "ok",
+          "message": "전원 확보 · 에스크로 보관 중 26,925원 (결제자에게 아직 지급 전)"
+        }
+      ]
+    },
+    "resolve": {
+      "id": "sp-ad7eae84df",
+      "groupId": null,
+      "chainId": "0xb8200230b409c895a64ecfea1effdb9ba57c2a8829010f43a0e4f1ea17bd5de2",
+      "name": "삼겹살 공동구매 (2차)",
+      "total": 35900,
+      "payer": "진주2",
+      "purpose": "삼겹살 1.2kg 공동구매 분담금(균등)",
+      "ruleText": "진주2는 5천원 적게 내고 나머지 세 명이 나눠줘",
+      "mode": "EQUAL",
+      "perPersonCap": null,
+      "totalCap": 40000,
+      "merchant": "Share Pie 공동구매",
+      "members": [
+        {
+          "name": "진주2",
+          "wallet": "0xAfae051463173d910a48F122BE1FB5807cdcAAC2",
+          "share": 8975,
+          "state": "payee",
+          "locked": true
+        },
+        {
+          "name": "진우2",
+          "wallet": "0x09FA021a7BeE1Cb9B0bC54Dd5B2159Dfc08be2fd",
+          "share": 8975,
+          "state": "locked",
+          "locked": true
+        },
+        {
+          "name": "민재2",
+          "wallet": "0xCDBe8648a551bEb8A51988274931C2842f8Fc871",
+          "share": 8975,
+          "state": "locked",
+          "locked": true
+        },
+        {
+          "name": "지현2",
+          "wallet": "0xb8E7BCFdE023692652D65Bb68D32345714B71F90",
+          "share": 8975,
+          "state": "locked",
+          "locked": true
+        }
+      ],
+      "status": "paid",
+      "releaseAt": 1790614812,
+      "now": 1790614658.145222,
+      "blocked": null,
+      "violations": [],
+      "dispute": {
+        "by": "진우2",
+        "reason": "판매자가 품절로 주문을 취소했어요. 예치금을 전원 돌려받아야 해요",
+        "raised_tx": "0x7e1b4dbb9f771c79a8ced56038c41f1d890a53b3f27add7fafdbd0c5a2eda72a",
+        "raised_url": "https://sepolia.etherscan.io/tx/0x7e1b4dbb9f771c79a8ced56038c41f1d890a53b3f27add7fafdbd0c5a2eda72a",
+        "at": 1790614644.8323238,
+        "verdict": "NORMAL_APPROVAL",
+        "verdict_ko": "정상 승인 (정산 유지)",
+        "refund": "none",
+        "explanation": "",
+        "guard": null,
+        "findings": [
+          {
+            "stage": "최초 요청",
+            "level": "ok",
+            "message": "분담 조건 원문 해시 일치: “진주2는 5천원 적게 내고 나머지 세 명이 나눠줘”"
+          },
+          {
+            "stage": "정산 코어(Stage1·2)",
+            "level": "ok",
+            "message": "코드 계산 합계 35,900원 검증 통과"
+          },
+          {
+            "stage": "온체인 등록",
+            "level": "ok",
+            "message": "4명 분담표가 체인과 일치"
+          },
+          {
+            "stage": "승인(예치)",
+            "level": "ok",
+            "message": "본인 지갑 서명으로 예치: 진우2, 민재2, 지현2"
+          },
+          {
+            "stage": "결제",
+            "level": "ok",
+            "message": "전원 확보 · 에스크로 보관 중 26,925원 (결제자에게 아직 지급 전)"
+          }
+        ],
+        "reason_category": null,
+        "refunded": [],
+        "resolved_tx": "0x6a47d5e0c9cfb1dd6ee8fae84187d4a7f42e9f09b89dc4b29b967ef0dd1eee9b",
+        "resolved_url": "https://sepolia.etherscan.io/tx/0x6a47d5e0c9cfb1dd6ee8fae84187d4a7f42e9f09b89dc4b29b967ef0dd1eee9b",
+        "resolved_at": 1790614657.4494312
+      },
+      "txs": [
+        {
+          "kind": "create",
+          "tx_hash": "0x77c56891fea34a55bf1df523f5e6cdd9967ef0cbc2739894f106a461f4eaea78",
+          "block": 11801849,
+          "url": "https://sepolia.etherscan.io/tx/0x77c56891fea34a55bf1df523f5e6cdd9967ef0cbc2739894f106a461f4eaea78",
+          "member": null,
+          "at": 1790614549.3066776
+        },
+        {
+          "kind": "lock",
+          "tx_hash": "0xa704bb5f7a009d215f6992804bca90554b74e5eca81675c3692a9f049ff7db7b",
+          "block": 11801852,
+          "url": "https://sepolia.etherscan.io/tx/0xa704bb5f7a009d215f6992804bca90554b74e5eca81675c3692a9f049ff7db7b",
+          "member": "진우2",
+          "at": 1790614587.7652519
+        },
+        {
+          "kind": "lock",
+          "tx_hash": "0xe8f7b968be2793bdd871cf301e0f54566ecd4a6b2c31351987cb5feb21b1b0df",
+          "block": 11801854,
+          "url": "https://sepolia.etherscan.io/tx/0xe8f7b968be2793bdd871cf301e0f54566ecd4a6b2c31351987cb5feb21b1b0df",
+          "member": "민재2",
+          "at": 1790614609.8952198
+        },
+        {
+          "kind": "lock",
+          "tx_hash": "0x46e18540023890d5a93e535d7b33c8cabb4b7b4245afce475efed844a14281a0",
+          "block": 11801856,
+          "url": "https://sepolia.etherscan.io/tx/0x46e18540023890d5a93e535d7b33c8cabb4b7b4245afce475efed844a14281a0",
+          "member": "지현2",
+          "at": 1790614636.3108938
+        },
+        {
+          "kind": "escrow",
+          "tx_hash": "0x46e18540023890d5a93e535d7b33c8cabb4b7b4245afce475efed844a14281a0",
+          "block": 11801856,
+          "url": "https://sepolia.etherscan.io/tx/0x46e18540023890d5a93e535d7b33c8cabb4b7b4245afce475efed844a14281a0",
+          "member": null,
+          "at": 1790614636.3109024
+        },
+        {
+          "kind": "dispute",
+          "tx_hash": "0x7e1b4dbb9f771c79a8ced56038c41f1d890a53b3f27add7fafdbd0c5a2eda72a",
+          "block": 11801857,
+          "url": "https://sepolia.etherscan.io/tx/0x7e1b4dbb9f771c79a8ced56038c41f1d890a53b3f27add7fafdbd0c5a2eda72a",
+          "member": "진우2",
+          "at": 1790614644.832335
+        },
+        {
+          "kind": "resolve",
+          "tx_hash": "0x6a47d5e0c9cfb1dd6ee8fae84187d4a7f42e9f09b89dc4b29b967ef0dd1eee9b",
+          "block": 11801858,
+          "url": "https://sepolia.etherscan.io/tx/0x6a47d5e0c9cfb1dd6ee8fae84187d4a7f42e9f09b89dc4b29b967ef0dd1eee9b",
+          "member": null,
+          "at": 1790614657.4493725
+        },
+        {
+          "kind": "paid",
+          "tx_hash": "0x6a47d5e0c9cfb1dd6ee8fae84187d4a7f42e9f09b89dc4b29b967ef0dd1eee9b",
+          "block": 11801858,
+          "url": "https://sepolia.etherscan.io/tx/0x6a47d5e0c9cfb1dd6ee8fae84187d4a7f42e9f09b89dc4b29b967ef0dd1eee9b",
+          "member": null,
+          "at": 1790614657.4494164
+        }
+      ],
+      "network": "BNB Smart Chain Testnet",
+      "cert": {
+        "txHash": "0x6a47d5e0c9cfb1dd6ee8fae84187d4a7f42e9f09b89dc4b29b967ef0dd1eee9b",
+        "block": 11801858,
+        "url": "https://sepolia.etherscan.io/tx/0x6a47d5e0c9cfb1dd6ee8fae84187d4a7f42e9f09b89dc4b29b967ef0dd1eee9b"
+      },
+      "createdAt": 1790614540.2209451,
+      "purchase": null
+    }
+  },
+  "balancesBefore": {
+    "진주2": 126925,
+    "진우2": 82050,
+    "민재2": 82050,
+    "지현2": 82050
+  },
+  "balancesAfter": {
+    "진주2": 153850,
+    "진우2": 82050,
+    "민재2": 82050,
+    "지현2": 82050
+  }
+}

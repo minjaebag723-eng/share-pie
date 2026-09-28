@@ -1,0 +1,9 @@
+.env
+data/
+beta-data/
+beta-bundles/
+backups/
+**/__pycache__/
+*.pyc
+.git/
+node_modules/

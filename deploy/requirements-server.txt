@@ -1,0 +1,2 @@
+# 베타 서버에서만 추가 (빠른 이벤트 루프·HTTP 파서 — Windows에서는 알아서 빠짐)
+uvicorn[standard]>=0.29

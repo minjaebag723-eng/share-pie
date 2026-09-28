@@ -1,0 +1,8 @@
+starlette>=0.37
+uvicorn>=0.29
+httpx>=0.27
+pydantic>=2.6
+# CHAIN_MODE=bsc 일 때만 필요
+web3>=6.15
+# Apple 로그인을 쓸 때만 (client_secret JWT 서명)
+# cryptography>=42

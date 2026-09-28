@@ -1,0 +1,8 @@
+# 줄바꿈 자동 정리 · Windows 실행 파일은 CRLF 고정 (LF면 한글 줄이 깨져 서버가 안 켜짐)
+* text=auto
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.sh  text eol=lf
+*.jpg binary
+*.png binary
+*.pdf binary

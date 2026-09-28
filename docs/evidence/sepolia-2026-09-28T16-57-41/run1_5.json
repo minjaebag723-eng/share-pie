@@ -1,0 +1,75 @@
+{
+  "cases": [
+    {
+      "label": "1인 한도 9,000원",
+      "caps": {
+        "per_person_cap": 9000,
+        "total_cap": null
+      },
+      "status": "open",
+      "blocked": null,
+      "violations": [],
+      "error": null,
+      "txs": [
+        {
+          "kind": "create",
+          "tx_hash": "0x9d90e808532df1e070b7322886ec880ac9def22ac939a7225c8156f798f8cf82",
+          "block": 11801847,
+          "url": "https://sepolia.etherscan.io/tx/0x9d90e808532df1e070b7322886ec880ac9def22ac939a7225c8156f798f8cf82",
+          "member": null,
+          "at": 1790614525.6245952
+        }
+      ]
+    },
+    {
+      "label": "총 한도 30,000원",
+      "caps": {
+        "per_person_cap": null,
+        "total_cap": 30000
+      },
+      "status": "blocked",
+      "blocked": {
+        "code": "OVER_TOTAL_CAP",
+        "reason_code": 5,
+        "member": null,
+        "message": "총액 35,900원이 총 예산 30,000원을 넘어요",
+        "detail": {
+          "total": 35900,
+          "cap": 30000
+        },
+        "tx_hash": "0x656bbf5082866c76903f4c5b5644a8172eeb4cf7de3674bf61815c1ddbcc4f48",
+        "block": 11801848,
+        "url": "https://sepolia.etherscan.io/tx/0x656bbf5082866c76903f4c5b5644a8172eeb4cf7de3674bf61815c1ddbcc4f48"
+      },
+      "violations": [
+        {
+          "code": "OVER_TOTAL_CAP",
+          "reason_code": 5,
+          "member": null,
+          "message": "총액 35,900원이 총 예산 30,000원을 넘어요",
+          "detail": {
+            "total": 35900,
+            "cap": 30000
+          }
+        }
+      ],
+      "error": null,
+      "txs": [
+        {
+          "kind": "block",
+          "tx_hash": "0x656bbf5082866c76903f4c5b5644a8172eeb4cf7de3674bf61815c1ddbcc4f48",
+          "block": 11801848,
+          "url": "https://sepolia.etherscan.io/tx/0x656bbf5082866c76903f4c5b5644a8172eeb4cf7de3674bf61815c1ddbcc4f48",
+          "member": null,
+          "at": 1790614537.6028059
+        }
+      ]
+    }
+  ],
+  "balancesAfter": {
+    "진주2": 126925,
+    "진우2": 91025,
+    "민재2": 91025,
+    "지현2": 91025
+  }
+}

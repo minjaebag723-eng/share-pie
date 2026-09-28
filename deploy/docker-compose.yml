@@ -1,0 +1,39 @@
+# Share Pie 베타 서버 — 프로젝트 맨 위 폴더에서 실행:
+#   docker compose --env-file .env -f deploy/docker-compose.yml up -d --build      (또는 bash deploy/beta.sh up)
+# 데이터는 호스트의 두 폴더에 쌓인다 (컨테이너를 지우거나 새 버전으로 바꿔도 그대로):
+#   data/       운영 데이터 — 계정·비밀번호 해시·정산 원본·Kiln 원본 기록. 백업만 하고 밖으로 보내지 않음
+#   beta-data/  베타 데이터 — 비식별 학습·토큰·평가 데이터. 이 폴더만 통째로 보내면 됨
+name: sharepie-beta
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    env_file: ../.env
+    environment:
+      DATA_DIR: /app/data
+      BETA_DATA_DIR: /app/beta-data
+    volumes:
+      - ../data:/app/data
+      - ../beta-data:/app/beta-data
+      - ../beta-bundles:/app/beta-bundles
+    restart: unless-stopped
+    stop_grace_period: 30s          # 종료 때 모아 둔 저장·스냅샷을 마칠 시간
+    logging:
+      driver: json-file
+      options: {max-size: "20m", max-file: "5"}
+  caddy:                            # HTTPS(자동 인증서) · 화면 파일 직접 제공 · API는 app으로
+    image: caddy:2
+    ports: ["80:80", "443:443"]
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-:80}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ../frontend:/srv/frontend:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on: [app]
+    restart: unless-stopped
+volumes:
+  caddy_data:
+  caddy_config:
