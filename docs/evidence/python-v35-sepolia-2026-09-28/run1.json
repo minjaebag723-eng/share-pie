@@ -1,0 +1,170 @@
+{
+  "analyze": {
+    "shares": [
+      [
+        "진주2",
+        5225
+      ],
+      [
+        "진우2",
+        10225
+      ],
+      [
+        "민재2",
+        10225
+      ],
+      [
+        "지현2",
+        10225
+      ]
+    ],
+    "ruleText": "진주2는 5천원 적게 내고 나머지 세 명이 나눠줘",
+    "purpose": "삼겹살 1.2kg 공동구매 분담금(주문자 5,000원 감면)",
+    "meta": "AI 사용 한도 도달 → 규칙 기반 응답 · AI 호출 0회 · 0 토큰"
+  },
+  "settlement": {
+    "id": "sp-4ea1730e98",
+    "groupId": null,
+    "chainId": "0x80260b8652b491ac896658f80648b9631d6e31e6f362b4a6ef1a336aa4c43c0a",
+    "name": "삼겹살 1.2kg 공동구매",
+    "total": 35900,
+    "payer": "진주2",
+    "purpose": "삼겹살 1.2kg 공동구매 분담금(주문자 5,000원 감면)",
+    "ruleText": "진주2는 5천원 적게 내고 나머지 세 명이 나눠줘",
+    "mode": "EQUAL",
+    "perPersonCap": null,
+    "totalCap": 40000,
+    "merchant": "Share Pie 공동구매",
+    "members": [
+      {
+        "name": "진주2",
+        "wallet": "0xAfae051463173d910a48F122BE1FB5807cdcAAC2",
+        "share": 5225,
+        "state": "payee",
+        "locked": true
+      },
+      {
+        "name": "진우2",
+        "wallet": "0x09FA021a7BeE1Cb9B0bC54Dd5B2159Dfc08be2fd",
+        "share": 10225,
+        "state": "locked",
+        "locked": true
+      },
+      {
+        "name": "민재2",
+        "wallet": "0xCDBe8648a551bEb8A51988274931C2842f8Fc871",
+        "share": 10225,
+        "state": "locked",
+        "locked": true
+      },
+      {
+        "name": "지현2",
+        "wallet": "0xb8E7BCFdE023692652D65Bb68D32345714B71F90",
+        "share": 10225,
+        "state": "locked",
+        "locked": true
+      }
+    ],
+    "status": "paid",
+    "releaseAt": 1790626992,
+    "now": 1790627005.7236202,
+    "blocked": null,
+    "violations": [],
+    "dispute": null,
+    "txs": [
+      {
+        "kind": "create",
+        "tx_hash": "0x1b2fc46198f8d2d7c2c88033d146c5e26d0475559a421ebc952d906659f401f3",
+        "block": 11802864,
+        "url": "https://sepolia.etherscan.io/tx/0x1b2fc46198f8d2d7c2c88033d146c5e26d0475559a421ebc952d906659f401f3",
+        "member": null,
+        "at": 1790626729.8140152
+      },
+      {
+        "kind": "lock",
+        "tx_hash": "0xdcb2b0f494d91bdc002e6a8df880f47c4ed62b32ee390b1f5a137d1925aed700",
+        "block": 11802866,
+        "url": "https://sepolia.etherscan.io/tx/0xdcb2b0f494d91bdc002e6a8df880f47c4ed62b32ee390b1f5a137d1925aed700",
+        "member": "진우2",
+        "at": 1790626756.014105
+      },
+      {
+        "kind": "lock",
+        "tx_hash": "0x17d6099703a05b4be2ba528d52e88a3ea990bffb35495a4404d5a4f9e0771c69",
+        "block": 11802868,
+        "url": "https://sepolia.etherscan.io/tx/0x17d6099703a05b4be2ba528d52e88a3ea990bffb35495a4404d5a4f9e0771c69",
+        "member": "민재2",
+        "at": 1790626782.1192024
+      },
+      {
+        "kind": "lock",
+        "tx_hash": "0x0c28a50db5f144e5f45b000ff44cd2c4c54020a3a27c253fd098a15e1c2bdcd0",
+        "block": 11802871,
+        "url": "https://sepolia.etherscan.io/tx/0x0c28a50db5f144e5f45b000ff44cd2c4c54020a3a27c253fd098a15e1c2bdcd0",
+        "member": "지현2",
+        "at": 1790626816.314778
+      },
+      {
+        "kind": "escrow",
+        "tx_hash": "0x0c28a50db5f144e5f45b000ff44cd2c4c54020a3a27c253fd098a15e1c2bdcd0",
+        "block": 11802871,
+        "url": "https://sepolia.etherscan.io/tx/0x0c28a50db5f144e5f45b000ff44cd2c4c54020a3a27c253fd098a15e1c2bdcd0",
+        "member": null,
+        "at": 1790626816.3147838
+      },
+      {
+        "kind": "release",
+        "tx_hash": "0x5461101574c706f997e6a5d52b60e62c6bc5c712fe623b724d1701eff7484ac3",
+        "block": 11802887,
+        "url": "https://sepolia.etherscan.io/tx/0x5461101574c706f997e6a5d52b60e62c6bc5c712fe623b724d1701eff7484ac3",
+        "member": null,
+        "at": 1790627004.9444976
+      },
+      {
+        "kind": "paid",
+        "tx_hash": "0x5461101574c706f997e6a5d52b60e62c6bc5c712fe623b724d1701eff7484ac3",
+        "block": 11802887,
+        "url": "https://sepolia.etherscan.io/tx/0x5461101574c706f997e6a5d52b60e62c6bc5c712fe623b724d1701eff7484ac3",
+        "member": null,
+        "at": 1790627004.944516
+      }
+    ],
+    "network": "Ethereum Sepolia Testnet",
+    "cert": {
+      "txHash": "0x5461101574c706f997e6a5d52b60e62c6bc5c712fe623b724d1701eff7484ac3",
+      "block": 11802887,
+      "url": "https://sepolia.etherscan.io/tx/0x5461101574c706f997e6a5d52b60e62c6bc5c712fe623b724d1701eff7484ac3"
+    },
+    "createdAt": 1790626720.6216462,
+    "purchase": null
+  },
+  "locks": [
+    {
+      "member": "진우2",
+      "share": 10225,
+      "tx_hash": "0xdcb2b0f494d91bdc002e6a8df880f47c4ed62b32ee390b1f5a137d1925aed700",
+      "block": 11802866,
+      "url": "https://sepolia.etherscan.io/tx/0xdcb2b0f494d91bdc002e6a8df880f47c4ed62b32ee390b1f5a137d1925aed700"
+    },
+    {
+      "member": "민재2",
+      "share": 10225,
+      "tx_hash": "0x17d6099703a05b4be2ba528d52e88a3ea990bffb35495a4404d5a4f9e0771c69",
+      "block": 11802868,
+      "url": "https://sepolia.etherscan.io/tx/0x17d6099703a05b4be2ba528d52e88a3ea990bffb35495a4404d5a4f9e0771c69"
+    },
+    {
+      "member": "지현2",
+      "share": 10225,
+      "tx_hash": "0x0c28a50db5f144e5f45b000ff44cd2c4c54020a3a27c253fd098a15e1c2bdcd0",
+      "block": 11802871,
+      "url": "https://sepolia.etherscan.io/tx/0x0c28a50db5f144e5f45b000ff44cd2c4c54020a3a27c253fd098a15e1c2bdcd0"
+    }
+  ],
+  "balancesAfter": {
+    "진주2": 545875,
+    "진우2": 351375,
+    "민재2": 351375,
+    "지현2": 351375
+  }
+}

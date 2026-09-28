@@ -1,0 +1,17 @@
+{
+  "name": "sharepie-chain-tests",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Hardhat tests + scripted deploy for ../contracts (ShareLedger, PieToken) — testnet only",
+  "scripts": {
+    "compile": "cd .. && hardhat compile",
+    "test": "cd .. && hardhat test",
+    "deploy": "cd .. && hardhat run hardhat/scripts/deploy.js",
+    "evidence": "node scripts/evidence-run.js",
+    "smoke": "node scripts/smoke.js"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "hardhat": "^2.29.1"
+  }
+}
