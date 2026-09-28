@@ -1,7 +1,7 @@
 'use strict';
 
-// 실제 체인(Sepolia 또는 로컬 Hardhat) 호출 — SharePieSettlement 컨트랙트
-// ⚠️ 테스트넷 전용. chainId가 Sepolia(11155111) / 로컬 Hardhat(31337)이 아니면 아무 트랜잭션도 보내지 않는다.
+// 실제 체인(Sepolia · 로컬 Hardhat · env 로 추가한 대회 테스트넷) 호출 — SharePieSettlement 컨트랙트
+// ⚠️ 테스트넷 전용. 허용 목록(chains.js)에 없는 chainId·메인넷이면 아무 트랜잭션도 보내지 않는다.
 //
 // 상태 머신 (컨트랙트와 동일): NONE → OPENED → LOCKED(보류) → RELEASED
 //                                              LOCKED → DISPUTED → LOCKED (NORMAL_APPROVAL / BAD_FAITH_DISPUTE)
@@ -12,10 +12,10 @@ const { SETTLEMENT_ABI, PIECOIN_ABI, STATES, VERDICT_CODES, VERDICT_NAMES } = re
 const { addressOf } = require('./members');
 const { ESCROW_RECIPIENT, InsufficientBalanceError, BlockchainError, holdSecondsFromEnv, verdictCodeOf } = require('./errors');
 const { isConditionsHash } = require('./conditionsHash');
+const { assertAllowedChain, allowedChains } = require('./chains');
 
 // 멤버는 모두 uid('u0', 'u1', …)로 받는다 (addressOf가 형식을 검사). 표시 이름은 절대 지갑 키로 쓰지 않는다.
 
-const ALLOWED_CHAINS = { 11155111: 'sepolia', 31337: 'hardhat-local' };
 const TX_TIMEOUT_MS = 180_000;
 
 function formatBlock(n) {
@@ -32,14 +32,12 @@ async function createOnchainClient({ signer, contractAddress, merchantAddress = 
   if (!ethers.isAddress(contractAddress)) throw new BlockchainError('CONTRACT_ADDRESS가 올바른 주소가 아니에요.', 'BLOCKCHAIN_NOT_CONFIGURED', 503);
   const provider = signer.provider;
   const { chainId } = await provider.getNetwork();
-  const network = ALLOWED_CHAINS[Number(chainId)];
-  if (!network) {
-    throw new BlockchainError(`chainId ${chainId}는 허용되지 않아요. SharePie는 Sepolia(11155111) 테스트넷에서만 동작해요.`, 'CHAIN_NOT_ALLOWED', 503);
-  }
+  const chain = assertAllowedChain(Number(chainId)); // 메인넷·미허용 체인이면 여기서 CHAIN_NOT_ALLOWED
+  const network = chain.name;
 
   const settlement = new ethers.Contract(contractAddress, SETTLEMENT_ABI, signer);
   const pieCoin = new ethers.Contract(await settlement.pieCoin(), PIECOIN_ABI, provider);
-  const explorer = (hash) => (network === 'sepolia' ? `https://sepolia.etherscan.io/tx/${hash}` : null);
+  const explorer = (hash) => chain.explorerTx(hash);
 
   // 컨트랙트 revert → 우리 에러로 변환 (uidOf: 주소 → uid)
   function translate(err, uidOf = {}) {
@@ -240,7 +238,7 @@ async function createOnchainClient({ signer, contractAddress, merchantAddress = 
     return { uid, address, amount, ...receiptInfo(receipt) };
   }
 
-  return { network, chainId: Number(chainId), recordSettlement, chargeToken, balanceOf, releaseSettlement, raiseDispute, resolveDispute, refundParticipant, getSettlementState };
+  return { network, chainId: Number(chainId), chain, contractAddress: ethers.getAddress(contractAddress), recordSettlement, chargeToken, balanceOf, releaseSettlement, raiseDispute, resolveDispute, refundParticipant, getSettlementState };
 }
 
-module.exports = { createOnchainClient, InsufficientBalanceError, BlockchainError, ESCROW_RECIPIENT, ALLOWED_CHAINS };
+module.exports = { createOnchainClient, InsufficientBalanceError, BlockchainError, ESCROW_RECIPIENT, allowedChains };

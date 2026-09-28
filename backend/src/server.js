@@ -11,6 +11,7 @@ const settlementRouter = require('./routes/settlement');
 const disputeRouter = require('./routes/dispute');
 const shoppingRouter = require('./routes/shopping');
 const { summarizeTokenUsage } = require('./logger');
+const { configuredChainId, describeChain } = require('./blockchain/chains'); // ethers 없이 동작
 
 const app = express();
 app.use(cors());
@@ -42,7 +43,15 @@ app.get('/support.js', (req, res) => res.sendFile(path.join(REPO_ROOT, 'support.
 app.use('/assets', express.static(path.join(REPO_ROOT, 'assets'), { dotfiles: 'deny' }));
 
 app.get('/health', (req, res) => {
-  res.json({ ok: true, kilnConfigured: Boolean(process.env.KILN_API_KEY), model: process.env.KILN_MODEL || 'gpt-oss-120b', shoppingProvider: process.env.SHOPPING_PROVIDER === 'mock' || !process.env.SHOPPING_API_KEY ? 'mock' : 'serpapi' });
+  const model = (process.env.KILN_MODEL || '').trim() || null;
+  // 블록체인 모드: 설정 3개가 모두 있으면 testnet, 아니면 mock (blockchainClient.IS_MOCK 과 같은 기준)
+  const chainConfigured = Boolean(process.env.BLOCKCHAIN_RPC_URL && process.env.CONTRACT_ADDRESS && process.env.DEPLOYER_PRIVATE_KEY);
+  let chainInfo = null;
+  try { chainInfo = describeChain(configuredChainId()); } catch { chainInfo = null; }
+  const contractAddress = process.env.CONTRACT_ADDRESS ? `${process.env.CONTRACT_ADDRESS.slice(0, 10)}…` : null;
+  res.json({ ok: true, kilnConfigured: Boolean(process.env.KILN_API_KEY), kilnModelConfigured: Boolean(model), model,
+    mode: chainConfigured ? 'testnet' : 'mock', network: chainConfigured ? (chainInfo ? chainInfo.name : 'unknown') : 'mock', chainId: chainConfigured && chainInfo ? chainInfo.chainId : null, contractAddress,
+    shoppingProvider: process.env.SHOPPING_PROVIDER === 'mock' || !process.env.SHOPPING_API_KEY ? 'mock' : 'serpapi' });
 });
 
 app.use('/settlement', settlementRouter);
@@ -97,6 +106,7 @@ if (require.main === module) {
     console.log(`SharePie → http://localhost:${port}  (화면)`);
     console.log(`          http://localhost:${port}/health  (서버 상태)`);
     if (!process.env.KILN_API_KEY) console.warn('⚠️  KILN_API_KEY가 없어요. backend/.env를 만들어 주세요 (.env.example 참고).');
+    if (!(process.env.KILN_MODEL || '').trim()) console.warn('⚠️  KILN_MODEL이 없어요. AI 호출(analyze/explain/investigate/search)은 503으로 거부돼요. backend/.env에 모델 ID를 넣어 주세요.');
   });
 }
 

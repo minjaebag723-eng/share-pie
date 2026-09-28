@@ -376,6 +376,84 @@ describe('백엔드 연동 (backend/src/blockchain/onchainClient.js)', () => {
     expect(rel.state).to.equal('RELEASED');
   });
 
+  it('Run 2 확정 시나리오(A안): 주입 정산 → raise → investigate(가짜 Kiln) → resolve(불일치 확인 강제) → refund × 4 → 잔액 복구 → 정정 정산 → verify MATCH', async () => {
+    const fs = require('fs');
+    const os = require('os');
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'sp-run2-'));
+    process.env.SETTLEMENT_STORE_DIR = tmp;
+    process.env.LOG_DIR = tmp;
+    const { runRun2, INJECTED_SHARES, CONDITIONS: RUN2_CONDITIONS, MEMBERS: RUN2_MEMBERS } = require(path.join(__dirname, '..', 'scripts', 'run2-dispute'));
+    const { compareRecords } = require(path.join(BACKEND, 'src', 'dispute', 'compareRecords'));
+    const { settlement, pie, owner, merchant } = await deploy();
+    const contractAddress = await settlement.getAddress();
+    const chain = await createOnchainClient({ signer: owner, contractAddress, merchantAddress: merchant.address });
+
+    // 가짜 Kiln: compareRecords 의 facts 를 그대로 따르는 판정만 돌려준다 (AI 규칙: 불일치 있으면 GENUINE_ERROR)
+    let investigateCalls = 0;
+    const fakeInvestigate = async (originalRequest, settlementPlan, approvalRecord, actualTransfer, dispute) => {
+      investigateCalls += 1;
+      const f = compareRecords({ originalRequest, settlementPlan, approvalRecord, actualTransfer, dispute });
+      return { verdict: f.mismatchDetected ? 'GENUINE_ERROR' : 'NORMAL_APPROVAL', mismatchDetected: f.mismatchDetected, mismatchPoint: f.mismatchPoint, expectedAmount: f.expectedAmount, actualAmount: f.actualAmount, explanation: '테스트용 판정' };
+    };
+
+    const log = await runRun2({ chain, investigate: fakeInvestigate, allowMock: true, holdSeconds: HOLD, quiet: true });
+    expect(investigateCalls).to.equal(1);
+    expect(log.verdict).to.equal('GENUINE_ERROR');
+    expect(log.state).to.equal('CANCELLED');
+    expect(log.txHashes.refunds.length).to.equal(4);
+    expect(log.correctShares).to.deep.equal([5225, 10225, 10225, 10225]);
+    expect(log.injectedShares).to.deep.equal(INJECTED_SHARES);
+
+    // 주입 정산: 조건 해시는 올바른 조건, 잠긴 금액은 주입값 → 계산 단계 불일치
+    const inv = log.steps.find((s) => s.name.startsWith('3.'));
+    expect(inv.mismatchDetected).to.equal(true);
+    expect(inv.mismatchPoint).to.equal('계산 단계');
+    expect(inv.expectedAmount).to.equal(5225); // u0 가 이의제기 → u0 의 기대/실제
+    expect(inv.actualAmount).to.equal(8975);
+    expect(await settlement.conditionsHashOf(log.settlementOnchainId)).to.equal(hashConditions(RUN2_CONDITIONS));
+    expect(await settlement.statusOf(log.settlementOnchainId)).to.equal(S.Cancelled);
+    for (const uid of RUN2_MEMBERS) expect(await settlement.isRefunded(log.settlementOnchainId, addressOf(uid))).to.equal(true);
+
+    // 정정 정산: 올바른 금액으로 LOCKED, 같은 조건 해시 → 제3자 검증 MATCH
+    expect(log.correctedSettlementOnchainId).to.match(/^0x[0-9a-f]{64}$/);
+    expect(await settlement.statusOf(log.correctedSettlementOnchainId)).to.equal(S.Locked);
+    for (let i = 0; i < RUN2_MEMBERS.length; i++) expect(await settlement.expectedOf(log.correctedSettlementOnchainId, addressOf(RUN2_MEMBERS[i]))).to.equal(log.correctShares[i]);
+    const v = await verifyConditions({ conditions: RUN2_CONDITIONS, ref: log.correctedSettlementOnchainId, provider: ethers.provider, contractAddress });
+    expect(v.match).to.equal(true);
+    // 환불(주입액 복구) → 부족분 충전(u1~u3 각 1,250) → 정정 정산 잠금. 남는 잔액 = max(주입액 − 올바른 분담액, 0). 에스크로에는 올바른 총액만
+    expect(log.correctionTopUps.map((t) => [t.uid, t.amount])).to.deep.equal([['u1', 1250], ['u2', 1250], ['u3', 1250]]);
+    for (let i = 0; i < RUN2_MEMBERS.length; i++) expect(await chain.balanceOf(RUN2_MEMBERS[i])).to.equal(Math.max(INJECTED_SHARES[i] - log.correctShares[i], 0));
+    expect(await pie.balanceOf(contractAddress)).to.equal(35900);
+    // 12번: verdict → 행동 → txHash 로그
+    const events = fs.readFileSync(path.join(tmp, 'events.jsonl'), 'utf8').trim().split('\n').map(JSON.parse);
+    expect(events.some((e) => e.type === 'run2.injected_error')).to.equal(true);
+    const action = events.find((e) => e.type === 'dispute.action');
+    expect(action.summary).to.equal('mismatchDetected=true, mismatchPoint=계산 단계 → verdict=GENUINE_ERROR → refund_participant × 4/4');
+  });
+
+  it('chains 맵: Sepolia·로컬 허용, 메인넷 chainId 거부, env 로 대회 테스트넷 추가 가능 (메인넷 id 는 env 로도 불가)', () => {
+    const chains = require(path.join(BACKEND, 'src', 'blockchain', 'chains'));
+    expect(chains.describeChain(11155111).name).to.equal('sepolia');
+    expect(chains.describeChain(11155111).explorerTx('0xabc')).to.equal('https://sepolia.etherscan.io/tx/0xabc');
+    expect(chains.describeChain(31337).name).to.equal('hardhat-local');
+    expect(chains.describeChain(31337).explorerTx('0xabc')).to.equal(null);
+    for (const mainnet of [1, 10, 56, 137, 8453, 42161]) {
+      expect(chains.describeChain(mainnet)).to.equal(null);
+      expect(() => chains.assertAllowedChain(mainnet)).to.throw(/메인넷/);
+    }
+    expect(() => chains.assertAllowedChain(99999)).to.throw(/허용 목록에 없어요/);
+    // env 로 커스텀 테스트넷 추가
+    const env = { CHAIN_ID: '424242', CHAIN_NAME: 'contest-testnet', EXPLORER_TX_URL: 'https://scan.example/tx/{hash}' };
+    const c = chains.assertAllowedChain(424242, env);
+    expect(c.name).to.equal('contest-testnet');
+    expect(c.custom).to.equal(true);
+    expect(c.explorerTx('0x1')).to.equal('https://scan.example/tx/0x1');
+    expect(() => chains.customChainFromEnv({ CHAIN_ID: '1' })).to.throw(/메인넷/);
+    expect(() => chains.customChainFromEnv({ CHAIN_ID: '137', CHAIN_NAME: 'x' })).to.throw(/메인넷/);
+    // 온체인 클라이언트도 같은 맵을 쓴다 (로컬 Hardhat 31337 허용)
+    expect(Object.keys(chains.allowedChains())).to.include.members(['11155111', '31337']);
+  });
+
   it('멤버 주소는 uid마다 고정: 같은 uid = 같은 주소, 다른 uid = 다른 주소', () => {
     expect(addressOf('u0')).to.equal(addressOf('u0'));
     expect(addressOf('u0')).to.not.equal(addressOf('u1'));

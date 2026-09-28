@@ -10,13 +10,13 @@ const OpenAI = require('openai');
 const { logTokenUsage, logEvent } = require('./logger');
 
 const DEFAULT_BASE_URL = 'https://api.bricksum.com/v1';
-const DEFAULT_MODEL = 'gpt-oss-120b';
+// 모델명은 코드에 두지 않는다 (CLAUDE.md 11번) — KILN_MODEL 환경변수로만 참조. 비어 있으면 호출 자체를 거부한다.
 const MAX_RETRIES = 3; // 파싱/검증 실패 시 재요청 횟수 (최초 1회 + 재요청 3회)
 const STAGES = new Set(['settlement.analyze', 'settlement.explain', 'dispute.investigate', 'shopping.search']);
 
 class KilnConfigError extends Error {
-  constructor() {
-    super('KILN_API_KEY가 설정되지 않았어요. backend/.env 파일을 확인하세요.');
+  constructor(message = 'KILN_API_KEY가 설정되지 않았어요. backend/.env 파일을 확인하세요.') {
+    super(message);
     this.name = 'KilnConfigError';
     this.code = 'KILN_NOT_CONFIGURED';
     this.status = 503;
@@ -51,7 +51,8 @@ function getClient() {
 
 async function chatCompletion({ stage, messages, attempt = 1 }) {
   if (!STAGES.has(stage)) throw new Error(`알 수 없는 stage 태그: ${stage}`);
-  const model = process.env.KILN_MODEL || DEFAULT_MODEL;
+  const model = (process.env.KILN_MODEL || '').trim();
+  if (!model) throw new KilnConfigError('KILN_MODEL이 설정되지 않았어요. backend/.env에 사용할 Kiln 모델 ID를 넣어 주세요 (CLAUDE.md 4번 참고).');
   const params = { model, messages, temperature: 0 };
 
   const started = Date.now();

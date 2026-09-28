@@ -233,8 +233,22 @@ test('라우트: /dispute/raise → /dispute/resolve GENUINE_ERROR → refunds N
     assert.equal(badVerdict.status, 400);
     assert.equal(badVerdict.body.error.code, 'INVALID_VERDICT');
 
-    const resolved = await post('/dispute/resolve', { settlementOnchainId: sid, verdict: 'GENUINE_ERROR', investigation: { verdict: 'GENUINE_ERROR', mismatchPoint: '계산 단계', explanation: '참여자 착오' } });
+    // A-2 규칙: 코드의 불일치 확인 없이는 판정을 실행하지 않는다 — 온체인 호출 0 (상태 DISPUTED 유지)
+    const noInv = await post('/dispute/resolve', { settlementOnchainId: sid, verdict: 'GENUINE_ERROR' });
+    assert.deepEqual([noInv.status, noInv.body.error.code], [400, 'INVESTIGATION_REQUIRED']);
+    const noMismatch = await post('/dispute/resolve', { settlementOnchainId: sid, verdict: 'GENUINE_ERROR', investigation: { verdict: 'GENUINE_ERROR', mismatchDetected: false, mismatchPoint: null, explanation: '착오' } });
+    assert.deepEqual([noMismatch.status, noMismatch.body.error.code], [409, 'MISMATCH_NOT_FOUND']);
+    const unresolved = await post('/dispute/resolve', { settlementOnchainId: sid, verdict: 'NORMAL_APPROVAL', investigation: { verdict: 'NORMAL_APPROVAL', mismatchDetected: true, mismatchPoint: '계산 단계', explanation: 'x' } });
+    assert.deepEqual([unresolved.status, unresolved.body.error.code], [409, 'MISMATCH_UNRESOLVED']);
+    assert.equal((await blockchain.getSettlementState({ settlementOnchainId: sid })).state, 'DISPUTED'); // 셋 다 온체인 호출 없음
+    // investigate 입력을 주면 compareRecords 를 직접 다시 돌려 facts 를 만든다 (기록 일치 → GENUINE_ERROR 거부)
+    const locks = ap.body.onchain.locks.map((l) => ({ from: l.from, to: l.to, amount: l.amount, txHash: l.txHash }));
+    const viaCompare = await post('/dispute/resolve', { settlementOnchainId: sid, verdict: 'GENUINE_ERROR', originalRequest: { text: 'x', structured: CONDITIONS }, settlementPlan: { members: UIDS, shares: SHARES, payer: null }, approvalRecord: locks, actualTransfer: locks, dispute: { raisedBy: 'u1', reason: 'x' } });
+    assert.deepEqual([viaCompare.status, viaCompare.body.error.code], [409, 'MISMATCH_NOT_FOUND']);
+
+    const resolved = await post('/dispute/resolve', { settlementOnchainId: sid, verdict: 'GENUINE_ERROR', investigation: { verdict: 'GENUINE_ERROR', mismatchDetected: true, mismatchPoint: '계산 단계', expectedAmount: 5225, actualAmount: 8975, explanation: '참여자 착오' } });
     assert.equal(resolved.status, 200);
+    assert.deepEqual([resolved.body.facts.mismatchDetected, resolved.body.facts.mismatchPoint, resolved.body.facts.source], [true, '계산 단계', 'investigation']);
     assert.equal(resolved.body.state, 'CANCELLED');
     assert.equal(resolved.body.refunds.length, 4);
     assert.ok(resolved.body.refunds.every((r) => r.ok && /^0x[0-9a-f]{64}$/.test(r.txHash)));
@@ -249,12 +263,16 @@ test('라우트: /dispute/raise → /dispute/resolve GENUINE_ERROR → refunds N
     assert.equal(action.action, 'refund_participant × 4/4');
     assert.equal(action.txHashes.length, 4);
     assert.equal(action.investigation.mismatchPoint, '계산 단계');
+    assert.equal(action.summary, 'mismatchDetected=true, mismatchPoint=계산 단계 → verdict=GENUINE_ERROR → refund_participant × 4/4');
+    assert.deepEqual([store.getSettlement(sid).investigation.mismatchDetected, store.getSettlement(sid).facts.mismatchPoint], [true, '계산 단계']);
 
-    // NORMAL_APPROVAL → 환불 0건, LOCKED 복귀
+    // NORMAL_APPROVAL(불일치 없음) → 환불 0건, LOCKED 복귀 — investigate 입력(compareRecords)으로 facts 확인
     const ap2 = await post('/settlement/approve', { settlementId: 'run2-ok', title: '삼겹살', settlement: CONDITIONS, approvals: [true, true, true, true], holdSeconds: 0 });
     const sid2 = ap2.body.onchain.settlementOnchainId;
     await post('/dispute/raise', { settlementOnchainId: sid2, raisedBy: 'u2', reason: '계산이 틀린 것 같아요' });
-    const kept = await post('/dispute/resolve', { settlementOnchainId: sid2, verdict: 'NORMAL_APPROVAL' });
+    const locks2 = ap2.body.onchain.locks.map((l) => ({ from: l.from, to: l.to, amount: l.amount, txHash: l.txHash }));
+    const kept = await post('/dispute/resolve', { settlementOnchainId: sid2, verdict: 'NORMAL_APPROVAL', originalRequest: { text: 'x', structured: CONDITIONS }, settlementPlan: { members: UIDS, shares: SHARES, payer: null }, approvalRecord: locks2, actualTransfer: locks2 });
+    assert.equal(kept.body.facts.source, 'compareRecords');
     assert.equal(kept.status, 200);
     assert.deepEqual([kept.body.state, kept.body.refunds.length], ['LOCKED', 0]);
     const kaction = readLog('events.jsonl').filter((e) => e.type === 'dispute.action' && e.settlementOnchainId === sid2).at(-1);
@@ -265,10 +283,92 @@ test('라우트: /dispute/raise → /dispute/resolve GENUINE_ERROR → refunds N
   }
 });
 
+test('Run 1.5 (MOCK): 예산 40,000→30,000 → OVER_BUDGET, u3 잔액 부족 → INSUFFICIENT_BALANCE — 둘 다 온체인 0건 + settlement.abort 로그', async () => {
+  const path = require('path');
+  const { runRun15 } = require(path.join(__dirname, '..', '..', 'contracts', 'scripts', 'run1_5-over-budget'));
+  // MOCK 잔액: chargeToken 으로 충전한 uid 만 추적. 충전 안 한 uid 는 null(무제한)
+  assert.equal(await blockchain.getBalance('u9'), null);
+  await blockchain.chargeToken('u9', 500);
+  assert.equal(await blockchain.getBalance('u9'), 500);
+
+  const log = await runRun15({ allowMock: true, quiet: true });
+  assert.equal(log.mock, true);
+  assert.equal(log.aiCalls, 0);
+  assert.equal(log.cases.length, 2);
+  const [c1, c2] = log.cases;
+  assert.deepEqual([c1.aborted, c1.code, c1.status, c1.detail.overBudgetBy, c1.detail.onchainTx], [true, 'OVER_BUDGET', 409, 5900, 0]);
+  assert.deepEqual([c2.aborted, c2.code, c2.status, c2.detail.participant, c2.detail.balancePIE, c2.detail.onchainTx], [true, 'INSUFFICIENT_BALANCE', 409, 'u3', 100, 0]);
+  assert.equal(log.allAborted, true);
+
+  const aborts = readLog('events.jsonl').filter((e) => e.type === 'settlement.abort');
+  const over = aborts.find((e) => e.code === 'OVER_BUDGET');
+  const bal = aborts.find((e) => e.code === 'INSUFFICIENT_BALANCE');
+  assert.ok(over && bal, 'settlement.abort 로그 2건');
+  assert.match(over.summary, /overBudgetBy 5900.*코드 판정 OVER_BUDGET.*중단/);
+  assert.match(bal.summary, /u3.*코드 판정 INSUFFICIENT_BALANCE.*중단/);
+  assert.match(over.aiRole, /AI는 조건 해석/);
+  assert.equal(over.action, '승인 거부 — 온체인 트랜잭션 0건');
+  // 실패한 approve 는 저장소에도 남지 않는다
+  assert.ok(!store.listSettlements().some((r) => r.settlementId === 'run1_5-budget' || r.settlementId === 'run1_5-balance'));
+});
+
+test('chains.js: 메인넷 거부·Sepolia 기본·env 커스텀 테스트넷 (ethers 없이 동작)', () => {
+  const chains = require('../src/blockchain/chains');
+  assert.equal(chains.configuredChainId({}), 11155111);
+  assert.equal(chains.configuredChainId({ CHAIN_ID: '424242' }), 424242);
+  assert.equal(chains.describeChain(11155111).explorerTx('0xab'), 'https://sepolia.etherscan.io/tx/0xab');
+  assert.throws(() => chains.assertAllowedChain(1), (e) => e.code === 'CHAIN_NOT_ALLOWED' && /메인넷/.test(e.message));
+  assert.throws(() => chains.assertAllowedChain(8453), (e) => e.code === 'CHAIN_NOT_ALLOWED');
+  assert.throws(() => chains.customChainFromEnv({ CHAIN_ID: '56' }), (e) => e.code === 'CHAIN_NOT_ALLOWED');
+  const c = chains.assertAllowedChain(424242, { CHAIN_ID: '424242', CHAIN_NAME: 'contest', EXPLORER_TX_URL: 'https://x/tx/{hash}' });
+  assert.deepEqual([c.name, c.custom, c.explorerTx('0x9')], ['contest', true, 'https://x/tx/0x9']);
+  assert.equal(chains.customChainFromEnv({}), null);
+});
+
 test('MOCK 모드에서는 ethers가 로드되지 않음 (uid 검사·해시·상태 머신 모두 ethers 없이 동작)', () => {
   const loaded = Object.keys(require.cache).filter((k) => /[\\/]node_modules[\\/]ethers[\\/]/.test(k));
   assert.equal(loaded.length, 0);
   assert.ok(!Object.keys(require.cache).some((k) => /onchainClient\.js$/.test(k)));
   assert.ok(!Object.keys(require.cache).some((k) => /blockchain[\\/]members\.js$/.test(k)));
   assert.ok(Object.keys(require.cache).some((k) => /conditionsHash\.js$/.test(k))); // 해시 모듈은 로드됐지만 ethers는 아님
+});
+
+test('demo-all (MOCK): preflight → Run 1 → Run 1.5 → Run 2(가짜 Kiln) → release → verify 가 끝까지 돌고 summary.md 를 만든다', async () => {
+  const path = require('path');
+  const { fakeKiln, restoreKiln } = require('./helpers');
+  const { runDemoAll } = require(path.join(__dirname, '..', '..', 'contracts', 'scripts', 'demo-all'));
+  const prevHold = process.env.SETTLEMENT_HOLD_SECONDS;
+  // 가짜 Kiln: dispute.investigate 1회 — 설명에는 facts 에 있는 숫자(5,225 / 8,975)만 쓴다 (AI 규칙 그대로 검증됨)
+  const calls = fakeKiln([JSON.stringify({ verdict: 'GENUINE_ERROR', explanation: '계산 단계에서 u0의 분담금이 5,225원이어야 하는데 8,975원이 잠겼어요. 착오로 판정해 환불을 진행해요.' })]);
+  try {
+    const r = await runDemoAll({ quiet: true, outRoot: process.env.LOG_DIR, holdSeconds: 0 });
+    assert.ok(fs.existsSync(r.summaryPath), 'summary.md 생성');
+    for (const k of ['run1', 'run1_5', 'run2', 'release', 'verify', 'preflight']) assert.equal(r.results[k].ok, true, `${k} 성공: ${JSON.stringify(r.results[k].error || null)}`);
+    assert.equal(r.results.mode, 'mock');
+    assert.equal(r.results.preflight.data.mode, 'mock');
+    assert.equal(r.results.run1_5.data.allAborted, true);
+    assert.equal(r.results.run2.data.verdict, 'GENUINE_ERROR');
+    assert.equal(r.results.run2.data.txHashes.refunds.length, 4);
+    assert.equal(r.results.release.data.released, true); // holdSeconds 0 → 바로 지급
+    assert.equal(r.results.verify.data.match, true);
+    assert.deepEqual(calls.map((c) => c.stage), ['dispute.investigate']); // AI 호출은 Run 2 재조사 1회만
+    for (const f of ['run1.json', 'run1_5.json', 'run2.json', 'release.json', 'results.json']) assert.ok(fs.existsSync(path.join(r.outDir, f)), f);
+
+    const md = fs.readFileSync(r.summaryPath, 'utf8');
+    assert.match(md, /모드: \*\*mock\*\*/);
+    assert.match(md, /\| Run 1 \| open_settlement \| `0x[0-9a-f]+` \| MOCK \|/);
+    assert.match(md, /\| Run 1 \| release_to_recipient \|/);
+    assert.match(md, /\| Run 2 \| resolve_dispute \(GENUINE_ERROR\) \|/);
+    assert.equal((md.match(/refund_participant #/g) || []).length, 4);
+    assert.match(md, /OVER_BUDGET/); assert.match(md, /INSUFFICIENT_BALANCE/);
+    assert.match(md, /verdict=\*\*GENUINE_ERROR\*\*/);
+    assert.match(md, /\| dispute\.investigate \| \d+ \| \d+ \| \d+ \|/); // 단계별 토큰 표 (가짜 Kiln 은 chatCompletion 자체를 바꿔 토큰 로그가 남지 않는다)
+    assert.match(md, /\| settlement\.calculate \| \d+ \(code-only\) \| 0 \| 0 \|/);
+    assert.match(md, /✅ MATCH/);
+    assert.match(md, /\[settlement\.abort\] .*OVER_BUDGET.*중단/);
+    assert.match(md, /\[dispute\.action\] mismatchDetected=true.*verdict=GENUINE_ERROR.*refund_participant × 4\/4/);
+  } finally {
+    restoreKiln();
+    if (prevHold === undefined) delete process.env.SETTLEMENT_HOLD_SECONDS; else process.env.SETTLEMENT_HOLD_SECONDS = prevHold;
+  }
 });

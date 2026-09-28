@@ -57,10 +57,21 @@ async function approveSettlement({ settlementId, title, settlement, approvals, m
   if (!Array.isArray(approvals) || approvals.length !== calc.members.length) {
     throw new InputError('approvals는 members와 같은 길이의 true/false 배열이어야 해요.');
   }
+  // 중단 로그 (CLAUDE.md 12번): AI 는 조건 해석(Stage 1)에만 쓰였고, 중단 판단은 코드가 한다 — 온체인 트랜잭션 0건
+  const abort = (code, detail) => {
+    logEvent('settlement.abort', {
+      settlementId, code, action: '승인 거부 — 온체인 트랜잭션 0건',
+      aiRole: 'AI는 조건 해석(Stage 1)만. 중단 판단은 코드(Stage 2 예산 검증 / 잠금 전 잔액 선확인)',
+      responseKey: settlement ? 'needsClarification=false (조건 구조화 완료)' : 'ui-form (AI 미사용)',
+      summary: `${detail} → 코드 판정 ${code} → 중단 (잠금 0건)`,
+      conditionsHash, total: calc.total, totalBudget: calc.totalBudget ?? null, overBudgetBy: calc.overBudgetBy ?? 0,
+    });
+  };
   if (!approvals.every((a) => a === true)) {
     throw new InputError('아직 승인하지 않은 멤버가 있어요.', 'NOT_ALL_APPROVED', 409);
   }
   if (!calc.withinBudget) {
+    abort('OVER_BUDGET', `총액 ${calc.total} > 예산 ${calc.totalBudget} (overBudgetBy ${calc.overBudgetBy})`);
     throw new InputError(`예산을 ${won(calc.overBudgetBy)} 초과해서 정산을 진행할 수 없어요.`, 'OVER_BUDGET', 409);
   }
   // 돈을 받는 곳
@@ -68,7 +79,13 @@ async function approveSettlement({ settlementId, title, settlement, approvals, m
   // - payer 명시("진우가 먼저 결제했어"): payer는 자기 몫을 이미 냈으므로 나머지 멤버만 잠그고 (보류 뒤) payer에게 지급
   // 온체인 기록: open_settlement → lock_for_settlement × N → Locked(보류 시작). 지급은 보류 뒤 /settlement/release (MOCK/실제 체인 동일 형식)
   // 잠그기 전에 전원 잔액을 먼저 확인하므로, 한 명이라도 부족하면 INSUFFICIENT_BALANCE(409)로 아무것도 잠기지 않는다
-  const onchain = await blockchain.recordSettlementOnchain({ settlementId, members: calc.members, shares: calc.shares, payer: calc.payer, conditionsHash, holdSeconds });
+  let onchain;
+  try {
+    onchain = await blockchain.recordSettlementOnchain({ settlementId, members: calc.members, shares: calc.shares, payer: calc.payer, conditionsHash, holdSeconds });
+  } catch (err) {
+    if (err.code === 'INSUFFICIENT_BALANCE') abort('INSUFFICIENT_BALANCE', `${err.participant ?? '참여자'} PieCoin 잔액 부족 (${err.message})`);
+    throw err;
+  }
   onchain.conditionsCanonical = conditionsCanonical; // 검증용 원문(정규화). 응답·로그에 남긴다
 
   // 인증서 TxHash = 전원 잠금이 확정된 트랜잭션(confirm). 지급(release) 해시는 보류 뒤 따로 기록된다

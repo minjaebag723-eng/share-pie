@@ -9,7 +9,10 @@
     "deploy:sepolia": "hardhat run scripts/deploy.js --network sepolia",
     "run1:sepolia": "node scripts/run1-settlement.js",
     "release:sepolia": "node scripts/release-settlement.js",
-    "run2:sepolia": "node scripts/run2-dispute.js"
+    "run2:sepolia": "node scripts/run2-dispute.js",
+    "run1.5:sepolia": "node scripts/run1_5-over-budget.js",
+    "preflight": "node scripts/preflight.js",
+    "demo:all": "node scripts/demo-all.js"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",

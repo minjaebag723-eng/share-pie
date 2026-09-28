@@ -62,6 +62,10 @@ const nowSec = () => Math.floor(Date.now() / 1000);
 
 // settlementOnchainId → { state, participants:[{uid, amount, refunded}], totalLocked, holdUntil, verdict, disputed, recipient }
 const mockStore = new Map();
+// MOCK PieCoin 잔액 — chargeToken 으로 충전한 uid 만 추적한다. 충전한 적 없는 uid 는 잔액 개념 없음(null)으로 두어 기존 흐름(잠금 검사 없음)을 유지.
+// 추적 중인 uid 는 실제 체인처럼 잠금 전 잔액을 확인하고(INSUFFICIENT_BALANCE), 잠금 시 차감·환불 시 복구한다 (Run 1.5 잔액 부족 시나리오용)
+const mockBalances = new Map();
+const mockBalanceOf = (uid) => (mockBalances.has(uid) ? mockBalances.get(uid) : null);
 
 function mockGet(settlementOnchainId) {
   const s = mockStore.get(settlementOnchainId);
@@ -89,6 +93,13 @@ function mockRecordSettlement({ settlementId, members, shares, payer = null, con
     .map((uid, i) => ({ uid, amount: shares[i], refunded: false }))
     .filter((p) => p.uid !== payer && p.amount > 0);
   if (!participants.length) throw new BlockchainError('잠글 분담금이 없어요.', 'INVALID_INPUT', 400);
+
+  // 잔액 선확인 (추적 중인 uid 만) — 한 명이라도 부족하면 아무것도 잠그지 않는다 (실제 체인과 같은 규칙)
+  for (const p of participants) {
+    const bal = mockBalanceOf(p.uid);
+    if (bal !== null && bal < p.amount) throw new InsufficientBalanceError(p.uid, p.amount, bal);
+  }
+  for (const p of participants) if (mockBalances.has(p.uid)) mockBalances.set(p.uid, mockBalances.get(p.uid) - p.amount);
 
   const settlementOnchainId = '0x' + crypto.createHash('sha256').update(`${settlementId}:${Date.now()}:${Math.random()}`).digest('hex');
   const open = mockTx({ fn: 'open_settlement', settlementId, conditionsHash });
@@ -155,6 +166,7 @@ function mockRefund({ settlementOnchainId, uid }) {
   if (!p) throw new BlockchainError(`${uid}은(는) 이 정산에 분담금을 잠근 적이 없어요.`, 'NOT_LOCKED_PARTICIPANT', 409);
   if (p.refunded) throw new BlockchainError(`${uid}은(는) 이미 환불됐어요.`, 'ALREADY_REFUNDED', 409);
   p.refunded = true;
+  if (mockBalances.has(uid)) mockBalances.set(uid, mockBalances.get(uid) + p.amount);
   const tx = mockTx({ fn: 'refund_participant', settlementOnchainId, uid, amount: p.amount });
   return { uid, address: mockAddress(uid), amount: p.amount, txHash: tx.txHash, block: tx.block, explorerUrl: null };
 }
@@ -196,12 +208,18 @@ async function getSettlementState(args) {
 }
 
 async function chargeToken(uid, amount) {
-  if (IS_MOCK) { assertUid(uid); return { uid, amount, ...mockTx({ fn: 'charge_token', uid, amount }) }; }
+  if (IS_MOCK) {
+    assertUid(uid);
+    if (!Number.isSafeInteger(amount) || amount <= 0) throw new BlockchainError('충전 금액은 1 이상의 정수여야 해요.', 'INVALID_INPUT', 400);
+    mockBalances.set(uid, (mockBalances.get(uid) || 0) + amount); // 이때부터 이 uid 는 잔액 추적 대상
+    return { uid, amount, ...mockTx({ fn: 'charge_token', uid, amount }) };
+  }
   return (await getOnchainClient()).chargeToken(uid, amount);
 }
 
+// MOCK: 충전한 적 없는 uid 는 null (잔액 개념 없음), 충전한 uid 는 추적 잔액
 async function getBalance(uid) {
-  if (IS_MOCK) { assertUid(uid); return null; } // MOCK에는 잔액 개념이 없음
+  if (IS_MOCK) { assertUid(uid); return mockBalanceOf(uid); }
   return (await getOnchainClient()).balanceOf(uid);
 }
 

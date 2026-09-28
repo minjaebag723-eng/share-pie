@@ -187,6 +187,25 @@ test('서비스 안 하는 모델(gpt-oss-120b 등)이면 502 KILN_API_ERROR + m
   }
 });
 
+test('KILN_MODEL 미설정이면 AI 호출은 503 KILN_NOT_CONFIGURED, /health는 kilnModelConfigured:false·model:null (코드에 기본 모델명 없음)', async () => {
+  const saved = process.env.KILN_MODEL;
+  delete process.env.KILN_MODEL;
+  try {
+    const h = await (await fetch(base + '/health')).json();
+    assert.equal(h.kilnModelConfigured, false);
+    assert.equal(h.model, null);
+    const before = kilnRequests.length;
+    const r = await post('/settlement/analyze', { text: '삼겹살 38,900원 4명', previousState: { members: FOUR } });
+    assert.deepEqual([r.status, r.body.error.code], [503, 'KILN_NOT_CONFIGURED']);
+    assert.match(r.body.error.message, /KILN_MODEL/);
+    assert.equal(kilnRequests.length, before); // Kiln 호출 없음
+  } finally {
+    process.env.KILN_MODEL = saved;
+  }
+  const h2 = await (await fetch(base + '/health')).json();
+  assert.deepEqual([h2.kilnModelConfigured, h2.model], [true, 'qwen3-32b']);
+});
+
 test('GET /logs/tokens: 흐름별 합계', async () => {
   const res = await fetch(base + '/logs/tokens');
   const s = await res.json();

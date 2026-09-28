@@ -27,11 +27,14 @@ router.post('/raise', async (req, res) => {
   res.json(await raiseDispute({ settlementOnchainId, raisedBy, reason }));
 });
 
-// body: { settlementOnchainId, verdict, investigation? }   verdict: NORMAL_APPROVAL | GENUINE_ERROR | BAD_FAITH_DISPUTE
-// → { settlementOnchainId, resolve: { txHash, block, verdict, verdictCode }, refunds: [{ uid, amount, txHash, ok }|{ uid, ok:false, error }], state, verdict }
+// body: { settlementOnchainId, verdict, investigation }  또는  { settlementOnchainId, verdict, originalRequest, settlementPlan, approvalRecord, actualTransfer, dispute }
+//   verdict: NORMAL_APPROVAL | GENUINE_ERROR | BAD_FAITH_DISPUTE
+//   investigation = /dispute/investigate 응답 전체. 없으면 investigate 입력으로 compareRecords 를 직접 다시 돌린다 (AI 재호출 없음)
+//   규칙: GENUINE_ERROR 인데 불일치 없음 → 409 MISMATCH_NOT_FOUND / 기각인데 불일치 있음 → 409 MISMATCH_UNRESOLVED / 둘 다 없음 → 400 INVESTIGATION_REQUIRED
+// → { settlementOnchainId, resolve: { txHash, block, verdict, verdictCode }, refunds: [{ uid, amount, txHash, ok }|{ uid, ok:false, error }], state, verdict, facts }
 router.post('/resolve', async (req, res) => {
-  const { settlementOnchainId, verdict, investigation = null } = req.body || {};
-  res.json(await resolveDispute({ settlementOnchainId, verdict, investigation }));
+  const { settlementOnchainId, verdict, investigation = null, originalRequest, settlementPlan, approvalRecord, actualTransfer, dispute } = req.body || {};
+  res.json(await resolveDispute({ settlementOnchainId, verdict, investigation, originalRequest, settlementPlan, approvalRecord, actualTransfer, dispute }));
 });
 
 module.exports = router;
