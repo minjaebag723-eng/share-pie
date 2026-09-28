@@ -17,6 +17,7 @@ const { computeSettlement } = require(path.join(BACKEND, 'src', 'settlement', 'c
 const blockchain = require(path.join(BACKEND, 'src', 'blockchain', 'blockchainClient'));
 const { addressOf } = require(path.join(BACKEND, 'src', 'blockchain', 'members'));
 const { hashConditions, canonicalize } = require(path.join(BACKEND, 'src', 'blockchain', 'conditionsHash'));
+const { saveSettlement } = require(path.join(BACKEND, 'src', 'settlement', 'settlementStore'));
 
 async function main() {
   if (blockchain.IS_MOCK) {
@@ -59,31 +60,54 @@ async function main() {
     charges: charges.map((c) => ({ ...who(c.uid), amount: c.amount, txHash: c.txHash, explorerUrl: c.explorerUrl })),
   });
 
-  // 3) 전원 승인 → 온체인 기록 (백엔드 /settlement/approve 와 같은 함수)
-  console.log('\n… Sepolia에 정산 등록·잠금·지급 트랜잭션을 보내는 중 (약 1분)');
+  // 3) 전원 승인 → 온체인 등록·전원 잠금 (백엔드 /settlement/approve 와 같은 함수). 지급(release)은 보류 기간 뒤 따로.
+  console.log('\n… Sepolia에 정산 등록·잠금 트랜잭션을 보내는 중 (약 1분)');
   const onchain = await blockchain.recordSettlementOnchain({ settlementId: 'run1-demo', members: calc.members, shares: calc.shares, payer: calc.payer, conditionsHash });
-  log.openTxHash = onchain.open && onchain.open.txHash; log.settlementOnchainId = onchain.settlementOnchainId;
-  step('3. 온체인 기록 (open → lock × N → release)', { ...onchain, locks: onchain.locks.map((l) => ({ ...l, fromName: NAME_OF[l.from] || l.from })) });
+  log.openTxHash = onchain.open && onchain.open.txHash;
+  log.settlementOnchainId = onchain.settlementOnchainId;
+  log.holdSeconds = onchain.holdSeconds;
+  log.holdUntil = onchain.holdUntil;
+  log.shares = calc.shares;
+  log.nameOf = NAME_OF; // 표시용 (run2 로그에서 이름 붙이기)
+  log.requestText = '삼겹살 1.2kg 35,900원, 진주는 5천원 적게 내고 나머지가 똑같이 나눠줘. 예산 4만원.';
+  step('3. 온체인 기록 (open → lock × N → Locked, 보류 시작) — 인증서 TxHash = confirm', {
+    ...onchain,
+    locks: onchain.locks.map((l) => ({ ...l, fromName: NAME_OF[l.from] || l.from })),
+  });
 
-  // 4) 잔액 재확인 (전원 잠금 → 결제처로 지급됐는지)
+  // 저장소 기록 — release / run2(raise·resolve·refund) 가 참여자·payer 를 여기서 찾는다 (/settlement/approve 와 동일)
+  saveSettlement({
+    settlementOnchainId: onchain.settlementOnchainId, settlementId: 'run1-demo', title: conditions.itemName,
+    members: calc.members, shares: calc.shares, payer: calc.payer, recipient: onchain.recipient,
+    conditions, conditionsHash, conditionsCanonical,
+    txs: { open: onchain.open, locks: onchain.locks, confirm: onchain.confirm, release: null, dispute: null, resolve: null, refunds: [] },
+    state: onchain.state, holdUntil: onchain.holdUntil, holdSeconds: onchain.holdSeconds, verdict: null, mock: false,
+  });
+
+  // 4) 잔액 재확인 (전원 잠금 → 에스크로 보관 중이므로 멤버 잔액은 0)
   const after = [];
   for (const uid of members) after.push({ ...who(uid), balancePIE: await blockchain.getBalance(uid) });
-  step('4. 정산 후 멤버 PieCoin 잔액', after);
+  step('4. 잠금 후 멤버 PieCoin 잔액 (에스크로 보관 중)', after);
 
   log.finishedAt = new Date().toISOString();
-  log.txHash = onchain.release.txHash;
+  log.txHash = onchain.confirm.txHash; // 인증서 TxHash (전원 잠금 확정)
   const outDir = path.join(BACKEND, 'logs');
   fs.mkdirSync(outDir, { recursive: true });
   const file = path.join(outDir, `run1-${Date.now()}.json`);
   fs.writeFileSync(file, JSON.stringify(log, null, 2) + '\n');
 
-  console.log('\n✅ Run 1 완료');
-  console.log(`   조건 해시(conditionsHash): ${conditionsHash}`);
-  console.log(`   등록(open) TxHash    : ${log.openTxHash}`);
-  console.log(`   지급(release) TxHash : ${onchain.release.txHash}`);
+  const holdAt = new Date(onchain.holdUntil * 1000).toLocaleString('ko-KR');
+  console.log('\n✅ Run 1 완료 (전원 잠금 확정 → 보류 중)');
+  console.log(`   정산 id(settlementOnchainId): ${log.settlementOnchainId}`);
+  console.log(`   조건 해시(conditionsHash)   : ${conditionsHash}`);
+  console.log(`   등록(open) TxHash          : ${log.openTxHash}`);
+  console.log(`   인증서(confirm) TxHash     : ${onchain.confirm.txHash}`);
+  if (onchain.confirm.explorerUrl) console.log(`   Etherscan                  : ${onchain.confirm.explorerUrl}`);
+  console.log(`   보류 종료(holdUntil)        : ${holdAt} (${onchain.holdSeconds}초)`);
+  console.log(`   지급: 보류가 끝난 뒤  npm run release:sepolia -- ${log.settlementOnchainId}`);
+  console.log(`   Run 2(이의제기): npm run run2:sepolia -- ${file}`);
   console.log(`   제3자 검증: node scripts/verify-conditions.js <조건 JSON> ${log.settlementOnchainId}`);
-  if (onchain.release.explorerUrl) console.log(`   Etherscan            : ${onchain.release.explorerUrl}`);
-  console.log(`   로그 파일            : ${file}`);
+  console.log(`   로그 파일                  : ${file}`);
 }
 
 main().catch((err) => {

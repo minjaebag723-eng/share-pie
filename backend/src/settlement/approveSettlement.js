@@ -1,8 +1,9 @@
 'use strict';
 
 // POST /settlement/approve 의 본체
-// 전원 승인 확인 → (서버에서 금액 재계산) → 블록체인 잠금·지급 → 정산 인증서 객체 생성
+// 전원 승인 확인 → (서버에서 금액 재계산) → 승인 조건 해시 → 블록체인 등록·전원 잠금(보류 시작) → 정산 인증서 객체 생성 → 저장소 기록
 // UI는 이 API 하나만 부르면 { group, cert } 를 받아 그대로 화면에 반영할 수 있다.
+// 지급(release)은 보류 기간(SETTLEMENT_HOLD_SECONDS)이 지난 뒤 POST /settlement/release 로 따로 실행한다.
 
 const { calculateSettlement } = require('./calculateSettlement');
 const blockchain = require('../blockchain/blockchainClient');
@@ -10,6 +11,7 @@ const { logEvent } = require('../logger');
 const { InputError } = require('../errors');
 const { won } = require('../utils/format');
 const { hashConditions, canonicalize } = require('../blockchain/conditionsHash');
+const { saveSettlement } = require('./settlementStore');
 
 // 인증서 날짜: UI 샘플과 같은 "2026.09.21 19:42" (한국 시간)
 function certDate(now = new Date()) {
@@ -37,7 +39,8 @@ function fromDirectShares({ members, shares, payer = null, rule = null }) {
 // (1) { settlement: { members, ...confirmData, totalBudget, payer } } — 확인 카드 조건 → 서버가 다시 계산 (프론트 금액을 믿지 않음)
 //     confirmData = { mode, itemName, total, participants, ratios, adjustments, items } (/settlement/analyze 응답의 confirmData)
 // (2) { members, shares, payer, rule } — UI 정산 폼에서 코드로 계산된 금액 → 형식 검증 후 그대로 사용
-async function approveSettlement({ settlementId, title, settlement, approvals, members, shares, payer, rule }) {
+// holdSeconds(선택): 보류 기간(초). 없으면 env SETTLEMENT_HOLD_SECONDS (기본 600)
+async function approveSettlement({ settlementId, title, settlement, approvals, members, shares, payer, rule, holdSeconds }) {
   if (typeof settlementId !== 'string' || !settlementId.trim()) throw new InputError('settlementId(그룹 id)가 필요해요.');
   if (typeof title !== 'string' || !title.trim()) throw new InputError('title(그룹 이름)이 필요해요.');
 
@@ -62,21 +65,21 @@ async function approveSettlement({ settlementId, title, settlement, approvals, m
   }
   // 돈을 받는 곳
   // - 기본: Pie(AI 정산 에이전트)가 전원의 분담금을 에스크로에 모아 결제까지 처리 → 전원 잠금
-  // - payer 명시("진우가 먼저 결제했어"): payer는 자기 몫을 이미 냈으므로 나머지 멤버만 잠그고 payer에게 지급
-  // 온체인 기록: open_settlement → lock_for_settlement × N → release_to_recipient (MOCK/실제 체인 동일 형식)
+  // - payer 명시("진우가 먼저 결제했어"): payer는 자기 몫을 이미 냈으므로 나머지 멤버만 잠그고 (보류 뒤) payer에게 지급
+  // 온체인 기록: open_settlement → lock_for_settlement × N → Locked(보류 시작). 지급은 보류 뒤 /settlement/release (MOCK/실제 체인 동일 형식)
   // 잠그기 전에 전원 잔액을 먼저 확인하므로, 한 명이라도 부족하면 INSUFFICIENT_BALANCE(409)로 아무것도 잠기지 않는다
-  const onchain = await blockchain.recordSettlementOnchain({ settlementId, members: calc.members, shares: calc.shares, payer: calc.payer, conditionsHash });
-  const { release } = onchain;
+  const onchain = await blockchain.recordSettlementOnchain({ settlementId, members: calc.members, shares: calc.shares, payer: calc.payer, conditionsHash, holdSeconds });
   onchain.conditionsCanonical = conditionsCanonical; // 검증용 원문(정규화). 응답·로그에 남긴다
 
+  // 인증서 TxHash = 전원 잠금이 확정된 트랜잭션(confirm). 지급(release) 해시는 보류 뒤 따로 기록된다
   const cert = {
     id: 'd' + Date.now(),
     kind: 'cert',
     title: title.trim(),
     date: certDate(),
     rows: calc.members.map((m, i) => [m, calc.shares[i]]),
-    hash: release.txHash,
-    block: release.block,
+    hash: onchain.confirm.txHash,
+    block: onchain.confirm.block,
     rule: calc.rule,
     conditionsHash, // 인증서에도 조건 해시 (체인의 conditionsHashOf와 같은 값)
   };
@@ -84,11 +87,33 @@ async function approveSettlement({ settlementId, title, settlement, approvals, m
     members: calc.members,
     shares: calc.shares,
     approvals: calc.members.map(() => true),
+    // UI 호환을 위해 '정산 완료'를 유지한다. 실제 체인 상태는 onchain.state('LOCKED' = 보류 중) — 지급은 보류 뒤 /settlement/release
     status: '정산 완료',
     cert: cert.id,
   };
 
-  logEvent('settlement.approve', { settlementId, source: settlement ? 'analyze' : 'ui-form', conditions, conditionsCanonical, conditionsHash, calculation: calc, cert, onchain });
+  // 저장소 기록 — 이후 release / raise / resolve / refund 가 참여자·payer 를 여기서 찾는다
+  saveSettlement({
+    settlementOnchainId: onchain.settlementOnchainId,
+    settlementId,
+    title: title.trim(),
+    members: calc.members,
+    shares: calc.shares,
+    payer: calc.payer,
+    recipient: onchain.recipient,
+    conditions,
+    conditionsHash,
+    conditionsCanonical,
+    txs: { open: onchain.open, locks: onchain.locks, confirm: onchain.confirm, release: null, dispute: null, resolve: null, refunds: [] },
+    state: onchain.state,
+    holdUntil: onchain.holdUntil,
+    holdSeconds: onchain.holdSeconds,
+    verdict: null,
+    mock: Boolean(onchain.mock),
+    certId: cert.id,
+  });
+
+  logEvent('settlement.approve', { settlementId, settlementOnchainId: onchain.settlementOnchainId, source: settlement ? 'analyze' : 'ui-form', conditions, conditionsCanonical, conditionsHash, calculation: calc, cert, onchain });
   return { group, cert, onchain };
 }
 

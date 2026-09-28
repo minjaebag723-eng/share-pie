@@ -7,6 +7,8 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const http = require('http');
 
+process.env.SETTLEMENT_STORE_DIR = process.env.LOG_DIR; // approve가 쓰는 정산 저장소도 임시 폴더로
+
 const FOUR = ['u0', 'u1', 'u2', 'u3']; // uid — /settlement/approve는 MOCK 포함 uid만 허용
 const SERVED_MODELS = ['qwen3-32b', 'deepseek-v4.1-flash'];
 const kilnRequests = [];
@@ -113,6 +115,14 @@ test('POST /settlement/explain → /settlement/approve: 인증서가 UI 모양 �
   assert.equal(onchain.mock, true);
   assert.equal(onchain.locks.length, 3); // payer(u0) 제외
   assert.deepEqual(onchain.locks.map((l) => l.from), ['u1', 'u2', 'u3']); // locks[].from은 uid 그대로
+  // 보류형 에스크로: 승인 시점에는 잠금 확정(confirm)까지만. 인증서 TxHash = confirm, 지급(release)은 보류 뒤 /settlement/release
+  assert.equal(onchain.state, 'LOCKED');
+  assert.equal(onchain.release, null);
+  assert.equal(typeof onchain.holdUntil, 'number');
+  assert.match(onchain.settlementOnchainId, /^0x[0-9a-f]{64}$/);
+  assert.equal(cert.hash, onchain.confirm.txHash);
+  assert.equal(cert.block, onchain.confirm.block);
+  assert.equal(onchain.confirm.txHash, onchain.locks[onchain.locks.length - 1].txHash);
 });
 
 test('POST /settlement/approve: UI 정산 폼 방식(members/shares 직접) + 형식 검증', async () => {
@@ -159,8 +169,8 @@ test('에러 응답은 항상 { error: { code, message } }', async () => {
   assert.deepEqual([badCalc.status, badCalc.body.error.code], [400, 'INVALID_SETTLEMENT_INPUT']);
   const emptyText = await post('/settlement/analyze', { text: '' });
   assert.deepEqual([emptyText.status, emptyText.body.error.code], [400, 'INVALID_INPUT']);
-  const notImpl = await post('/dispute/raise', {});
-  assert.equal(notImpl.status, 501);
+  const noId = await post('/dispute/raise', {}); // settlementOnchainId 없음 → 입력 검증 에러
+  assert.deepEqual([noId.status, noId.body.error.code], [400, 'INVALID_INPUT']);
   const nf = await post('/nope', {});
   assert.equal(nf.status, 404);
 });

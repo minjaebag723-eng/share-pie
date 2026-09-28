@@ -17,12 +17,31 @@ class InsufficientBalanceError extends Error {
 }
 
 class BlockchainError extends Error {
-  constructor(message, code = 'BLOCKCHAIN_ERROR', status = 502) {
+  constructor(message, code = 'BLOCKCHAIN_ERROR', status = 502, details = null) {
     super(message);
     this.name = 'BlockchainError';
     this.code = code;
     this.status = status;
+    if (details) Object.assign(this, details); // 예: { holdUntil }, { state }
   }
+}
+
+// 보류 기간(초) — 팀 결정 전이라 상수로 박지 않고 env SETTLEMENT_HOLD_SECONDS (기본 600)
+const DEFAULT_HOLD_SECONDS = 600;
+function holdSecondsFromEnv() {
+  const raw = process.env.SETTLEMENT_HOLD_SECONDS;
+  if (raw === undefined || raw === '') return DEFAULT_HOLD_SECONDS;
+  const n = Number(raw);
+  if (!Number.isSafeInteger(n) || n < 0) throw new BlockchainError(`SETTLEMENT_HOLD_SECONDS는 0 이상의 정수여야 해요 (받은 값: ${raw}).`, 'BLOCKCHAIN_NOT_CONFIGURED', 503);
+  return n;
+}
+
+// 판정 코드 (CLAUDE.md 7번 — 3개뿐). 컨트랙트·백엔드·문서에서 동일: 0/1/2
+const VERDICT_NAMES = ['NORMAL_APPROVAL', 'GENUINE_ERROR', 'BAD_FAITH_DISPUTE'];
+function verdictCodeOf(verdict) {
+  const code = VERDICT_NAMES.indexOf(verdict);
+  if (code === -1) throw new BlockchainError(`verdict는 ${VERDICT_NAMES.join(' / ')} 중 하나여야 해요 (받은 값: ${JSON.stringify(verdict)}).`, 'INVALID_VERDICT', 400);
+  return code;
 }
 
 // 멤버 식별자(uid) 형식 — UI가 붙이는 'u0', 'u1' 같은 고정 번호. 표시 이름('진주')은 동명이인이 있어 지갑 키로 쓰면 안 된다.
@@ -36,4 +55,4 @@ function assertUid(uid) {
   return uid;
 }
 
-module.exports = { ESCROW_RECIPIENT, InsufficientBalanceError, BlockchainError, UID_PATTERN, assertUid };
+module.exports = { ESCROW_RECIPIENT, InsufficientBalanceError, BlockchainError, UID_PATTERN, assertUid, DEFAULT_HOLD_SECONDS, holdSecondsFromEnv, VERDICT_NAMES, verdictCodeOf };

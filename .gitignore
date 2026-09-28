@@ -7,3 +7,6 @@ node_modules/
 
 # 실행 로그 (제출용 로그는 필요할 때 따로 복사해서 보관)
 backend/logs/
+
+# 정산 기록 저장소 (settlementOnchainId → 참여자·상태, 실행 중 생성)
+backend/data/
