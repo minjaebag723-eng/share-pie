@@ -174,9 +174,10 @@ async function main() {
   const run1 = { analyze: { shares: an.shares, ruleText: an.ruleText, purpose: an.purpose, meta: an.meta }, settlement: r1, locks: l1.locks, balancesAfter: await balances() };
 
   // ── Run 1.5 ───────────────────────────────────────────────────────────
-  log('▶ Run 1.5: 조건 변경 → 지출 통제 중단 (1인 한도 9,000 / 총 한도 30,000)');
+  log('▶ Run 1.5: 조건 변경 → 지출 통제 중단 (1인 한도 9,000 / 총 한도 30,000 / 허용 판매처 위반)');
   const run15 = { cases: [] };
-  for (const [label, caps] of [['1인 한도 9,000원', { per_person_cap: 9000, total_cap: null }], ['총 한도 30,000원', { per_person_cap: null, total_cap: 30000 }]]) {
+  for (const [label, caps] of [['1인 한도 9,000원', { per_person_cap: 9000, total_cap: null }], ['총 한도 30,000원', { per_person_cap: null, total_cap: 30000 }],
+    ['허용 판매처 위반 (쿠팡만 허용인데 네이버스토어)', { per_person_cap: null, total_cap: null, allowed_merchants: ['쿠팡'], merchant: '네이버스토어' }]]) {
     let rec, error = null;
     try {
       rec = await api('/api/settlement/request', {
