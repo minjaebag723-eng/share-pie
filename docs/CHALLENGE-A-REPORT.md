@@ -132,7 +132,7 @@ Run 1(정상): 등록 0xb5d5158f878c219c67421af295727c4ee3e3f7c9934e2e925bceffd6
 | 1 정상 | "진주2는 5천원 적게 내고 나머지 세 명이 나눠줘", 총 35,900, 예산 40,000 → [5,225 / 10,225 × 3] | 등록 → 3명 예치 → 보류 → 지급(paid) | 0xb5d5…60c0 / 0x932d…d7c6 |
 | 1.5 ① 예산 축소 | 같은 조건에 1인 한도 9,000원 | 코드 `OVER_PERSON_CAP` → 등록·예치·지급 0건, `Blocked` 온체인 기록, AI 호출 0회 | 0x4e779d27db4761eacad55636783b3b9482434df50a2e9641aecf7937f86ff5cb |
 | 1.5 ② 예산 축소 | 총 한도 30,000원 | 코드 `OVER_TOTAL_CAP` → 중단, `Blocked` 기록 | 0x8367cb18e439e8e9062a451c1ef15d347032dc576001098b11dae3d5fa8f33fc |
-| 1.5 ③ 판매처 불허 | "쿠팡만 허용"인데 네이버스토어 | 코드 `MERCHANT_NOT_ALLOWED` → 중단 (증거 실행기에 포함, 베타 실사용에서 2건 발생) | 다음 증거 실행 시 기록 |
+| 1.5 ③ 판매처 불허 | "쿠팡만 허용"인데 네이버스토어 | 코드 `MERCHANT_NOT_ALLOWED` → 등록 없이 중단 (증거 실행기에 포함; 베타 실사용(모의 체인 모드)에서도 2건 발생) | [확인 필요] 다음 증거 실행 시 기록 |
 | 2 이의제기 | 예치 완료 후 "판매자 품절 취소" → AI `GENUINE_ERROR`(refund=all) | 환불 3건 + 판정 → `Refunded`, 잔액 전액 복구 | 이의제기 0x156e42e2a5812795f53c214ddf4ce21d7baaf009861b9e0e0ef2a1cc41738d31 · 환불 0xfa901750cb327e9d40fff252627e9ee1eb99583e769f6abe3faec55a4c56f228 · 판정 0x9a217542ee35079eb9b07a4ed33d4f61ecdc8cac3be7f608c86d03805e3955a3 |
 
 지출 통제는 AI가 아니라 코드가 강제하며, 중단은 트랜잭션 0건으로 조용히 끝내지 않고 `Blocked`로 온체인에 남긴다.
@@ -180,6 +180,6 @@ cd hardhat && npm install && npm test && npm run smoke && npm run evidence   # �
 ## 7. 자료 위치
 - README.md (선언·구조·역할·블록체인·증거·에너지·한계)
 - docs/evidence/sepolia-2026-09-28T22-36-17/ — summary.md · run1.json · run1_5.json · run2.json · usage-report.md · wallets.json
-- docs/evidence/ 베타 데이터 보고서 — report.md · dialogs.jsonl · feedback.jsonl · settlements.jsonl · usage.jsonl
+- docs/evidence/beta-2026-09-29/ — 베타 데이터(비식별) report.md · dialogs.jsonl · feedback.jsonl · settlements.jsonl · usage.jsonl
 - contracts/ShareLedger.sol · contracts/PieToken.sol · hardhat/test/ShareLedger.test.js(30개)
 - Etherscan: https://sepolia.etherscan.io/address/0xF297240957c3aB10458Dc1A4C6eC2eA18292529E

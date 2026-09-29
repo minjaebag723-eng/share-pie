@@ -1,0 +1,92 @@
+{
+ "app": "Share Pie",
+ "version": "beta-1",
+ "generatedAt": 1790646231.3030522,
+ "generatedAtText": "2026-09-29 10:43:51",
+ "folder": "C:\\Users\\pmj20\\.sharepie-data\\beta",
+ "range": {
+  "from": 1790634344.458,
+  "to": 1790646226.651
+ },
+ "files": {
+  "dialogs.jsonl": {
+   "bytes": 93456,
+   "lines": 92,
+   "sha256": "8166ce27112c39b9edb59210b2a5eb9d34a75428a47a51448eddd2cf08d182b8"
+  },
+  "events.jsonl": {
+   "bytes": 4456,
+   "lines": 43,
+   "sha256": "1dfd1d2b7e9c4893615d4b480115137fd070b690c86782bc208d30bfc0431998"
+  },
+  "feedback.jsonl": {
+   "bytes": 5923,
+   "lines": 41,
+   "sha256": "5c3829241240557076a435b6799e5f513887076e9f081dbeecc878dce7251f28"
+  },
+  "README.md": {
+   "bytes": 2715,
+   "lines": null,
+   "sha256": "cdc8be91089da87e5f305281b3732c855ea02d07131ab8ebef60d2f388d5befa"
+  },
+  "report.json": {
+   "bytes": 5189,
+   "lines": null,
+   "sha256": "ec6b635bf365f83fbec216c880acdbb68d0d076a32f2408a7325e9667edecd5f"
+  },
+  "report.md": {
+   "bytes": 2515,
+   "lines": null,
+   "sha256": "6c804ff63593ddc1b56d1097c2d11ef99ffb0bca7fbd867ef693c7f3c2a90eb8"
+  },
+  "settlements.jsonl": {
+   "bytes": 8889,
+   "lines": 11,
+   "sha256": "b858e21ccd6e8db29657ee7b701a2afd5e13a3677da0ac11f3c4eef7ee51de39"
+  },
+  "usage.jsonl": {
+   "bytes": 216129,
+   "lines": 566,
+   "sha256": "dc937ae527c32987ccd33d3b13a3a396af23197f8a6429d35587eedb6f675611"
+  }
+ },
+ "participation": {
+  "betaUsers": 9,
+  "consented": 8,
+  "declined": 0,
+  "missionsDone": {
+   "S01": 5,
+   "S02": 6,
+   "S03": 4,
+   "S04": 2,
+   "S05": 2,
+   "S06": 1,
+   "S07": 0,
+   "S08": 2,
+   "S09": 2,
+   "S10": 1,
+   "S11": 1,
+   "S12": 1,
+   "S13": 1
+  },
+  "dialogsSaved": 92,
+  "feedback": {
+   "up": 26,
+   "down": 12,
+   "reasons": {
+    "금액이 틀렸어요": 2,
+    "엉뚱한 답이에요": 9,
+    "기타": 1
+   }
+  }
+ },
+ "criteria": {
+  "settlements": 11,
+  "paid": 6,
+  "blockedBySpendingControl": 3,
+  "conditionChangedReruns": 1,
+  "disputes": 0,
+  "disputesJudged": 0,
+  "onchainTxs": 38
+ }
+}

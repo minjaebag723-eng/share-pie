@@ -1,0 +1,26 @@
+[
+  {
+    "label": "진주",
+    "short": "진주2",
+    "address": "0xAfae051463173d910a48F122BE1FB5807cdcAAC2",
+    "explorer": "https://sepolia.etherscan.io/address/0xAfae051463173d910a48F122BE1FB5807cdcAAC2"
+  },
+  {
+    "label": "진우",
+    "short": "진우2",
+    "address": "0x09FA021a7BeE1Cb9B0bC54Dd5B2159Dfc08be2fd",
+    "explorer": "https://sepolia.etherscan.io/address/0x09FA021a7BeE1Cb9B0bC54Dd5B2159Dfc08be2fd"
+  },
+  {
+    "label": "민재",
+    "short": "민재2",
+    "address": "0xCDBe8648a551bEb8A51988274931C2842f8Fc871",
+    "explorer": "https://sepolia.etherscan.io/address/0xCDBe8648a551bEb8A51988274931C2842f8Fc871"
+  },
+  {
+    "label": "지현",
+    "short": "지현2",
+    "address": "0xb8E7BCFdE023692652D65Bb68D32345714B71F90",
+    "explorer": "https://sepolia.etherscan.io/address/0xb8E7BCFdE023692652D65Bb68D32345714B71F90"
+  }
+]

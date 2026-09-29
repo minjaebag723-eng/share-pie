@@ -8,6 +8,8 @@
 
 ## 바로 가기
 
+경로는 최종 시스템 폴더(`share-pie-ai` v39) 기준이다. 블록체인 도구·증거만 따로 둔 저장소에서는 `python-blockchain-kit/`와 `docs/evidence/`가 해당한다.
+
 | 문서 | 내용 |
 |---|---|
 | [`HOW-TO-RUN.md`](HOW-TO-RUN.md) | 실행 안내 (로컬 · Sepolia 설정 · 검증) |
@@ -15,7 +17,7 @@
 | [`docs/BETA-PUBLIC.md`](docs/BETA-PUBLIC.md) | PC + Cloudflare 터널로 외부 공개 · 새 백엔드 버전에 블록체인 얹기 |
 | [`docs/user-manual/`](docs/user-manual/) | 베타 참가자용 사용 설명서 (PDF) |
 | [`CHANGES-beta-server.md`](CHANGES-beta-server.md) | 베타 서버 병합 · 실제 체인 동시 접속 수정 내역 |
-| [`docs/evidence/`](docs/evidence/) | Sepolia 실행 증거 (TxHash · Etherscan 링크 · AI 토큰 표 · 응답→행동 기록) |
+| [`docs/evidence/`](docs/evidence/) | Sepolia 실행 증거 `sepolia-2026-09-28T22-36-17/` (TxHash · Etherscan 링크 · AI 토큰 표 · 응답→행동 기록) · 베타 데이터(비식별) `beta-2026-09-29/` |
 
 ## 배포된 컨트랙트 (Ethereum Sepolia, chainId 11155111)
 
@@ -115,7 +117,7 @@ tests/          폰 4대 E2E 시뮬레이션 · 대화형 에이전트 점검 ·
 | **1.5 조건 변경 ②** | 총 한도 30,000원 | 코드 `OVER_TOTAL_CAP` → 중단, `Blocked` 기록 | [`0x8367…33fc`](https://sepolia.etherscan.io/tx/0x8367cb18e439e8e9062a451c1ef15d347032dc576001098b11dae3d5fa8f33fc) |
 | **2 이의제기** | 예치 완료 후 "판매자 품절 취소" → AI `dispute.investigate` = **GENUINE_ERROR** (refund=all) | 코드가 환불 3건 + 판정 실행 → **refunded**, 잔액 전액 복구 | 이의제기 [`0x156e…8d31`](https://sepolia.etherscan.io/tx/0x156e42e2a5812795f53c214ddf4ce21d7baaf009861b9e0e0ef2a1cc41738d31) · 환불 [`0xfa90…f228`](https://sepolia.etherscan.io/tx/0xfa901750cb327e9d40fff252627e9ee1eb99583e769f6abe3faec55a4c56f228) · 판정 [`0x9a21…55a3`](https://sepolia.etherscan.io/tx/0x9a217542ee35079eb9b07a4ed33d4f61ecdc8cac3be7f608c86d03805e3955a3) |
 
-허용 판매처 위반(`MERCHANT_NOT_ALLOWED`) 케이스도 증거 실행기 Run 1.5에 포함돼 있으며(“쿠팡만 허용인데 네이버스토어”), 베타 실사용에서 2건 발생해 `Blocked`로 기록됐다.
+허용 판매처 위반(`MERCHANT_NOT_ALLOWED`) 케이스도 증거 실행기 Run 1.5에 포함돼 있다(“쿠팡만 허용인데 네이버스토어”; 다음 실행에서 TxHash 기록). 베타 실사용(당시 모의 체인 모드)에서도 같은 위반이 2건 발생해 등록 없이 중단 처리됐다(`docs/evidence/beta-2026-09-29/settlements.jsonl`).
 
 **Kiln 응답 → 행동** (로그 `events.jsonl` · `summary.md`):
 - `settlement.analyze` → `status: ok` + 규칙 JSON → 코드 계산·지출 통제 → 통과 시 `createSettlement`, 위반 시 `blockSettlement` (AI 재호출 없음)

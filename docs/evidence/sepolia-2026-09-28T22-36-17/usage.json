@@ -1,0 +1,1824 @@
+{
+  "generatedAt": 1790634974.803053,
+  "flow": null,
+  "model": "qwen3-32b",
+  "endpoint": "api.bricksum.com",
+  "llmMode": "live",
+  "live": true,
+  "stages": [
+    {
+      "stage": "settlement.analyze",
+      "label": "Stage 1 조건 해석",
+      "phase": "settle",
+      "kind": "AI",
+      "calls": 48,
+      "code_steps": 4,
+      "fallbacks": 1,
+      "prompt_tokens": 67546,
+      "completion_tokens": 7307,
+      "total_tokens": 74853,
+      "latency_ms": 135189,
+      "energy_wh": 5.632873,
+      "avg_tokens": 1559.4,
+      "avg_latency_ms": 2816,
+      "share_pct": 49.2
+    },
+    {
+      "stage": "settlement.calculate",
+      "label": "Stage 2 금액 계산",
+      "phase": "settle",
+      "kind": "코드",
+      "calls": 0,
+      "code_steps": 45,
+      "fallbacks": 0,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "latency_ms": 0,
+      "energy_wh": 0,
+      "avg_tokens": 0,
+      "avg_latency_ms": 0,
+      "share_pct": 0
+    },
+    {
+      "stage": "settlement.policy",
+      "label": "지출 통제 검사",
+      "phase": "settle",
+      "kind": "코드",
+      "calls": 0,
+      "code_steps": 26,
+      "fallbacks": 0,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "latency_ms": 0,
+      "energy_wh": 0,
+      "avg_tokens": 0,
+      "avg_latency_ms": 0,
+      "share_pct": 0
+    },
+    {
+      "stage": "settlement.explain",
+      "label": "Stage 3 결과 설명",
+      "phase": "settle",
+      "kind": "AI",
+      "calls": 2,
+      "code_steps": 0,
+      "fallbacks": 0,
+      "prompt_tokens": 462,
+      "completion_tokens": 196,
+      "total_tokens": 658,
+      "latency_ms": 3496,
+      "energy_wh": 0.145667,
+      "avg_tokens": 329,
+      "avg_latency_ms": 1748,
+      "share_pct": 0.4
+    },
+    {
+      "stage": "dispute.records",
+      "label": "분쟁 기록 대조",
+      "phase": "dispute",
+      "kind": "코드",
+      "calls": 0,
+      "code_steps": 5,
+      "fallbacks": 0,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "latency_ms": 0,
+      "energy_wh": 0,
+      "avg_tokens": 0,
+      "avg_latency_ms": 0,
+      "share_pct": 0
+    },
+    {
+      "stage": "dispute.investigate",
+      "label": "분쟁 판정",
+      "phase": "dispute",
+      "kind": "AI",
+      "calls": 5,
+      "code_steps": 0,
+      "fallbacks": 0,
+      "prompt_tokens": 3810,
+      "completion_tokens": 1472,
+      "total_tokens": 5282,
+      "latency_ms": 24852,
+      "energy_wh": 1.0355,
+      "avg_tokens": 1056.4,
+      "avg_latency_ms": 4970,
+      "share_pct": 3.5
+    },
+    {
+      "stage": "shopping.web",
+      "label": "상품 검색",
+      "phase": "shop",
+      "kind": "코드",
+      "calls": 0,
+      "code_steps": 6,
+      "fallbacks": 0,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "latency_ms": 0,
+      "energy_wh": 0,
+      "avg_tokens": 0,
+      "avg_latency_ms": 0,
+      "share_pct": 0
+    },
+    {
+      "stage": "shopping.search",
+      "label": "공동구매 비교",
+      "phase": "shop",
+      "kind": "AI",
+      "calls": 4,
+      "code_steps": 0,
+      "fallbacks": 2,
+      "prompt_tokens": 3352,
+      "completion_tokens": 619,
+      "total_tokens": 3971,
+      "latency_ms": 11114,
+      "energy_wh": 0.463083,
+      "avg_tokens": 992.8,
+      "avg_latency_ms": 2778,
+      "share_pct": 2.6
+    },
+    {
+      "stage": "shopping.calculate",
+      "label": "1인 비용 계산",
+      "phase": "shop",
+      "kind": "코드",
+      "calls": 0,
+      "code_steps": 5,
+      "fallbacks": 0,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "latency_ms": 0,
+      "energy_wh": 0,
+      "avg_tokens": 0,
+      "avg_latency_ms": 0,
+      "share_pct": 0
+    },
+    {
+      "stage": "shopping.explain",
+      "label": "비교 결과 설명",
+      "phase": "shop",
+      "kind": "AI",
+      "calls": 4,
+      "code_steps": 0,
+      "fallbacks": 2,
+      "prompt_tokens": 3299,
+      "completion_tokens": 813,
+      "total_tokens": 4112,
+      "latency_ms": 13561,
+      "energy_wh": 0.565042,
+      "avg_tokens": 1028,
+      "avg_latency_ms": 3390,
+      "share_pct": 2.7
+    },
+    {
+      "stage": "chat.route",
+      "label": "요청 의도 파악",
+      "phase": "chat",
+      "kind": "코드",
+      "calls": 0,
+      "code_steps": 12,
+      "fallbacks": 0,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "latency_ms": 0,
+      "energy_wh": 0,
+      "avg_tokens": 0,
+      "avg_latency_ms": 0,
+      "share_pct": 0
+    },
+    {
+      "stage": "assistant.step",
+      "label": "Pie 에이전트 판단",
+      "phase": "chat",
+      "kind": "AI",
+      "calls": 22,
+      "code_steps": 0,
+      "fallbacks": 0,
+      "prompt_tokens": 60864,
+      "completion_tokens": 2512,
+      "total_tokens": 63376,
+      "latency_ms": 48456,
+      "energy_wh": 2.018998,
+      "avg_tokens": 2880.7,
+      "avg_latency_ms": 2203,
+      "share_pct": 41.6
+    },
+    {
+      "stage": "assistant.brain",
+      "label": "assistant.brain",
+      "phase": "chat",
+      "kind": "코드",
+      "calls": 0,
+      "code_steps": 5,
+      "fallbacks": 0,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "latency_ms": 0,
+      "energy_wh": 0,
+      "avg_tokens": 0,
+      "avg_latency_ms": 0,
+      "share_pct": 0
+    },
+    {
+      "stage": "assistant.tool",
+      "label": "assistant.tool",
+      "phase": "chat",
+      "kind": "코드",
+      "calls": 0,
+      "code_steps": 20,
+      "fallbacks": 0,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "latency_ms": 0,
+      "energy_wh": 0,
+      "avg_tokens": 0,
+      "avg_latency_ms": 0,
+      "share_pct": 0
+    }
+  ],
+  "phases": [
+    {
+      "phase": "settle",
+      "label": "정산 코어",
+      "stages": [
+        "settlement.analyze",
+        "settlement.calculate",
+        "settlement.policy",
+        "settlement.explain"
+      ],
+      "calls": 50,
+      "code_steps": 75,
+      "total_tokens": 75511,
+      "latency_ms": 138685,
+      "energy_wh": 5.77854
+    },
+    {
+      "phase": "dispute",
+      "label": "분쟁·증거",
+      "stages": [
+        "dispute.records",
+        "dispute.investigate"
+      ],
+      "calls": 5,
+      "code_steps": 5,
+      "total_tokens": 5282,
+      "latency_ms": 24852,
+      "energy_wh": 1.0355
+    },
+    {
+      "phase": "shop",
+      "label": "공동구매·추천",
+      "stages": [
+        "shopping.web",
+        "shopping.search",
+        "shopping.calculate",
+        "shopping.explain"
+      ],
+      "calls": 8,
+      "code_steps": 11,
+      "total_tokens": 8083,
+      "latency_ms": 24675,
+      "energy_wh": 1.028125
+    },
+    {
+      "phase": "chat",
+      "label": "Pie 대화 (1:1·그룹)",
+      "stages": [
+        "chat.route",
+        "assistant.step",
+        "assistant.brain",
+        "assistant.tool"
+      ],
+      "calls": 22,
+      "code_steps": 37,
+      "total_tokens": 63376,
+      "latency_ms": 48456,
+      "energy_wh": 2.018998
+    }
+  ],
+  "savings": {
+    "items": [
+      {
+        "id": "group_skip",
+        "label": "그룹방 잡담에는 Pie가 끼지 않음 (답할지 코드가 먼저 판단)",
+        "count": 0,
+        "est_tokens": 0,
+        "basis": "잡담 1건 = Kiln 최소 1회(그룹방 호출 평균 1,791토큰)를 안 부른 것으로 계산"
+      },
+      {
+        "id": "prohibited",
+        "label": "불법 목적 요청은 AI 호출 전에 코드가 거절",
+        "count": 0,
+        "est_tokens": 0,
+        "basis": "1건 = Kiln 최소 1회(호출 평균 1,791토큰)"
+      },
+      {
+        "id": "code_fix",
+        "label": "AI가 놓친 금액을 코드가 읽어 되묻기·재호출을 막음",
+        "count": 4,
+        "est_tokens": 7164,
+        "basis": "1건 = 재호출 1회(호출 평균 1,791토큰)"
+      },
+      {
+        "id": "limit",
+        "label": "구독 한도를 넘어 Kiln 없이 규칙으로 답함",
+        "count": 5,
+        "est_tokens": 8955,
+        "basis": "1건 = Kiln 최소 1회(호출 평균 1,791토큰)"
+      },
+      {
+        "id": "code_calc",
+        "label": "금액 계산·합계 검증·지출 통제는 코드로만 (Stage 2)",
+        "count": 76,
+        "est_tokens": null,
+        "basis": "설계상 이 단계는 처음부터 AI를 부르지 않아 추정치에 넣지 않음 (0 토큰)"
+      }
+    ],
+    "est_tokens_avoided": 16119,
+    "avg_call_tokens": 1791,
+    "design": [
+      "금액 계산·합계 검증·지출 통제는 코드(0 토큰). AI는 조건 해석(Stage 1)과 설명(Stage 3)만 한다.",
+      "그룹방은 답할지를 코드가 먼저 정한다(이름 부름·정산·구매 이야기만). 잡담은 AI 호출 0회.",
+      "qwen3-32b: 평소엔 긴 사고를 끄고(/no_think), 판단이 어려운 단계(shopping.plan, dispute.investigate)만 사고 모드.",
+      "답이 max_tokens에 걸리면 한도를 늘려 한 번만 다시 부르고, 잘린 시도의 토큰도 빠짐없이 기록한다.",
+      "구독 한도: 5시간 세션·주간 한도를 넘으면 Kiln을 부르지 않는다(정산·결제는 코드로 계속). 분쟁 조사는 한도 밖."
+    ]
+  },
+  "energy": {
+    "total_wh_upper": 9.86116,
+    "calls": 85,
+    "tokens": 152252,
+    "latency_ms": 236668,
+    "wh_per_call": 0.116014,
+    "wh_per_1k_tokens": 0.064769,
+    "npu_power_watts": 150,
+    "npu_count": 1,
+    "formula": "Wh = NPU 전력(W) × 카드 수 × 응답 지연(초) / 3600",
+    "bound": "배치 처리로 여러 요청이 카드를 나눠 쓰는 효과를 빼서 실제보다 큰 값(상한)",
+    "measured": "Kiln 요청부터 응답까지 걸린 시간(latency_ms)을 호출마다 실측",
+    "source": "RNGD TDP 150W — developer.furiosa.ai/latest/en/overview/rngd.html"
+  },
+  "decisions": 32,
+  "runs": [
+    {
+      "run": 6,
+      "sid": "sp-cdb1f9c046",
+      "createdAt": 1790615227.1082215,
+      "status": "blocked",
+      "outcome": "지출 통제로 중단 (온체인 Blocked 기록)",
+      "conditions": {
+        "total": 35900,
+        "members": 4,
+        "perPersonCap": 9000,
+        "totalCap": null,
+        "allowedMerchants": null,
+        "merchant": "Share Pie 공동구매",
+        "purchase": false
+      },
+      "violations": [
+        "OVER_PERSON_CAP",
+        "OVER_PERSON_CAP",
+        "OVER_PERSON_CAP"
+      ],
+      "txs": [
+        {
+          "kind": "block",
+          "label": "지출 통제 중단",
+          "tx_hash": "0xd7f265c020cca78d57ca2fea751e344d93cc539080ebd66c19551f6ef7e39c94",
+          "block": 11801906,
+          "url": "https://sepolia.etherscan.io/tx/0xd7f265c020cca78d57ca2fea751e344d93cc539080ebd66c19551f6ef7e39c94",
+          "at": 1790615232.5427723
+        }
+      ],
+      "ai_calls": 0,
+      "tokens": 0,
+      "latency_ms": 0,
+      "energy_wh": 0,
+      "code_steps": 1,
+      "steps": [
+        {
+          "ts": 1790615227.107,
+          "stage": "settlement.policy",
+          "mode": "code",
+          "tokens": 0,
+          "latency_ms": 0,
+          "note": "0 tokens (code-only): 3 violations"
+        }
+      ]
+    },
+    {
+      "run": 7,
+      "sid": "sp-96cfd33f3f",
+      "createdAt": 1790615235.4095242,
+      "status": "blocked",
+      "outcome": "지출 통제로 중단 (온체인 Blocked 기록)",
+      "conditions": {
+        "total": 35900,
+        "members": 4,
+        "perPersonCap": null,
+        "totalCap": 30000,
+        "allowedMerchants": null,
+        "merchant": "Share Pie 공동구매",
+        "purchase": false
+      },
+      "violations": [
+        "OVER_TOTAL_CAP"
+      ],
+      "txs": [
+        {
+          "kind": "block",
+          "label": "지출 통제 중단",
+          "tx_hash": "0xa22de2e43e8002ebad7ffb905042d23dd2da7da183adc9264aaa33ad49e58987",
+          "block": 11801907,
+          "url": "https://sepolia.etherscan.io/tx/0xa22de2e43e8002ebad7ffb905042d23dd2da7da183adc9264aaa33ad49e58987",
+          "at": 1790615245.4933083
+        }
+      ],
+      "ai_calls": 0,
+      "tokens": 0,
+      "latency_ms": 0,
+      "energy_wh": 0,
+      "code_steps": 1,
+      "steps": [
+        {
+          "ts": 1790615235.409,
+          "stage": "settlement.policy",
+          "mode": "code",
+          "tokens": 0,
+          "latency_ms": 0,
+          "note": "0 tokens (code-only): 1 violations"
+        }
+      ]
+    },
+    {
+      "run": 8,
+      "sid": "sp-0e977c0a4a",
+      "createdAt": 1790615248.1945136,
+      "status": "refunded",
+      "outcome": "이의제기 → GENUINE_ERROR · 환불",
+      "conditions": {
+        "total": 35900,
+        "members": 4,
+        "perPersonCap": null,
+        "totalCap": 40000,
+        "allowedMerchants": null,
+        "merchant": "Share Pie 공동구매",
+        "purchase": false
+      },
+      "violations": [],
+      "txs": [
+        {
+          "kind": "create",
+          "label": "정산 등록",
+          "tx_hash": "0x35aec80f5387b9f5f049c8ea28398dd1a5879bf9663013d89b3a859a9d4717db",
+          "block": 11801908,
+          "url": "https://sepolia.etherscan.io/tx/0x35aec80f5387b9f5f049c8ea28398dd1a5879bf9663013d89b3a859a9d4717db",
+          "at": 1790615257.5252378
+        },
+        {
+          "kind": "lock",
+          "label": "예치",
+          "tx_hash": "0x8962ecb77d0057621c83b1be20ec88dff82def616c8d212591204d2f9f9ee2d1",
+          "block": 11801910,
+          "url": "https://sepolia.etherscan.io/tx/0x8962ecb77d0057621c83b1be20ec88dff82def616c8d212591204d2f9f9ee2d1",
+          "at": 1790615284.4134855
+        },
+        {
+          "kind": "lock",
+          "label": "예치",
+          "tx_hash": "0x3b780aff6102b3ab2de616b9fd9f7279ce83de6211e6a6ede9208081529abf78",
+          "block": 11801912,
+          "url": "https://sepolia.etherscan.io/tx/0x3b780aff6102b3ab2de616b9fd9f7279ce83de6211e6a6ede9208081529abf78",
+          "at": 1790615306.7727067
+        },
+        {
+          "kind": "lock",
+          "label": "예치",
+          "tx_hash": "0x0f3ab995c0636662f2c2e4b7fb522f7cb7f485e96eadd4e79789715948025bcb",
+          "block": 11801914,
+          "url": "https://sepolia.etherscan.io/tx/0x0f3ab995c0636662f2c2e4b7fb522f7cb7f485e96eadd4e79789715948025bcb",
+          "at": 1790615333.219188
+        },
+        {
+          "kind": "escrow",
+          "label": "전원 예치",
+          "tx_hash": "0x0f3ab995c0636662f2c2e4b7fb522f7cb7f485e96eadd4e79789715948025bcb",
+          "block": 11801914,
+          "url": "https://sepolia.etherscan.io/tx/0x0f3ab995c0636662f2c2e4b7fb522f7cb7f485e96eadd4e79789715948025bcb",
+          "at": 1790615333.2191963
+        },
+        {
+          "kind": "dispute",
+          "label": "이의제기",
+          "tx_hash": "0x4cc7d1e6f70d46742b52d9082f6cadc4c405828ea9ead587b44b2b437c07a7d7",
+          "block": 11801915,
+          "url": "https://sepolia.etherscan.io/tx/0x4cc7d1e6f70d46742b52d9082f6cadc4c405828ea9ead587b44b2b437c07a7d7",
+          "at": 1790615340.817789
+        },
+        {
+          "kind": "refund",
+          "label": "환불",
+          "tx_hash": "0xfe49d45d2cf3811079e24062e35344def33c765af7222b3436cb1aca29d9f783",
+          "block": 11801917,
+          "url": "https://sepolia.etherscan.io/tx/0xfe49d45d2cf3811079e24062e35344def33c765af7222b3436cb1aca29d9f783",
+          "at": 1790615364.4272056
+        },
+        {
+          "kind": "refund",
+          "label": "환불",
+          "tx_hash": "0x487428825b97bc3d216ec89a4894d0011ed8c82ed890a58ac4bb3c45c535e5ac",
+          "block": 11801918,
+          "url": "https://sepolia.etherscan.io/tx/0x487428825b97bc3d216ec89a4894d0011ed8c82ed890a58ac4bb3c45c535e5ac",
+          "at": 1790615376.5768816
+        },
+        {
+          "kind": "refund",
+          "label": "환불",
+          "tx_hash": "0xb361afc724efb585e4b7e77cbb5bc7ffb46dda89e681befc906d5aa626eeaecb",
+          "block": 11801919,
+          "url": "https://sepolia.etherscan.io/tx/0xb361afc724efb585e4b7e77cbb5bc7ffb46dda89e681befc906d5aa626eeaecb",
+          "at": 1790615389.628564
+        },
+        {
+          "kind": "resolve",
+          "label": "판정 기록",
+          "tx_hash": "0x3988da81f4c282f96b9b17b05215e3bddbefbc122f243f7a7049c3ee3501a735",
+          "block": 11801920,
+          "url": "https://sepolia.etherscan.io/tx/0x3988da81f4c282f96b9b17b05215e3bddbefbc122f243f7a7049c3ee3501a735",
+          "at": 1790615401.6550536
+        }
+      ],
+      "ai_calls": 1,
+      "tokens": 1112,
+      "latency_ms": 6267,
+      "energy_wh": 0.261125,
+      "code_steps": 2,
+      "steps": [
+        {
+          "ts": 1790615248.194,
+          "stage": "settlement.policy",
+          "mode": "code",
+          "tokens": 0,
+          "latency_ms": 0,
+          "note": "0 tokens (code-only): 0 violations"
+        },
+        {
+          "ts": 1790615342.902,
+          "stage": "dispute.records",
+          "mode": "code",
+          "tokens": 0,
+          "latency_ms": 0,
+          "note": "0 tokens (code-only): 단계별 기록 대조"
+        },
+        {
+          "ts": 1790615349.17,
+          "stage": "dispute.investigate",
+          "mode": "json",
+          "tokens": 1112,
+          "latency_ms": 6267,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "run": 9,
+      "sid": "sp-a2f2ac6f3f",
+      "createdAt": 1790616200.297426,
+      "status": "paid",
+      "outcome": "결제자에게 지급 완료",
+      "conditions": {
+        "total": 35900,
+        "members": 4,
+        "perPersonCap": null,
+        "totalCap": 40000,
+        "allowedMerchants": null,
+        "merchant": "Share Pie 공동구매",
+        "purchase": false
+      },
+      "violations": [],
+      "txs": [
+        {
+          "kind": "create",
+          "label": "정산 등록",
+          "tx_hash": "0x568c30648aabcdb103f598a045dd255ea943e2eb00390215aa467aac60b3b789",
+          "block": 11801987,
+          "url": "https://sepolia.etherscan.io/tx/0x568c30648aabcdb103f598a045dd255ea943e2eb00390215aa467aac60b3b789",
+          "at": 1790616205.6268117
+        },
+        {
+          "kind": "lock",
+          "label": "예치",
+          "tx_hash": "0xae559cb491a600b79514346e37e754a3c42b37187a66257f748ab98224e759f6",
+          "block": 11801990,
+          "url": "https://sepolia.etherscan.io/tx/0xae559cb491a600b79514346e37e754a3c42b37187a66257f748ab98224e759f6",
+          "at": 1790616244.2078125
+        },
+        {
+          "kind": "lock",
+          "label": "예치",
+          "tx_hash": "0x72c6904298dd78577e3ec1daeace5fb027a1a62a8db52b7b5890508a10e66220",
+          "block": 11801993,
+          "url": "https://sepolia.etherscan.io/tx/0x72c6904298dd78577e3ec1daeace5fb027a1a62a8db52b7b5890508a10e66220",
+          "at": 1790616278.5112743
+        },
+        {
+          "kind": "lock",
+          "label": "예치",
+          "tx_hash": "0xf1c3fa6dd02afdc5244d676432430f21c5ce1b64e4bcd7f88bb692087c9d7386",
+          "block": 11801996,
+          "url": "https://sepolia.etherscan.io/tx/0xf1c3fa6dd02afdc5244d676432430f21c5ce1b64e4bcd7f88bb692087c9d7386",
+          "at": 1790616312.815389
+        },
+        {
+          "kind": "escrow",
+          "label": "전원 예치",
+          "tx_hash": "0xf1c3fa6dd02afdc5244d676432430f21c5ce1b64e4bcd7f88bb692087c9d7386",
+          "block": 11801996,
+          "url": "https://sepolia.etherscan.io/tx/0xf1c3fa6dd02afdc5244d676432430f21c5ce1b64e4bcd7f88bb692087c9d7386",
+          "at": 1790616312.8154016
+        },
+        {
+          "kind": "release",
+          "label": "release",
+          "tx_hash": "0x56e083cdabd7adf56be5993c5a9a4811fffb5c2da13474d548622ce3564e7f02",
+          "block": 11802012,
+          "url": "https://sepolia.etherscan.io/tx/0x56e083cdabd7adf56be5993c5a9a4811fffb5c2da13474d548622ce3564e7f02",
+          "at": 1790616505.7342494
+        },
+        {
+          "kind": "paid",
+          "label": "지급",
+          "tx_hash": "0x56e083cdabd7adf56be5993c5a9a4811fffb5c2da13474d548622ce3564e7f02",
+          "block": 11802012,
+          "url": "https://sepolia.etherscan.io/tx/0x56e083cdabd7adf56be5993c5a9a4811fffb5c2da13474d548622ce3564e7f02",
+          "at": 1790616505.7342887
+        }
+      ],
+      "ai_calls": 0,
+      "tokens": 0,
+      "latency_ms": 0,
+      "energy_wh": 0,
+      "code_steps": 1,
+      "steps": [
+        {
+          "ts": 1790616200.296,
+          "stage": "settlement.policy",
+          "mode": "code",
+          "tokens": 0,
+          "latency_ms": 0,
+          "note": "0 tokens (code-only): 0 violations"
+        }
+      ]
+    },
+    {
+      "run": 10,
+      "sid": "sp-87051a7018",
+      "createdAt": 1790616509.2083707,
+      "status": "blocked",
+      "outcome": "지출 통제로 중단 (온체인 Blocked 기록)",
+      "conditions": {
+        "total": 35900,
+        "members": 4,
+        "perPersonCap": 9000,
+        "totalCap": null,
+        "allowedMerchants": null,
+        "merchant": "Share Pie 공동구매",
+        "purchase": false
+      },
+      "violations": [
+        "OVER_PERSON_CAP",
+        "OVER_PERSON_CAP",
+        "OVER_PERSON_CAP"
+      ],
+      "txs": [
+        {
+          "kind": "block",
+          "label": "지출 통제 중단",
+          "tx_hash": "0x58996bc68dc304732cd2b51d97177282e4df635891b3a06f3906d99d7dbcba66",
+          "block": 11802013,
+          "url": "https://sepolia.etherscan.io/tx/0x58996bc68dc304732cd2b51d97177282e4df635891b3a06f3906d99d7dbcba66",
+          "at": 1790616516.9683344
+        }
+      ],
+      "ai_calls": 0,
+      "tokens": 0,
+      "latency_ms": 0,
+      "energy_wh": 0,
+      "code_steps": 1,
+      "steps": [
+        {
+          "ts": 1790616509.207,
+          "stage": "settlement.policy",
+          "mode": "code",
+          "tokens": 0,
+          "latency_ms": 0,
+          "note": "0 tokens (code-only): 3 violations"
+        }
+      ]
+    },
+    {
+      "run": 11,
+      "sid": "sp-eeda05de02",
+      "createdAt": 1790616519.6126857,
+      "status": "blocked",
+      "outcome": "지출 통제로 중단 (온체인 Blocked 기록)",
+      "conditions": {
+        "total": 35900,
+        "members": 4,
+        "perPersonCap": null,
+        "totalCap": 30000,
+        "allowedMerchants": null,
+        "merchant": "Share Pie 공동구매",
+        "purchase": false
+      },
+      "violations": [
+        "OVER_TOTAL_CAP"
+      ],
+      "txs": [
+        {
+          "kind": "block",
+          "label": "지출 통제 중단",
+          "tx_hash": "0x84ed29a0cfff37efda3c9f0de1c73e472a6ca32bb44a3c9b4c27ba9113ec4162",
+          "block": 11802014,
+          "url": "https://sepolia.etherscan.io/tx/0x84ed29a0cfff37efda3c9f0de1c73e472a6ca32bb44a3c9b4c27ba9113ec4162",
+          "at": 1790616528.683436
+        }
+      ],
+      "ai_calls": 0,
+      "tokens": 0,
+      "latency_ms": 0,
+      "energy_wh": 0,
+      "code_steps": 1,
+      "steps": [
+        {
+          "ts": 1790616519.612,
+          "stage": "settlement.policy",
+          "mode": "code",
+          "tokens": 0,
+          "latency_ms": 0,
+          "note": "0 tokens (code-only): 1 violations"
+        }
+      ]
+    },
+    {
+      "run": 12,
+      "sid": "sp-a9217d3b42",
+      "createdAt": 1790616531.5830374,
+      "status": "refunded",
+      "outcome": "이의제기 → GENUINE_ERROR · 환불",
+      "conditions": {
+        "total": 35900,
+        "members": 4,
+        "perPersonCap": null,
+        "totalCap": 40000,
+        "allowedMerchants": null,
+        "merchant": "Share Pie 공동구매",
+        "purchase": false
+      },
+      "violations": [],
+      "txs": [
+        {
+          "kind": "create",
+          "label": "정산 등록",
+          "tx_hash": "0x48323fb903f7c8141be80ddb71ebf531b7c75e40f1de3f28631ef75e77a37a97",
+          "block": 11802015,
+          "url": "https://sepolia.etherscan.io/tx/0x48323fb903f7c8141be80ddb71ebf531b7c75e40f1de3f28631ef75e77a37a97",
+          "at": 1790616541.624559
+        },
+        {
+          "kind": "lock",
+          "label": "예치",
+          "tx_hash": "0x0112ef7575d374886c24be2636a8832cb5e3b1617d90ebc363d742481a7ce3a5",
+          "block": 11802018,
+          "url": "https://sepolia.etherscan.io/tx/0x0112ef7575d374886c24be2636a8832cb5e3b1617d90ebc363d742481a7ce3a5",
+          "at": 1790616580.1582854
+        },
+        {
+          "kind": "lock",
+          "label": "예치",
+          "tx_hash": "0xd7df4f7b8811487da0f27af06128a48949726146f07e7030800d7539613ad487",
+          "block": 11802020,
+          "url": "https://sepolia.etherscan.io/tx/0xd7df4f7b8811487da0f27af06128a48949726146f07e7030800d7539613ad487",
+          "at": 1790616602.87978
+        },
+        {
+          "kind": "lock",
+          "label": "예치",
+          "tx_hash": "0x2ff00813657ed868ecaa80c2bd249a81b5f20b0df932b80f1401ab1e50691bb2",
+          "block": 11802023,
+          "url": "https://sepolia.etherscan.io/tx/0x2ff00813657ed868ecaa80c2bd249a81b5f20b0df932b80f1401ab1e50691bb2",
+          "at": 1790616637.2269099
+        },
+        {
+          "kind": "escrow",
+          "label": "전원 예치",
+          "tx_hash": "0x2ff00813657ed868ecaa80c2bd249a81b5f20b0df932b80f1401ab1e50691bb2",
+          "block": 11802023,
+          "url": "https://sepolia.etherscan.io/tx/0x2ff00813657ed868ecaa80c2bd249a81b5f20b0df932b80f1401ab1e50691bb2",
+          "at": 1790616637.226923
+        },
+        {
+          "kind": "dispute",
+          "label": "이의제기",
+          "tx_hash": "0xcce569f05c3cbbfc065a6c4ac92aef3cbc18fa5b556905aac2a7fd83a5cad789",
+          "block": 11802024,
+          "url": "https://sepolia.etherscan.io/tx/0xcce569f05c3cbbfc065a6c4ac92aef3cbc18fa5b556905aac2a7fd83a5cad789",
+          "at": 1790616648.713082
+        },
+        {
+          "kind": "refund",
+          "label": "환불",
+          "tx_hash": "0x6c7e13d56f9612ed82c77c69b9f09c163fcbb2a00bb274d8a7e37328b8441085",
+          "block": 11802025,
+          "url": "https://sepolia.etherscan.io/tx/0x6c7e13d56f9612ed82c77c69b9f09c163fcbb2a00bb274d8a7e37328b8441085",
+          "at": 1790616662.20581
+        },
+        {
+          "kind": "refund",
+          "label": "환불",
+          "tx_hash": "0xea9a151a64d743fb5792bce6fd1a28557e24b1dc57ac6889f40295c3335b07b3",
+          "block": 11802026,
+          "url": "https://sepolia.etherscan.io/tx/0xea9a151a64d743fb5792bce6fd1a28557e24b1dc57ac6889f40295c3335b07b3",
+          "at": 1790616673.608068
+        },
+        {
+          "kind": "refund",
+          "label": "환불",
+          "tx_hash": "0x4035b5f08794f5707ff6282ba566a40216df45cef1e4f0b79006503fd2eacf24",
+          "block": 11802027,
+          "url": "https://sepolia.etherscan.io/tx/0x4035b5f08794f5707ff6282ba566a40216df45cef1e4f0b79006503fd2eacf24",
+          "at": 1790616685.0654593
+        },
+        {
+          "kind": "resolve",
+          "label": "판정 기록",
+          "tx_hash": "0x576abdb7c8862d013640ab204616f927f18ba44dfa92caa17a0812062b0e9ba2",
+          "block": 11802028,
+          "url": "https://sepolia.etherscan.io/tx/0x576abdb7c8862d013640ab204616f927f18ba44dfa92caa17a0812062b0e9ba2",
+          "at": 1790616697.6333444
+        }
+      ],
+      "ai_calls": 1,
+      "tokens": 1054,
+      "latency_ms": 5218,
+      "energy_wh": 0.217417,
+      "code_steps": 2,
+      "steps": [
+        {
+          "ts": 1790616531.582,
+          "stage": "settlement.policy",
+          "mode": "code",
+          "tokens": 0,
+          "latency_ms": 0,
+          "note": "0 tokens (code-only): 0 violations"
+        },
+        {
+          "ts": 1790616650.754,
+          "stage": "dispute.records",
+          "mode": "code",
+          "tokens": 0,
+          "latency_ms": 0,
+          "note": "0 tokens (code-only): 단계별 기록 대조"
+        },
+        {
+          "ts": 1790616655.974,
+          "stage": "dispute.investigate",
+          "mode": "json",
+          "tokens": 1054,
+          "latency_ms": 5218,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "run": 13,
+      "sid": "sp-a97571b166",
+      "createdAt": 1790621244.262523,
+      "status": "blocked",
+      "outcome": "지출 통제로 중단 (온체인 Blocked 기록)",
+      "conditions": {
+        "total": 35900,
+        "members": 4,
+        "perPersonCap": null,
+        "totalCap": 30000,
+        "allowedMerchants": null,
+        "merchant": "Share Pie 공동구매",
+        "purchase": false
+      },
+      "violations": [
+        "OVER_TOTAL_CAP"
+      ],
+      "txs": [
+        {
+          "kind": "block",
+          "label": "지출 통제 중단",
+          "tx_hash": "0xa8677d146ded906d8975ccf0133536028cb4e60a367df5c4bfc99e26aa1c76f7",
+          "block": 11802408,
+          "url": "https://sepolia.etherscan.io/tx/0xa8677d146ded906d8975ccf0133536028cb4e60a367df5c4bfc99e26aa1c76f7",
+          "at": 1790621257.3581436
+        }
+      ],
+      "ai_calls": 0,
+      "tokens": 0,
+      "latency_ms": 0,
+      "energy_wh": 0,
+      "code_steps": 1,
+      "steps": [
+        {
+          "ts": 1790621244.261,
+          "stage": "settlement.policy",
+          "mode": "code",
+          "tokens": 0,
+          "latency_ms": 0,
+          "note": "0 tokens (code-only): 1 violations"
+        }
+      ]
+    },
+    {
+      "run": 14,
+      "sid": "sp-38a5e2b88a",
+      "createdAt": 1790621561.076118,
+      "status": "blocked",
+      "outcome": "지출 통제로 중단 (온체인 Blocked 기록)",
+      "conditions": {
+        "total": 35900,
+        "members": 4,
+        "perPersonCap": null,
+        "totalCap": 30000,
+        "allowedMerchants": null,
+        "merchant": "Share Pie 공동구매",
+        "purchase": false
+      },
+      "violations": [
+        "OVER_TOTAL_CAP"
+      ],
+      "txs": [
+        {
+          "kind": "block",
+          "label": "지출 통제 중단",
+          "tx_hash": "0x928a3058bfeb8ec32e949aa359bd8c98572464fba1ebd4a436297acd8952a564",
+          "block": 11802434,
+          "url": "https://sepolia.etherscan.io/tx/0x928a3058bfeb8ec32e949aa359bd8c98572464fba1ebd4a436297acd8952a564",
+          "at": 1790621568.845479
+        }
+      ],
+      "ai_calls": 0,
+      "tokens": 0,
+      "latency_ms": 0,
+      "energy_wh": 0,
+      "code_steps": 1,
+      "steps": [
+        {
+          "ts": 1790621561.075,
+          "stage": "settlement.policy",
+          "mode": "code",
+          "tokens": 0,
+          "latency_ms": 0,
+          "note": "0 tokens (code-only): 1 violations"
+        }
+      ]
+    },
+    {
+      "run": 15,
+      "sid": "sp-21356b2fbd",
+      "createdAt": 1790621571.0365813,
+      "status": "blocked",
+      "outcome": "지출 통제로 중단 (온체인 Blocked 기록)",
+      "conditions": {
+        "total": 35900,
+        "members": 4,
+        "perPersonCap": null,
+        "totalCap": 40000,
+        "allowedMerchants": null,
+        "merchant": "Share Pie 공동구매",
+        "purchase": false
+      },
+      "violations": [],
+      "txs": [
+        {
+          "kind": "create",
+          "label": "정산 등록",
+          "tx_hash": "0x70cc4dac2af0123d0203a805e99a36221983afb21e5cfc2789203a7acefcc9a9",
+          "block": 11802435,
+          "url": "https://sepolia.etherscan.io/tx/0x70cc4dac2af0123d0203a805e99a36221983afb21e5cfc2789203a7acefcc9a9",
+          "at": 1790621580.7985039
+        },
+        {
+          "kind": "block",
+          "label": "지출 통제 중단",
+          "tx_hash": "0xad20b72dc09c0fa060b2db4310e80eda572a925e14463e6001b7c03fb1986a3f",
+          "block": 11802436,
+          "url": "https://sepolia.etherscan.io/tx/0xad20b72dc09c0fa060b2db4310e80eda572a925e14463e6001b7c03fb1986a3f",
+          "at": 1790621592.6616747
+        }
+      ],
+      "ai_calls": 0,
+      "tokens": 0,
+      "latency_ms": 0,
+      "energy_wh": 0,
+      "code_steps": 1,
+      "steps": [
+        {
+          "ts": 1790621571.036,
+          "stage": "settlement.policy",
+          "mode": "code",
+          "tokens": 0,
+          "latency_ms": 0,
+          "note": "0 tokens (code-only): 0 violations"
+        }
+      ]
+    },
+    {
+      "run": 16,
+      "sid": "sp-4ea1730e98",
+      "createdAt": 1790626720.6216462,
+      "status": "paid",
+      "outcome": "결제자에게 지급 완료",
+      "conditions": {
+        "total": 35900,
+        "members": 4,
+        "perPersonCap": null,
+        "totalCap": 40000,
+        "allowedMerchants": null,
+        "merchant": "Share Pie 공동구매",
+        "purchase": false
+      },
+      "violations": [],
+      "txs": [
+        {
+          "kind": "create",
+          "label": "정산 등록",
+          "tx_hash": "0x1b2fc46198f8d2d7c2c88033d146c5e26d0475559a421ebc952d906659f401f3",
+          "block": 11802864,
+          "url": "https://sepolia.etherscan.io/tx/0x1b2fc46198f8d2d7c2c88033d146c5e26d0475559a421ebc952d906659f401f3",
+          "at": 1790626729.8140152
+        },
+        {
+          "kind": "lock",
+          "label": "예치",
+          "tx_hash": "0xdcb2b0f494d91bdc002e6a8df880f47c4ed62b32ee390b1f5a137d1925aed700",
+          "block": 11802866,
+          "url": "https://sepolia.etherscan.io/tx/0xdcb2b0f494d91bdc002e6a8df880f47c4ed62b32ee390b1f5a137d1925aed700",
+          "at": 1790626756.014105
+        },
+        {
+          "kind": "lock",
+          "label": "예치",
+          "tx_hash": "0x17d6099703a05b4be2ba528d52e88a3ea990bffb35495a4404d5a4f9e0771c69",
+          "block": 11802868,
+          "url": "https://sepolia.etherscan.io/tx/0x17d6099703a05b4be2ba528d52e88a3ea990bffb35495a4404d5a4f9e0771c69",
+          "at": 1790626782.1192024
+        },
+        {
+          "kind": "lock",
+          "label": "예치",
+          "tx_hash": "0x0c28a50db5f144e5f45b000ff44cd2c4c54020a3a27c253fd098a15e1c2bdcd0",
+          "block": 11802871,
+          "url": "https://sepolia.etherscan.io/tx/0x0c28a50db5f144e5f45b000ff44cd2c4c54020a3a27c253fd098a15e1c2bdcd0",
+          "at": 1790626816.314778
+        },
+        {
+          "kind": "escrow",
+          "label": "전원 예치",
+          "tx_hash": "0x0c28a50db5f144e5f45b000ff44cd2c4c54020a3a27c253fd098a15e1c2bdcd0",
+          "block": 11802871,
+          "url": "https://sepolia.etherscan.io/tx/0x0c28a50db5f144e5f45b000ff44cd2c4c54020a3a27c253fd098a15e1c2bdcd0",
+          "at": 1790626816.3147838
+        },
+        {
+          "kind": "release",
+          "label": "release",
+          "tx_hash": "0x5461101574c706f997e6a5d52b60e62c6bc5c712fe623b724d1701eff7484ac3",
+          "block": 11802887,
+          "url": "https://sepolia.etherscan.io/tx/0x5461101574c706f997e6a5d52b60e62c6bc5c712fe623b724d1701eff7484ac3",
+          "at": 1790627004.9444976
+        },
+        {
+          "kind": "paid",
+          "label": "지급",
+          "tx_hash": "0x5461101574c706f997e6a5d52b60e62c6bc5c712fe623b724d1701eff7484ac3",
+          "block": 11802887,
+          "url": "https://sepolia.etherscan.io/tx/0x5461101574c706f997e6a5d52b60e62c6bc5c712fe623b724d1701eff7484ac3",
+          "at": 1790627004.944516
+        }
+      ],
+      "ai_calls": 0,
+      "tokens": 0,
+      "latency_ms": 0,
+      "energy_wh": 0,
+      "code_steps": 1,
+      "steps": [
+        {
+          "ts": 1790626720.621,
+          "stage": "settlement.policy",
+          "mode": "code",
+          "tokens": 0,
+          "latency_ms": 0,
+          "note": "0 tokens (code-only): 0 violations"
+        }
+      ]
+    },
+    {
+      "run": 17,
+      "sid": "sp-f45780c795",
+      "createdAt": 1790627008.3009038,
+      "status": "blocked",
+      "outcome": "지출 통제로 중단 (온체인 Blocked 기록)",
+      "conditions": {
+        "total": 35900,
+        "members": 4,
+        "perPersonCap": 9000,
+        "totalCap": null,
+        "allowedMerchants": null,
+        "merchant": "Share Pie 공동구매",
+        "purchase": false
+      },
+      "violations": [
+        "OVER_PERSON_CAP",
+        "OVER_PERSON_CAP",
+        "OVER_PERSON_CAP"
+      ],
+      "txs": [
+        {
+          "kind": "block",
+          "label": "지출 통제 중단",
+          "tx_hash": "0x453179d15eac18400ad0fd4b308d942fe95039892ca3ce224f0d7f54ddd7b1a5",
+          "block": 11802888,
+          "url": "https://sepolia.etherscan.io/tx/0x453179d15eac18400ad0fd4b308d942fe95039892ca3ce224f0d7f54ddd7b1a5",
+          "at": 1790627017.273547
+        }
+      ],
+      "ai_calls": 0,
+      "tokens": 0,
+      "latency_ms": 0,
+      "energy_wh": 0,
+      "code_steps": 1,
+      "steps": [
+        {
+          "ts": 1790627008.3,
+          "stage": "settlement.policy",
+          "mode": "code",
+          "tokens": 0,
+          "latency_ms": 0,
+          "note": "0 tokens (code-only): 3 violations"
+        }
+      ]
+    },
+    {
+      "run": 18,
+      "sid": "sp-f7190048f9",
+      "createdAt": 1790627019.743068,
+      "status": "blocked",
+      "outcome": "지출 통제로 중단 (온체인 Blocked 기록)",
+      "conditions": {
+        "total": 35900,
+        "members": 4,
+        "perPersonCap": null,
+        "totalCap": 30000,
+        "allowedMerchants": null,
+        "merchant": "Share Pie 공동구매",
+        "purchase": false
+      },
+      "violations": [
+        "OVER_TOTAL_CAP"
+      ],
+      "txs": [
+        {
+          "kind": "block",
+          "label": "지출 통제 중단",
+          "tx_hash": "0x1df4455b28f9a23986aec8a4f20a8aed9e9d3b7c0a82d804fa3cfe448e409a4d",
+          "block": 11802889,
+          "url": "https://sepolia.etherscan.io/tx/0x1df4455b28f9a23986aec8a4f20a8aed9e9d3b7c0a82d804fa3cfe448e409a4d",
+          "at": 1790627029.6065688
+        }
+      ],
+      "ai_calls": 0,
+      "tokens": 0,
+      "latency_ms": 0,
+      "energy_wh": 0,
+      "code_steps": 1,
+      "steps": [
+        {
+          "ts": 1790627019.743,
+          "stage": "settlement.policy",
+          "mode": "code",
+          "tokens": 0,
+          "latency_ms": 0,
+          "note": "0 tokens (code-only): 1 violations"
+        }
+      ]
+    },
+    {
+      "run": 19,
+      "sid": "sp-122477344b",
+      "createdAt": 1790627032.2629223,
+      "status": "refunded",
+      "outcome": "이의제기 → GENUINE_ERROR · 환불",
+      "conditions": {
+        "total": 35900,
+        "members": 4,
+        "perPersonCap": null,
+        "totalCap": 40000,
+        "allowedMerchants": null,
+        "merchant": "Share Pie 공동구매",
+        "purchase": false
+      },
+      "violations": [],
+      "txs": [
+        {
+          "kind": "create",
+          "label": "정산 등록",
+          "tx_hash": "0xcd46ed47523ed987b153f2d1989e8663a53c94fe6d54994cb301ca2d4301ec7c",
+          "block": 11802890,
+          "url": "https://sepolia.etherscan.io/tx/0xcd46ed47523ed987b153f2d1989e8663a53c94fe6d54994cb301ca2d4301ec7c",
+          "at": 1790627041.2097642
+        },
+        {
+          "kind": "lock",
+          "label": "예치",
+          "tx_hash": "0x2d20b31eb68aa1323f43819289428d9f1d2ac77bc5ebaadd0ad8eaa16cdd1a01",
+          "block": 11802893,
+          "url": "https://sepolia.etherscan.io/tx/0x2d20b31eb68aa1323f43819289428d9f1d2ac77bc5ebaadd0ad8eaa16cdd1a01",
+          "at": 1790627080.2942438
+        },
+        {
+          "kind": "lock",
+          "label": "예치",
+          "tx_hash": "0x6992e10fc7a1a3569e83809431e4bee5812b91284ad6c7fe3ed69bd36a59af37",
+          "block": 11802896,
+          "url": "https://sepolia.etherscan.io/tx/0x6992e10fc7a1a3569e83809431e4bee5812b91284ad6c7fe3ed69bd36a59af37",
+          "at": 1790627114.7069201
+        },
+        {
+          "kind": "lock",
+          "label": "예치",
+          "tx_hash": "0xeca997a59fed164183db803e7dfce95e0272680c63c9fbd0e01ed5c5fa69eca7",
+          "block": 11802898,
+          "url": "https://sepolia.etherscan.io/tx/0xeca997a59fed164183db803e7dfce95e0272680c63c9fbd0e01ed5c5fa69eca7",
+          "at": 1790627140.7568965
+        },
+        {
+          "kind": "escrow",
+          "label": "전원 예치",
+          "tx_hash": "0xeca997a59fed164183db803e7dfce95e0272680c63c9fbd0e01ed5c5fa69eca7",
+          "block": 11802898,
+          "url": "https://sepolia.etherscan.io/tx/0xeca997a59fed164183db803e7dfce95e0272680c63c9fbd0e01ed5c5fa69eca7",
+          "at": 1790627140.7569058
+        },
+        {
+          "kind": "dispute",
+          "label": "이의제기",
+          "tx_hash": "0x89e70df35219d1eea3c4677e576b8eacce7361ddad2c472df2a21a90d3422d42",
+          "block": 11802899,
+          "url": "https://sepolia.etherscan.io/tx/0x89e70df35219d1eea3c4677e576b8eacce7361ddad2c472df2a21a90d3422d42",
+          "at": 1790627161.9764996
+        },
+        {
+          "kind": "refund",
+          "label": "환불",
+          "tx_hash": "0x65c54a9754f6068f8b8c2c6215390d0abcd7f11705ece0458261bcc3bede3c23",
+          "block": 11802901,
+          "url": "https://sepolia.etherscan.io/tx/0x65c54a9754f6068f8b8c2c6215390d0abcd7f11705ece0458261bcc3bede3c23",
+          "at": 1790627185.3762233
+        },
+        {
+          "kind": "refund",
+          "label": "환불",
+          "tx_hash": "0xbd0c1d375c0bb0b921389583ba4a6ce83bdbb8931ed60b1d530745ba259303dc",
+          "block": 11802902,
+          "url": "https://sepolia.etherscan.io/tx/0xbd0c1d375c0bb0b921389583ba4a6ce83bdbb8931ed60b1d530745ba259303dc",
+          "at": 1790627196.9593916
+        },
+        {
+          "kind": "refund",
+          "label": "환불",
+          "tx_hash": "0xadb830bcf5bb122028fabe3449c148917265830d5dfa29f6aa864cb08d4412be",
+          "block": 11802903,
+          "url": "https://sepolia.etherscan.io/tx/0xadb830bcf5bb122028fabe3449c148917265830d5dfa29f6aa864cb08d4412be",
+          "at": 1790627208.9050863
+        },
+        {
+          "kind": "resolve",
+          "label": "판정 기록",
+          "tx_hash": "0x937c18fcd24f47d22ae246f021b4518b25a288e56e2b4c0f9d8f453ae27f01b7",
+          "block": 11802904,
+          "url": "https://sepolia.etherscan.io/tx/0x937c18fcd24f47d22ae246f021b4518b25a288e56e2b4c0f9d8f453ae27f01b7",
+          "at": 1790627221.964923
+        }
+      ],
+      "ai_calls": 1,
+      "tokens": 1094,
+      "latency_ms": 5743,
+      "energy_wh": 0.239292,
+      "code_steps": 2,
+      "steps": [
+        {
+          "ts": 1790627032.262,
+          "stage": "settlement.policy",
+          "mode": "code",
+          "tokens": 0,
+          "latency_ms": 0,
+          "note": "0 tokens (code-only): 0 violations"
+        },
+        {
+          "ts": 1790627163.792,
+          "stage": "dispute.records",
+          "mode": "code",
+          "tokens": 0,
+          "latency_ms": 0,
+          "note": "0 tokens (code-only): 단계별 기록 대조"
+        },
+        {
+          "ts": 1790627169.536,
+          "stage": "dispute.investigate",
+          "mode": "json",
+          "tokens": 1094,
+          "latency_ms": 5743,
+          "note": ""
+        },
+        {
+          "ts": 1790627169.537,
+          "stage": "dispute.investigate",
+          "mode": "decision",
+          "tokens": 0,
+          "latency_ms": 0,
+          "note": "Kiln 응답 → 판정 GENUINE_ERROR → 전원 환불 트랜잭션 실행"
+        }
+      ]
+    },
+    {
+      "run": 20,
+      "sid": "sp-c8123d5f12",
+      "createdAt": 1790634022.756313,
+      "status": "blocked",
+      "outcome": "지출 통제로 중단 (온체인 Blocked 기록)",
+      "conditions": {
+        "total": 35900,
+        "members": 4,
+        "perPersonCap": null,
+        "totalCap": 30000,
+        "allowedMerchants": null,
+        "merchant": "Share Pie 공동구매",
+        "purchase": false
+      },
+      "violations": [
+        "OVER_TOTAL_CAP"
+      ],
+      "txs": [
+        {
+          "kind": "block",
+          "label": "지출 통제 중단",
+          "tx_hash": "0xeaec2da472faaeb1670b85408e5487a2b95088c09a69f59359128b3188c4981f",
+          "block": 11803471,
+          "url": "https://sepolia.etherscan.io/tx/0xeaec2da472faaeb1670b85408e5487a2b95088c09a69f59359128b3188c4981f",
+          "at": 1790634037.0555332
+        }
+      ],
+      "ai_calls": 0,
+      "tokens": 0,
+      "latency_ms": 0,
+      "energy_wh": 0,
+      "code_steps": 1,
+      "steps": [
+        {
+          "ts": 1790634022.755,
+          "stage": "settlement.policy",
+          "mode": "code",
+          "tokens": 0,
+          "latency_ms": 0,
+          "note": "0 tokens (code-only): 1 violations"
+        }
+      ]
+    },
+    {
+      "run": 21,
+      "sid": "sp-8c672cfb84",
+      "createdAt": 1790634050.1437714,
+      "status": "blocked",
+      "outcome": "지출 통제로 중단 (온체인 Blocked 기록)",
+      "conditions": {
+        "total": 35900,
+        "members": 4,
+        "perPersonCap": null,
+        "totalCap": 40000,
+        "allowedMerchants": null,
+        "merchant": "Share Pie 공동구매",
+        "purchase": false
+      },
+      "violations": [],
+      "txs": [
+        {
+          "kind": "create",
+          "label": "정산 등록",
+          "tx_hash": "0xc7344a553dd691e7c1c433ad33eae11d415c736cfe8be037782b8d60aa86e49c",
+          "block": 11803473,
+          "url": "https://sepolia.etherscan.io/tx/0xc7344a553dd691e7c1c433ad33eae11d415c736cfe8be037782b8d60aa86e49c",
+          "at": 1790634063.7999237
+        },
+        {
+          "kind": "block",
+          "label": "지출 통제 중단",
+          "tx_hash": "0x4538196af29d52ebf9c07c0d1a8e8d66c12ac4f67f94cc028d29a5aebbe67d5a",
+          "block": 11803475,
+          "url": "https://sepolia.etherscan.io/tx/0x4538196af29d52ebf9c07c0d1a8e8d66c12ac4f67f94cc028d29a5aebbe67d5a",
+          "at": 1790634084.8736975
+        }
+      ],
+      "ai_calls": 0,
+      "tokens": 0,
+      "latency_ms": 0,
+      "energy_wh": 0,
+      "code_steps": 1,
+      "steps": [
+        {
+          "ts": 1790634050.039,
+          "stage": "settlement.policy",
+          "mode": "code",
+          "tokens": 0,
+          "latency_ms": 0,
+          "note": "0 tokens (code-only): 0 violations"
+        }
+      ]
+    },
+    {
+      "run": 22,
+      "sid": "sp-dddf6e186e",
+      "createdAt": 1790634523.782404,
+      "status": "paid",
+      "outcome": "결제자에게 지급 완료",
+      "conditions": {
+        "total": 35900,
+        "members": 4,
+        "perPersonCap": null,
+        "totalCap": 40000,
+        "allowedMerchants": null,
+        "merchant": "Share Pie 공동구매",
+        "purchase": false
+      },
+      "violations": [],
+      "txs": [
+        {
+          "kind": "create",
+          "label": "정산 등록",
+          "tx_hash": "0xb5d5158f878c219c67421af295727c4ee3e3f7c9934e2e925bceffd6e1fb60c0",
+          "block": 11803512,
+          "url": "https://sepolia.etherscan.io/tx/0xb5d5158f878c219c67421af295727c4ee3e3f7c9934e2e925bceffd6e1fb60c0",
+          "at": 1790634529.0820653
+        },
+        {
+          "kind": "lock",
+          "label": "예치",
+          "tx_hash": "0xf55e5561095828ffeb8335d70a269386b9709aef71b8471b9ba47aa7badc5ad0",
+          "block": 11803514,
+          "url": "https://sepolia.etherscan.io/tx/0xf55e5561095828ffeb8335d70a269386b9709aef71b8471b9ba47aa7badc5ad0",
+          "at": 1790634556.557645
+        },
+        {
+          "kind": "lock",
+          "label": "예치",
+          "tx_hash": "0xe9baf799f3fea594bbd70ba69e10a431f84fddb28df4c735e652a2a490db9bba",
+          "block": 11803516,
+          "url": "https://sepolia.etherscan.io/tx/0xe9baf799f3fea594bbd70ba69e10a431f84fddb28df4c735e652a2a490db9bba",
+          "at": 1790634578.674382
+        },
+        {
+          "kind": "lock",
+          "label": "예치",
+          "tx_hash": "0xaf31a0ea5180afda72da2d005172b0592aa4924924ca64d075d1a9c9f0b4c0ec",
+          "block": 11803518,
+          "url": "https://sepolia.etherscan.io/tx/0xaf31a0ea5180afda72da2d005172b0592aa4924924ca64d075d1a9c9f0b4c0ec",
+          "at": 1790634604.9690967
+        },
+        {
+          "kind": "escrow",
+          "label": "전원 예치",
+          "tx_hash": "0xaf31a0ea5180afda72da2d005172b0592aa4924924ca64d075d1a9c9f0b4c0ec",
+          "block": 11803518,
+          "url": "https://sepolia.etherscan.io/tx/0xaf31a0ea5180afda72da2d005172b0592aa4924924ca64d075d1a9c9f0b4c0ec",
+          "at": 1790634604.969106
+        },
+        {
+          "kind": "release",
+          "label": "release",
+          "tx_hash": "0x932d4af1317b1caf49304e2e660585e48c09bf38ba040ef60c3d7d7745b4d7c6",
+          "block": 11803534,
+          "url": "https://sepolia.etherscan.io/tx/0x932d4af1317b1caf49304e2e660585e48c09bf38ba040ef60c3d7d7745b4d7c6",
+          "at": 1790634794.400222
+        },
+        {
+          "kind": "paid",
+          "label": "지급",
+          "tx_hash": "0x932d4af1317b1caf49304e2e660585e48c09bf38ba040ef60c3d7d7745b4d7c6",
+          "block": 11803534,
+          "url": "https://sepolia.etherscan.io/tx/0x932d4af1317b1caf49304e2e660585e48c09bf38ba040ef60c3d7d7745b4d7c6",
+          "at": 1790634794.4002395
+        }
+      ],
+      "ai_calls": 0,
+      "tokens": 0,
+      "latency_ms": 0,
+      "energy_wh": 0,
+      "code_steps": 1,
+      "steps": [
+        {
+          "ts": 1790634523.781,
+          "stage": "settlement.policy",
+          "mode": "code",
+          "tokens": 0,
+          "latency_ms": 0,
+          "note": "0 tokens (code-only): 0 violations"
+        }
+      ]
+    },
+    {
+      "run": 23,
+      "sid": "sp-9693efee69",
+      "createdAt": 1790634807.1387467,
+      "status": "blocked",
+      "outcome": "지출 통제로 중단 (온체인 Blocked 기록)",
+      "conditions": {
+        "total": 35900,
+        "members": 4,
+        "perPersonCap": 9000,
+        "totalCap": null,
+        "allowedMerchants": null,
+        "merchant": "Share Pie 공동구매",
+        "purchase": false
+      },
+      "violations": [
+        "OVER_PERSON_CAP",
+        "OVER_PERSON_CAP",
+        "OVER_PERSON_CAP"
+      ],
+      "txs": [
+        {
+          "kind": "block",
+          "label": "지출 통제 중단",
+          "tx_hash": "0x4e779d27db4761eacad55636783b3b9482434df50a2e9641aecf7937f86ff5cb",
+          "block": 11803536,
+          "url": "https://sepolia.etherscan.io/tx/0x4e779d27db4761eacad55636783b3b9482434df50a2e9641aecf7937f86ff5cb",
+          "at": 1790634818.1161456
+        }
+      ],
+      "ai_calls": 0,
+      "tokens": 0,
+      "latency_ms": 0,
+      "energy_wh": 0,
+      "code_steps": 1,
+      "steps": [
+        {
+          "ts": 1790634807.135,
+          "stage": "settlement.policy",
+          "mode": "code",
+          "tokens": 0,
+          "latency_ms": 0,
+          "note": "0 tokens (code-only): 3 violations"
+        }
+      ]
+    },
+    {
+      "run": 24,
+      "sid": "sp-3800c9b03a",
+      "createdAt": 1790634821.235246,
+      "status": "blocked",
+      "outcome": "지출 통제로 중단 (온체인 Blocked 기록)",
+      "conditions": {
+        "total": 35900,
+        "members": 4,
+        "perPersonCap": null,
+        "totalCap": 30000,
+        "allowedMerchants": null,
+        "merchant": "Share Pie 공동구매",
+        "purchase": false
+      },
+      "violations": [
+        "OVER_TOTAL_CAP"
+      ],
+      "txs": [
+        {
+          "kind": "block",
+          "label": "지출 통제 중단",
+          "tx_hash": "0x8367cb18e439e8e9062a451c1ef15d347032dc576001098b11dae3d5fa8f33fc",
+          "block": 11803537,
+          "url": "https://sepolia.etherscan.io/tx/0x8367cb18e439e8e9062a451c1ef15d347032dc576001098b11dae3d5fa8f33fc",
+          "at": 1790634829.8396502
+        }
+      ],
+      "ai_calls": 0,
+      "tokens": 0,
+      "latency_ms": 0,
+      "energy_wh": 0,
+      "code_steps": 1,
+      "steps": [
+        {
+          "ts": 1790634821.233,
+          "stage": "settlement.policy",
+          "mode": "code",
+          "tokens": 0,
+          "latency_ms": 0,
+          "note": "0 tokens (code-only): 1 violations"
+        }
+      ]
+    },
+    {
+      "run": 25,
+      "sid": "sp-edccf95f19",
+      "createdAt": 1790634833.0247772,
+      "status": "refunded",
+      "outcome": "이의제기 → GENUINE_ERROR · 환불",
+      "conditions": {
+        "total": 35900,
+        "members": 4,
+        "perPersonCap": null,
+        "totalCap": 40000,
+        "allowedMerchants": null,
+        "merchant": "Share Pie 공동구매",
+        "purchase": false
+      },
+      "violations": [],
+      "txs": [
+        {
+          "kind": "create",
+          "label": "정산 등록",
+          "tx_hash": "0x8a75d8a508b63d7a3ef77d536a73374fa30aadb9841be3d70148a19df5d66890",
+          "block": 11803538,
+          "url": "https://sepolia.etherscan.io/tx/0x8a75d8a508b63d7a3ef77d536a73374fa30aadb9841be3d70148a19df5d66890",
+          "at": 1790634840.978638
+        },
+        {
+          "kind": "lock",
+          "label": "예치",
+          "tx_hash": "0x35433f2b46a7a193dbeaba405f631babf8c188d1ebeaf6548172b47cf985ff73",
+          "block": 11803540,
+          "url": "https://sepolia.etherscan.io/tx/0x35433f2b46a7a193dbeaba405f631babf8c188d1ebeaf6548172b47cf985ff73",
+          "at": 1790634868.0944464
+        },
+        {
+          "kind": "lock",
+          "label": "예치",
+          "tx_hash": "0xa64054797c7bfc57b87435eb72e36c8312a6d91b3c271e49d7e6c2f3e5873edd",
+          "block": 11803542,
+          "url": "https://sepolia.etherscan.io/tx/0xa64054797c7bfc57b87435eb72e36c8312a6d91b3c271e49d7e6c2f3e5873edd",
+          "at": 1790634890.2994359
+        },
+        {
+          "kind": "lock",
+          "label": "예치",
+          "tx_hash": "0x684f8008115736b95c15c8037eec13928ef1f6a916ef835ca59f03590918bc97",
+          "block": 11803544,
+          "url": "https://sepolia.etherscan.io/tx/0x684f8008115736b95c15c8037eec13928ef1f6a916ef835ca59f03590918bc97",
+          "at": 1790634916.5390322
+        },
+        {
+          "kind": "escrow",
+          "label": "전원 예치",
+          "tx_hash": "0x684f8008115736b95c15c8037eec13928ef1f6a916ef835ca59f03590918bc97",
+          "block": 11803544,
+          "url": "https://sepolia.etherscan.io/tx/0x684f8008115736b95c15c8037eec13928ef1f6a916ef835ca59f03590918bc97",
+          "at": 1790634916.5390394
+        },
+        {
+          "kind": "dispute",
+          "label": "이의제기",
+          "tx_hash": "0x156e42e2a5812795f53c214ddf4ce21d7baaf009861b9e0e0ef2a1cc41738d31",
+          "block": 11803545,
+          "url": "https://sepolia.etherscan.io/tx/0x156e42e2a5812795f53c214ddf4ce21d7baaf009861b9e0e0ef2a1cc41738d31",
+          "at": 1790634925.8253846
+        },
+        {
+          "kind": "refund",
+          "label": "환불",
+          "tx_hash": "0xfa901750cb327e9d40fff252627e9ee1eb99583e769f6abe3faec55a4c56f228",
+          "block": 11803546,
+          "url": "https://sepolia.etherscan.io/tx/0xfa901750cb327e9d40fff252627e9ee1eb99583e769f6abe3faec55a4c56f228",
+          "at": 1790634938.0152466
+        },
+        {
+          "kind": "refund",
+          "label": "환불",
+          "tx_hash": "0x71715ee7c14b2e2ed0afd94f8110b99f55806f466b84a7d81f7ec52676255b57",
+          "block": 11803547,
+          "url": "https://sepolia.etherscan.io/tx/0x71715ee7c14b2e2ed0afd94f8110b99f55806f466b84a7d81f7ec52676255b57",
+          "at": 1790634949.5028048
+        },
+        {
+          "kind": "refund",
+          "label": "환불",
+          "tx_hash": "0xfb6d3acd7feecee1b170e802d3336e887fb0d0476a65dbb76cdbf8b05c206500",
+          "block": 11803548,
+          "url": "https://sepolia.etherscan.io/tx/0xfb6d3acd7feecee1b170e802d3336e887fb0d0476a65dbb76cdbf8b05c206500",
+          "at": 1790634961.5612466
+        },
+        {
+          "kind": "resolve",
+          "label": "판정 기록",
+          "tx_hash": "0x9a217542ee35079eb9b07a4ed33d4f61ecdc8cac3be7f608c86d03805e3955a3",
+          "block": 11803549,
+          "url": "https://sepolia.etherscan.io/tx/0x9a217542ee35079eb9b07a4ed33d4f61ecdc8cac3be7f608c86d03805e3955a3",
+          "at": 1790634972.964547
+        }
+      ],
+      "ai_calls": 1,
+      "tokens": 1072,
+      "latency_ms": 5424,
+      "energy_wh": 0.226,
+      "code_steps": 2,
+      "steps": [
+        {
+          "ts": 1790634833.023,
+          "stage": "settlement.policy",
+          "mode": "code",
+          "tokens": 0,
+          "latency_ms": 0,
+          "note": "0 tokens (code-only): 0 violations"
+        },
+        {
+          "ts": 1790634929.028,
+          "stage": "dispute.records",
+          "mode": "code",
+          "tokens": 0,
+          "latency_ms": 0,
+          "note": "0 tokens (code-only): 단계별 기록 대조"
+        },
+        {
+          "ts": 1790634934.454,
+          "stage": "dispute.investigate",
+          "mode": "json",
+          "tokens": 1072,
+          "latency_ms": 5424,
+          "note": ""
+        },
+        {
+          "ts": 1790634934.455,
+          "stage": "dispute.investigate",
+          "mode": "decision",
+          "tokens": 0,
+          "latency_ms": 0,
+          "note": "Kiln 응답 → 판정 GENUINE_ERROR → 전원 환불 트랜잭션 실행"
+        }
+      ]
+    }
+  ],
+  "plans": [
+    {
+      "id": "free",
+      "label": "Free",
+      "price": 0,
+      "desc": "가끔 정산을 부탁하는 개인 · Pie 대화 약 5번 / 5시간",
+      "mult": 0.2,
+      "sessionLimit": 25000,
+      "weekLimit": 100000
+    },
+    {
+      "id": "pro",
+      "label": "Pie Pro",
+      "price": 4900,
+      "desc": "모임 정산을 자주 하는 사람 · Free의 5배",
+      "mult": 1,
+      "sessionLimit": 125000,
+      "weekLimit": 500000
+    },
+    {
+      "id": "max",
+      "label": "Pie Max 5x",
+      "price": 24500,
+      "desc": "총무·공동구매 방장 · Pro의 5배",
+      "mult": 5,
+      "sessionLimit": 625000,
+      "weekLimit": 2500000
+    },
+    {
+      "id": "max20",
+      "label": "Pie Max 20x",
+      "price": 49000,
+      "desc": "여러 방을 매일 돌리는 헤비 유저 · Pro의 20배",
+      "mult": 20,
+      "sessionLimit": 2500000,
+      "weekLimit": 10000000
+    }
+  ],
+  "llm_calls": 85,
+  "code_steps": 128,
+  "offline_steps": 5,
+  "total_tokens": 152252,
+  "total_latency_ms": 236668,
+  "energy_wh_upper_bound": 9.86116,
+  "assumptions": {
+    "npu_power_watts": 150,
+    "npu_count": 1,
+    "formula": "Wh = NPU 전력(W) × 카드 수 × 응답 지연(초) / 3600",
+    "bound": "배치 처리로 여러 요청이 카드를 나눠 쓰는 효과를 빼서 실제보다 큰 값(상한)",
+    "measured": "Kiln 요청부터 응답까지 걸린 시간(latency_ms)을 호출마다 실측",
+    "source": "RNGD TDP 150W — developer.furiosa.ai/latest/en/overview/rngd.html"
+  },
+  "markdown": "# Share Pie · Kiln API 사용 보고서\n생성 2026-09-29 07:36:14 KST · 모델 `qwen3-32b` (api.bricksum.com) · 실측 (LLM_MODE=live) · Kiln 호출 85회 · 응답 반영 기록 32건\n\n## 1. 워크플로 단계별 토큰\n\n| 구간 | 단계 | 처리 | Kiln 호출 | 코드 처리 | 입력 | 출력 | 합계 | 호출당 평균 | 평균 지연(ms) | 에너지 상한(Wh) | 비중 |\n|---|---|---|---|---|---|---|---|---|---|---|---|\n| 정산 코어 | Stage 1 조건 해석 `settlement.analyze` | AI | 48 | 4 | 67,546 | 7,307 | 74,853 | 1,559.4 | 2,816 | 5.63287 | 49.2% |\n| 정산 코어 | Stage 2 금액 계산 `settlement.calculate` | 코드 | 0 | 45 | 0 | 0 | 0 | 0 | 0 | 0.00000 | 0.0% |\n| 정산 코어 | 지출 통제 검사 `settlement.policy` | 코드 | 0 | 26 | 0 | 0 | 0 | 0 | 0 | 0.00000 | 0.0% |\n| 정산 코어 | Stage 3 결과 설명 `settlement.explain` | AI | 2 | 0 | 462 | 196 | 658 | 329.0 | 1,748 | 0.14567 | 0.4% |\n| 분쟁·증거 | 분쟁 기록 대조 `dispute.records` | 코드 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | 0.00000 | 0.0% |\n| 분쟁·증거 | 분쟁 판정 `dispute.investigate` | AI | 5 | 0 | 3,810 | 1,472 | 5,282 | 1,056.4 | 4,970 | 1.03550 | 3.5% |\n| 공동구매·추천 | 상품 검색 `shopping.web` | 코드 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | 0.00000 | 0.0% |\n| 공동구매·추천 | 공동구매 비교 `shopping.search` | AI | 4 | 0 | 3,352 | 619 | 3,971 | 992.8 | 2,778 | 0.46308 | 2.6% |\n| 공동구매·추천 | 1인 비용 계산 `shopping.calculate` | 코드 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | 0.00000 | 0.0% |\n| 공동구매·추천 | 비교 결과 설명 `shopping.explain` | AI | 4 | 0 | 3,299 | 813 | 4,112 | 1,028.0 | 3,390 | 0.56504 | 2.7% |\n| Pie 대화 (1:1·그룹) | 요청 의도 파악 `chat.route` | 코드 | 0 | 12 | 0 | 0 | 0 | 0 | 0 | 0.00000 | 0.0% |\n| Pie 대화 (1:1·그룹) | Pie 에이전트 판단 `assistant.step` | AI | 22 | 0 | 60,864 | 2,512 | 63,376 | 2,880.7 | 2,203 | 2.01900 | 41.6% |\n| Pie 대화 (1:1·그룹) | assistant.brain `assistant.brain` | 코드 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | 0.00000 | 0.0% |\n| Pie 대화 (1:1·그룹) | assistant.tool `assistant.tool` | 코드 | 0 | 20 | 0 | 0 | 0 | 0 | 0 | 0.00000 | 0.0% |\n\n## 2. 구간별 합계\n\n| 구간 | Kiln 호출 | 코드 처리 | 토큰 | 에너지 상한(Wh) |\n|---|---|---|---|---|\n| 정산 코어 | 50 | 75 | 75,511 | 5.77854 |\n| 분쟁·증거 | 5 | 5 | 5,282 | 1.03550 |\n| 공동구매·추천 | 8 | 11 | 8,083 | 1.02812 |\n| Pie 대화 (1:1·그룹) | 22 | 37 | 63,376 | 2.01900 |\n\n## 3. 실행(정산)별 기록 — 조건을 바꾼 실행 비교\n\n| 실행 | 정산 | 조건 | 결과 | Kiln 호출 | 토큰 | 에너지 상한(Wh) | 온체인 기록 |\n|---|---|---|---|---|---|---|---|\n| Run 6 | `sp-cdb1f9c046` | 총 35,900원 · 4명 · 1인 한도 9,000원 · 위반 OVER_PERSON_CAP,OVER_PERSON_CAP,OVER_PERSON_CAP | 지출 통제로 중단 (온체인 Blocked 기록) | 0 | 0 | 0.00000 | 지출 통제 중단 [`0xd7f265c0…`](https://sepolia.etherscan.io/tx/0xd7f265c020cca78d57ca2fea751e344d93cc539080ebd66c19551f6ef7e39c94) |\n| Run 7 | `sp-96cfd33f3f` | 총 35,900원 · 4명 · 총 한도 30,000원 · 위반 OVER_TOTAL_CAP | 지출 통제로 중단 (온체인 Blocked 기록) | 0 | 0 | 0.00000 | 지출 통제 중단 [`0xa22de2e4…`](https://sepolia.etherscan.io/tx/0xa22de2e43e8002ebad7ffb905042d23dd2da7da183adc9264aaa33ad49e58987) |\n| Run 8 | `sp-0e977c0a4a` | 총 35,900원 · 4명 · 총 한도 40,000원 | 이의제기 → GENUINE_ERROR · 환불 | 1 | 1,112 | 0.26112 | 정산 등록 [`0x35aec80f…`](https://sepolia.etherscan.io/tx/0x35aec80f5387b9f5f049c8ea28398dd1a5879bf9663013d89b3a859a9d4717db) 예치 [`0x8962ecb7…`](https://sepolia.etherscan.io/tx/0x8962ecb77d0057621c83b1be20ec88dff82def616c8d212591204d2f9f9ee2d1) 예치 [`0x3b780aff…`](https://sepolia.etherscan.io/tx/0x3b780aff6102b3ab2de616b9fd9f7279ce83de6211e6a6ede9208081529abf78) 예치 [`0x0f3ab995…`](https://sepolia.etherscan.io/tx/0x0f3ab995c0636662f2c2e4b7fb522f7cb7f485e96eadd4e79789715948025bcb) 전원 예치 [`0x0f3ab995…`](https://sepolia.etherscan.io/tx/0x0f3ab995c0636662f2c2e4b7fb522f7cb7f485e96eadd4e79789715948025bcb) 이의제기 [`0x4cc7d1e6…`](https://sepolia.etherscan.io/tx/0x4cc7d1e6f70d46742b52d9082f6cadc4c405828ea9ead587b44b2b437c07a7d7) |\n| Run 9 | `sp-a2f2ac6f3f` | 총 35,900원 · 4명 · 총 한도 40,000원 | 결제자에게 지급 완료 | 0 | 0 | 0.00000 | 정산 등록 [`0x568c3064…`](https://sepolia.etherscan.io/tx/0x568c30648aabcdb103f598a045dd255ea943e2eb00390215aa467aac60b3b789) 예치 [`0xae559cb4…`](https://sepolia.etherscan.io/tx/0xae559cb491a600b79514346e37e754a3c42b37187a66257f748ab98224e759f6) 예치 [`0x72c69042…`](https://sepolia.etherscan.io/tx/0x72c6904298dd78577e3ec1daeace5fb027a1a62a8db52b7b5890508a10e66220) 예치 [`0xf1c3fa6d…`](https://sepolia.etherscan.io/tx/0xf1c3fa6dd02afdc5244d676432430f21c5ce1b64e4bcd7f88bb692087c9d7386) 전원 예치 [`0xf1c3fa6d…`](https://sepolia.etherscan.io/tx/0xf1c3fa6dd02afdc5244d676432430f21c5ce1b64e4bcd7f88bb692087c9d7386) release [`0x56e083cd…`](https://sepolia.etherscan.io/tx/0x56e083cdabd7adf56be5993c5a9a4811fffb5c2da13474d548622ce3564e7f02) |\n| Run 10 | `sp-87051a7018` | 총 35,900원 · 4명 · 1인 한도 9,000원 · 위반 OVER_PERSON_CAP,OVER_PERSON_CAP,OVER_PERSON_CAP | 지출 통제로 중단 (온체인 Blocked 기록) | 0 | 0 | 0.00000 | 지출 통제 중단 [`0x58996bc6…`](https://sepolia.etherscan.io/tx/0x58996bc68dc304732cd2b51d97177282e4df635891b3a06f3906d99d7dbcba66) |\n| Run 11 | `sp-eeda05de02` | 총 35,900원 · 4명 · 총 한도 30,000원 · 위반 OVER_TOTAL_CAP | 지출 통제로 중단 (온체인 Blocked 기록) | 0 | 0 | 0.00000 | 지출 통제 중단 [`0x84ed29a0…`](https://sepolia.etherscan.io/tx/0x84ed29a0cfff37efda3c9f0de1c73e472a6ca32bb44a3c9b4c27ba9113ec4162) |\n| Run 12 | `sp-a9217d3b42` | 총 35,900원 · 4명 · 총 한도 40,000원 | 이의제기 → GENUINE_ERROR · 환불 | 1 | 1,054 | 0.21742 | 정산 등록 [`0x48323fb9…`](https://sepolia.etherscan.io/tx/0x48323fb903f7c8141be80ddb71ebf531b7c75e40f1de3f28631ef75e77a37a97) 예치 [`0x0112ef75…`](https://sepolia.etherscan.io/tx/0x0112ef7575d374886c24be2636a8832cb5e3b1617d90ebc363d742481a7ce3a5) 예치 [`0xd7df4f7b…`](https://sepolia.etherscan.io/tx/0xd7df4f7b8811487da0f27af06128a48949726146f07e7030800d7539613ad487) 예치 [`0x2ff00813…`](https://sepolia.etherscan.io/tx/0x2ff00813657ed868ecaa80c2bd249a81b5f20b0df932b80f1401ab1e50691bb2) 전원 예치 [`0x2ff00813…`](https://sepolia.etherscan.io/tx/0x2ff00813657ed868ecaa80c2bd249a81b5f20b0df932b80f1401ab1e50691bb2) 이의제기 [`0xcce569f0…`](https://sepolia.etherscan.io/tx/0xcce569f05c3cbbfc065a6c4ac92aef3cbc18fa5b556905aac2a7fd83a5cad789) |\n| Run 13 | `sp-a97571b166` | 총 35,900원 · 4명 · 총 한도 30,000원 · 위반 OVER_TOTAL_CAP | 지출 통제로 중단 (온체인 Blocked 기록) | 0 | 0 | 0.00000 | 지출 통제 중단 [`0xa8677d14…`](https://sepolia.etherscan.io/tx/0xa8677d146ded906d8975ccf0133536028cb4e60a367df5c4bfc99e26aa1c76f7) |\n| Run 14 | `sp-38a5e2b88a` | 총 35,900원 · 4명 · 총 한도 30,000원 · 위반 OVER_TOTAL_CAP | 지출 통제로 중단 (온체인 Blocked 기록) | 0 | 0 | 0.00000 | 지출 통제 중단 [`0x928a3058…`](https://sepolia.etherscan.io/tx/0x928a3058bfeb8ec32e949aa359bd8c98572464fba1ebd4a436297acd8952a564) |\n| Run 15 | `sp-21356b2fbd` | 총 35,900원 · 4명 · 총 한도 40,000원 | 지출 통제로 중단 (온체인 Blocked 기록) | 0 | 0 | 0.00000 | 정산 등록 [`0x70cc4dac…`](https://sepolia.etherscan.io/tx/0x70cc4dac2af0123d0203a805e99a36221983afb21e5cfc2789203a7acefcc9a9) 지출 통제 중단 [`0xad20b72d…`](https://sepolia.etherscan.io/tx/0xad20b72dc09c0fa060b2db4310e80eda572a925e14463e6001b7c03fb1986a3f) |\n| Run 16 | `sp-4ea1730e98` | 총 35,900원 · 4명 · 총 한도 40,000원 | 결제자에게 지급 완료 | 0 | 0 | 0.00000 | 정산 등록 [`0x1b2fc461…`](https://sepolia.etherscan.io/tx/0x1b2fc46198f8d2d7c2c88033d146c5e26d0475559a421ebc952d906659f401f3) 예치 [`0xdcb2b0f4…`](https://sepolia.etherscan.io/tx/0xdcb2b0f494d91bdc002e6a8df880f47c4ed62b32ee390b1f5a137d1925aed700) 예치 [`0x17d60997…`](https://sepolia.etherscan.io/tx/0x17d6099703a05b4be2ba528d52e88a3ea990bffb35495a4404d5a4f9e0771c69) 예치 [`0x0c28a50d…`](https://sepolia.etherscan.io/tx/0x0c28a50db5f144e5f45b000ff44cd2c4c54020a3a27c253fd098a15e1c2bdcd0) 전원 예치 [`0x0c28a50d…`](https://sepolia.etherscan.io/tx/0x0c28a50db5f144e5f45b000ff44cd2c4c54020a3a27c253fd098a15e1c2bdcd0) release [`0x54611015…`](https://sepolia.etherscan.io/tx/0x5461101574c706f997e6a5d52b60e62c6bc5c712fe623b724d1701eff7484ac3) |\n| Run 17 | `sp-f45780c795` | 총 35,900원 · 4명 · 1인 한도 9,000원 · 위반 OVER_PERSON_CAP,OVER_PERSON_CAP,OVER_PERSON_CAP | 지출 통제로 중단 (온체인 Blocked 기록) | 0 | 0 | 0.00000 | 지출 통제 중단 [`0x453179d1…`](https://sepolia.etherscan.io/tx/0x453179d15eac18400ad0fd4b308d942fe95039892ca3ce224f0d7f54ddd7b1a5) |\n| Run 18 | `sp-f7190048f9` | 총 35,900원 · 4명 · 총 한도 30,000원 · 위반 OVER_TOTAL_CAP | 지출 통제로 중단 (온체인 Blocked 기록) | 0 | 0 | 0.00000 | 지출 통제 중단 [`0x1df4455b…`](https://sepolia.etherscan.io/tx/0x1df4455b28f9a23986aec8a4f20a8aed9e9d3b7c0a82d804fa3cfe448e409a4d) |\n| Run 19 | `sp-122477344b` | 총 35,900원 · 4명 · 총 한도 40,000원 | 이의제기 → GENUINE_ERROR · 환불 | 1 | 1,094 | 0.23929 | 정산 등록 [`0xcd46ed47…`](https://sepolia.etherscan.io/tx/0xcd46ed47523ed987b153f2d1989e8663a53c94fe6d54994cb301ca2d4301ec7c) 예치 [`0x2d20b31e…`](https://sepolia.etherscan.io/tx/0x2d20b31eb68aa1323f43819289428d9f1d2ac77bc5ebaadd0ad8eaa16cdd1a01) 예치 [`0x6992e10f…`](https://sepolia.etherscan.io/tx/0x6992e10fc7a1a3569e83809431e4bee5812b91284ad6c7fe3ed69bd36a59af37) 예치 [`0xeca997a5…`](https://sepolia.etherscan.io/tx/0xeca997a59fed164183db803e7dfce95e0272680c63c9fbd0e01ed5c5fa69eca7) 전원 예치 [`0xeca997a5…`](https://sepolia.etherscan.io/tx/0xeca997a59fed164183db803e7dfce95e0272680c63c9fbd0e01ed5c5fa69eca7) 이의제기 [`0x89e70df3…`](https://sepolia.etherscan.io/tx/0x89e70df35219d1eea3c4677e576b8eacce7361ddad2c472df2a21a90d3422d42) |\n| Run 20 | `sp-c8123d5f12` | 총 35,900원 · 4명 · 총 한도 30,000원 · 위반 OVER_TOTAL_CAP | 지출 통제로 중단 (온체인 Blocked 기록) | 0 | 0 | 0.00000 | 지출 통제 중단 [`0xeaec2da4…`](https://sepolia.etherscan.io/tx/0xeaec2da472faaeb1670b85408e5487a2b95088c09a69f59359128b3188c4981f) |\n| Run 21 | `sp-8c672cfb84` | 총 35,900원 · 4명 · 총 한도 40,000원 | 지출 통제로 중단 (온체인 Blocked 기록) | 0 | 0 | 0.00000 | 정산 등록 [`0xc7344a55…`](https://sepolia.etherscan.io/tx/0xc7344a553dd691e7c1c433ad33eae11d415c736cfe8be037782b8d60aa86e49c) 지출 통제 중단 [`0x4538196a…`](https://sepolia.etherscan.io/tx/0x4538196af29d52ebf9c07c0d1a8e8d66c12ac4f67f94cc028d29a5aebbe67d5a) |\n| Run 22 | `sp-dddf6e186e` | 총 35,900원 · 4명 · 총 한도 40,000원 | 결제자에게 지급 완료 | 0 | 0 | 0.00000 | 정산 등록 [`0xb5d5158f…`](https://sepolia.etherscan.io/tx/0xb5d5158f878c219c67421af295727c4ee3e3f7c9934e2e925bceffd6e1fb60c0) 예치 [`0xf55e5561…`](https://sepolia.etherscan.io/tx/0xf55e5561095828ffeb8335d70a269386b9709aef71b8471b9ba47aa7badc5ad0) 예치 [`0xe9baf799…`](https://sepolia.etherscan.io/tx/0xe9baf799f3fea594bbd70ba69e10a431f84fddb28df4c735e652a2a490db9bba) 예치 [`0xaf31a0ea…`](https://sepolia.etherscan.io/tx/0xaf31a0ea5180afda72da2d005172b0592aa4924924ca64d075d1a9c9f0b4c0ec) 전원 예치 [`0xaf31a0ea…`](https://sepolia.etherscan.io/tx/0xaf31a0ea5180afda72da2d005172b0592aa4924924ca64d075d1a9c9f0b4c0ec) release [`0x932d4af1…`](https://sepolia.etherscan.io/tx/0x932d4af1317b1caf49304e2e660585e48c09bf38ba040ef60c3d7d7745b4d7c6) |\n| Run 23 | `sp-9693efee69` | 총 35,900원 · 4명 · 1인 한도 9,000원 · 위반 OVER_PERSON_CAP,OVER_PERSON_CAP,OVER_PERSON_CAP | 지출 통제로 중단 (온체인 Blocked 기록) | 0 | 0 | 0.00000 | 지출 통제 중단 [`0x4e779d27…`](https://sepolia.etherscan.io/tx/0x4e779d27db4761eacad55636783b3b9482434df50a2e9641aecf7937f86ff5cb) |\n| Run 24 | `sp-3800c9b03a` | 총 35,900원 · 4명 · 총 한도 30,000원 · 위반 OVER_TOTAL_CAP | 지출 통제로 중단 (온체인 Blocked 기록) | 0 | 0 | 0.00000 | 지출 통제 중단 [`0x8367cb18…`](https://sepolia.etherscan.io/tx/0x8367cb18e439e8e9062a451c1ef15d347032dc576001098b11dae3d5fa8f33fc) |\n| Run 25 | `sp-edccf95f19` | 총 35,900원 · 4명 · 총 한도 40,000원 | 이의제기 → GENUINE_ERROR · 환불 | 1 | 1,072 | 0.22600 | 정산 등록 [`0x8a75d8a5…`](https://sepolia.etherscan.io/tx/0x8a75d8a508b63d7a3ef77d536a73374fa30aadb9841be3d70148a19df5d66890) 예치 [`0x35433f2b…`](https://sepolia.etherscan.io/tx/0x35433f2b46a7a193dbeaba405f631babf8c188d1ebeaf6548172b47cf985ff73) 예치 [`0xa6405479…`](https://sepolia.etherscan.io/tx/0xa64054797c7bfc57b87435eb72e36c8312a6d91b3c271e49d7e6c2f3e5873edd) 예치 [`0x684f8008…`](https://sepolia.etherscan.io/tx/0x684f8008115736b95c15c8037eec13928ef1f6a916ef835ca59f03590918bc97) 전원 예치 [`0x684f8008…`](https://sepolia.etherscan.io/tx/0x684f8008115736b95c15c8037eec13928ef1f6a916ef835ca59f03590918bc97) 이의제기 [`0x156e42e2…`](https://sepolia.etherscan.io/tx/0x156e42e2a5812795f53c214ddf4ce21d7baaf009861b9e0e0ef2a1cc41738d31) |\n\n**Run 24 단계 순서** (`sp-3800c9b03a` · 지출 통제로 중단 (온체인 Blocked 기록))\n\n1. [코드] `settlement.policy` — 0 tokens (code-only): 1 violations\n- [체인] 지출 통제 중단 `0x8367cb18e439e8e9062a451c1ef15d347032dc576001098b11dae3d5fa8f33fc` (블록 11803537)\n\n**Run 25 단계 순서** (`sp-edccf95f19` · 이의제기 → GENUINE_ERROR · 환불)\n\n1. [코드] `settlement.policy` — 0 tokens (code-only): 0 violations\n2. [코드] `dispute.records` — 0 tokens (code-only): 단계별 기록 대조\n3. [Kiln] `dispute.investigate` · 1,072토큰 · 5424ms\n4. [응답 반영] `dispute.investigate` — Kiln 응답 → 판정 GENUINE_ERROR → 전원 환불 트랜잭션 실행\n- [체인] 정산 등록 `0x8a75d8a508b63d7a3ef77d536a73374fa30aadb9841be3d70148a19df5d66890` (블록 11803538)\n- [체인] 예치 `0x35433f2b46a7a193dbeaba405f631babf8c188d1ebeaf6548172b47cf985ff73` (블록 11803540)\n- [체인] 예치 `0xa64054797c7bfc57b87435eb72e36c8312a6d91b3c271e49d7e6c2f3e5873edd` (블록 11803542)\n- [체인] 예치 `0x684f8008115736b95c15c8037eec13928ef1f6a916ef835ca59f03590918bc97` (블록 11803544)\n- [체인] 전원 예치 `0x684f8008115736b95c15c8037eec13928ef1f6a916ef835ca59f03590918bc97` (블록 11803544)\n- [체인] 이의제기 `0x156e42e2a5812795f53c214ddf4ce21d7baaf009861b9e0e0ef2a1cc41738d31` (블록 11803545)\n- [체인] 환불 `0xfa901750cb327e9d40fff252627e9ee1eb99583e769f6abe3faec55a4c56f228` (블록 11803546)\n- [체인] 환불 `0x71715ee7c14b2e2ed0afd94f8110b99f55806f466b84a7d81f7ec52676255b57` (블록 11803547)\n- [체인] 환불 `0xfb6d3acd7feecee1b170e802d3336e887fb0d0476a65dbb76cdbf8b05c206500` (블록 11803548)\n- [체인] 판정 기록 `0x9a217542ee35079eb9b07a4ed33d4f61ecdc8cac3be7f608c86d03805e3955a3` (블록 11803549)\n\n## 4. 불필요한 추론을 줄인 방법과 효과\n\n| 방법 | 건수 | 최소 절감 추정(토큰) | 계산 근거 |\n|---|---|---|---|\n| 그룹방 잡담에는 Pie가 끼지 않음 (답할지 코드가 먼저 판단) | 0 | 0 | 잡담 1건 = Kiln 최소 1회(그룹방 호출 평균 1,791토큰)를 안 부른 것으로 계산 |\n| 불법 목적 요청은 AI 호출 전에 코드가 거절 | 0 | 0 | 1건 = Kiln 최소 1회(호출 평균 1,791토큰) |\n| AI가 놓친 금액을 코드가 읽어 되묻기·재호출을 막음 | 4 | 7,164 | 1건 = 재호출 1회(호출 평균 1,791토큰) |\n| 구독 한도를 넘어 Kiln 없이 규칙으로 답함 | 5 | 8,955 | 1건 = Kiln 최소 1회(호출 평균 1,791토큰) |\n| 금액 계산·합계 검증·지출 통제는 코드로만 (Stage 2) | 76 | - | 설계상 이 단계는 처음부터 AI를 부르지 않아 추정치에 넣지 않음 (0 토큰) |\n\n최소 절감 추정 합계 16,119토큰 (호출 평균 1,791토큰 기준, 실제로는 한 번에 여러 걸음이라 더 크다)\n\n- 금액 계산·합계 검증·지출 통제는 코드(0 토큰). AI는 조건 해석(Stage 1)과 설명(Stage 3)만 한다.\n- 그룹방은 답할지를 코드가 먼저 정한다(이름 부름·정산·구매 이야기만). 잡담은 AI 호출 0회.\n- qwen3-32b: 평소엔 긴 사고를 끄고(/no_think), 판단이 어려운 단계(shopping.plan, dispute.investigate)만 사고 모드.\n- 답이 max_tokens에 걸리면 한도를 늘려 한 번만 다시 부르고, 잘린 시도의 토큰도 빠짐없이 기록한다.\n- 구독 한도: 5시간 세션·주간 한도를 넘으면 Kiln을 부르지 않는다(정산·결제는 코드로 계속). 분쟁 조사는 한도 밖.\n\n## 5. 에너지 추정 근거\n\n- 측정값: Kiln 요청부터 응답까지 걸린 시간(latency_ms)을 호출마다 실측\n- 가정: NPU 전력 150W × 카드 1장 (RNGD TDP 150W — developer.furiosa.ai/latest/en/overview/rngd.html)\n- 공식: Wh = NPU 전력(W) × 카드 수 × 응답 지연(초) / 3600 — 배치 처리로 여러 요청이 카드를 나눠 쓰는 효과를 빼서 실제보다 큰 값(상한)\n- 결과: 총 9.86116 Wh 상한 · Kiln 호출 1회당 0.116014 Wh · 1,000토큰당 0.064769 Wh\n\n## 6. 구독 요금제와 사용 한도\n\n| 요금제 | 월 가격 (PIE) | 5시간 세션 한도 (토큰) | 주간 한도 (토큰) |\n|---|---|---|---|\n| Free | 0 | 25,000 | 100,000 |\n| Pie Pro | 4,900 | 125,000 | 500,000 |\n| Pie Max 5x | 24,500 | 625,000 | 2,500,000 |\n| Pie Max 20x | 49,000 | 2,500,000 | 10,000,000 |\n\nPIE는 테스트넷 토큰이라 실제 가치가 없다. 구독료 결제는 PieToken.transfer 온체인 기록으로 남는다."
+}
