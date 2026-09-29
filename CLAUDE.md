@@ -195,7 +195,7 @@ Run 1.5 (조건 변경 → 코드 중단): ① 1인 한도 9,000원 → OVER_PER
 Run 2 (이의제기): 별도 정산 → 전원 예치(Locked) → "판매자 품절 취소" raiseDispute → dispute.investigate = GENUINE_ERROR(refund=all)
                 → refundParticipant ×3 → resolveDispute(2) → Refunded, 잔액 전액 복구
 실행:           서버 켠 뒤  cd hardhat && npm run evidence  → docs/evidence/<시각>/summary.md (트랜잭션 표·Etherscan·AI 토큰 표·응답→행동)
-최신 증거:       docs/evidence/sepolia-2026-09-28T22-36-17/ (v39, 저장소·최종본 폴더 모두) · docs/evidence/beta-2026-09-29/ (베타 데이터, 비식별)
+최신 증거:       docs/evidence/sepolia-2026-09-28T22-36-17/ (v39, 폴더명은 UTC = KST 09-29 07:36, 저장소·최종본 폴더 모두) · docs/evidence/beta-2026-09-29/ (베타 데이터, 비식별)
 ```
 - 지급(`Paid`) 이후에는 이의제기가 불가능하므로 **Run 2는 별도 정산**으로 실행한다.
 - Run 2의 착오는 시연용으로 주입한 시나리오이며, 판정은 AI가·환불 실행은 코드가 한다. README에 명시.

@@ -61,7 +61,7 @@ GWDC Korea Hackathon · FuriosaAI × Bricksum · Agent Finance Bonus Track
 - `dispute.investigate` → `GENUINE_ERROR`(refund=all) → `refundParticipant` × N → `resolveDispute(2)`; `NORMAL_APPROVAL` / `BAD_FAITH_DISPUTE` → `resolveDispute(1|3)` 후 지급
 - 실제 예(2026-09-28 22:35, Sepolia): 이의제기 "판매자가 품절로 주문을 취소했어요" → AI 판정 GENUINE_ERROR → 환불 tx 0xfa90…f228 / 0x7171…5b57 / 0xfb6d…6500 → 판정 tx 0x9a21…55a3
 
-### 2.3 단계별 토큰 (실측, v39 증거 실행)
+### 2.3 단계별 토큰 (실측 · v39 서버 기동 후 누적 = 스모크 6문장 + 검색 테스트 + 증거 실행, 2026-09-29 07:36 KST 기준)
 | 구간 | 단계 | 처리 | Kiln 호출 | 코드 처리 | 토큰 합계 | 호출당 평균 | 평균 지연(ms) | 에너지 상한(Wh) |
 |---|---|---|---|---|---|---|---|---|
 | 정산 코어 | Stage 1 해석 `settlement.analyze` | AI | 48 | 4 | 74,853 | 1,559 | 2,816 | 5.633 |

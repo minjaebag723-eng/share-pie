@@ -15,7 +15,7 @@
 | [`HOW-TO-RUN.md`](HOW-TO-RUN.md) | 실행 안내 (로컬 · Sepolia 설정 · 검증) |
 | [`deploy/README.md`](deploy/README.md) | 베타 서버 — 100명 동시 접속 · 데이터 폴더 · 클라우드 배포 |
 | [`docs/BETA-PUBLIC.md`](docs/BETA-PUBLIC.md) | PC + Cloudflare 터널로 외부 공개 · 새 백엔드 버전에 블록체인 얹기 |
-| [`docs/user-manual/`](docs/user-manual/) | 베타 참가자용 사용 설명서 (PDF) |
+| `docs/user-manual/` | 베타 참가자용 사용 설명서 (PDF) — 작성 예정 |
 | [`CHANGES-beta-server.md`](CHANGES-beta-server.md) | 베타 서버 병합 · 실제 체인 동시 접속 수정 내역 |
 | [`docs/evidence/`](docs/evidence/) | Sepolia 실행 증거 `sepolia-2026-09-28T22-36-17/` (TxHash · Etherscan 링크 · AI 토큰 표 · 응답→행동 기록) · 베타 데이터(비식별) `beta-2026-09-29/` |
 
@@ -42,7 +42,7 @@ npm run evidence                           # Run 1 / 1.5 / 2 실제 체인 실�
 ## 실행
 
 ```bash
-py -3.14 -m pip install -r requirements.txt && py -3.14 -m pip install "web3>=6.15"   # Python 3.14
+py -3.14 -m pip install -r requirements.txt                                            # Python 3.14 (web3 포함)
 py -3.14 -m uvicorn deploy.asgi:app --host 0.0.0.0 --port 8000 --workers 1             # → http://localhost:8000 (베타 서버 진입점)
 ```
 - 외부 공개(폰·다른 PC)는 `run-public.cmd` (Cloudflare 터널) — `docs/BETA-PUBLIC.md`
@@ -106,9 +106,9 @@ tests/          폰 4대 E2E 시뮬레이션 · 대화형 에이전트 점검 ·
 
 상태 머신: `Open → Locked → Paid`, 위반·취소 `Blocked`, 이의제기 `Disputed → Refunded | Paid`. 판정 코드 1=NORMAL_APPROVAL, 2=GENUINE_ERROR, 3=BAD_FAITH_DISPUTE.
 
-## 조건 2회 변경 실행 — 온체인 증거 (2026-09-28, v39, 실제 Sepolia)
+## 조건 2회 변경 실행 — 온체인 증거 (v39, 실제 Sepolia, 2026-09-28 22:36 UTC = 09-29 07:36 KST)
 
-전체 트랜잭션 표·Etherscan 링크·AI 토큰 표·응답→행동 기록: `docs/evidence/sepolia-2026-09-28T22-36-17/summary.md`
+전체 트랜잭션 표·Etherscan 링크·AI 토큰 표·응답→행동 기록: `docs/evidence/sepolia-2026-09-28T22-36-17/summary.md` (폴더명은 UTC)
 
 | Run | 조건 | 결과 | 대표 TxHash |
 |---|---|---|---|
@@ -155,7 +155,7 @@ tests/          폰 4대 E2E 시뮬레이션 · 대화형 에이전트 점검 ·
 
 ## AI 토큰 · 추론 절감 · 에너지 추정 (심사 제출용)
 
-### 단계별 AI 토큰 (실측, v39 증거 실행 2026-09-28 · 모델 qwen3-32b · 서버 `GET /api/usage/report.md`)
+### 단계별 AI 토큰 (실측 · v39 서버 기동 후 누적 = 스모크 6문장 + 검색 테스트 + 증거 실행, 2026-09-29 07:36 KST 기준 · 모델 qwen3-32b · 서버 `GET /api/usage/report.md`)
 
 | 구간 | 단계 | 처리 | Kiln 호출 | 코드 처리 | 토큰 합계 | 호출당 평균 | 평균 지연(ms) | 에너지 상한(Wh) |
 |---|---|---|---|---|---|---|---|---|
